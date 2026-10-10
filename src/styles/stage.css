@@ -139,14 +139,14 @@
 }
 
 /* During the intro a cover can be pressed but the page still scrolls; in the gallery the
-   wall takes the drag itself. */
+   wall takes the drag itself. The cursor stays the site's own hands throughout. */
 .wall.is-interactive {
   touch-action: none;
-  cursor: grab;
 }
 
-.wall.is-dragging {
-  cursor: grabbing;
+.wall.is-dragging,
+.wall.is-dragging .cell {
+  cursor: var(--cursor-press);
 }
 
 /* Edges fall away into the wall colour, so the grid has no visible end. */
@@ -177,10 +177,6 @@
   height: var(--cell-h);
   cursor: var(--cursor-press);
   will-change: transform;
-}
-
-.wall.is-interactive .cell {
-  cursor: inherit;
 }
 
 /*

@@ -16,6 +16,59 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap"
       rel="stylesheet"
     />
+    <style>
+      /* The load screen. It is here, not in the stylesheet, so it paints before anything else arrives. */
+      #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 16px;
+        background: #0c0c0d;
+        color: #ece8df;
+        transition: opacity 0.9s ease, visibility 0s 0.9s;
+      }
+      [data-theme='day'] #loader {
+        background: #f4f0e8;
+        color: #1b1a17;
+      }
+      #loader[data-done] {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .loader-figure {
+        font: 400 1.375rem / 1 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
+        font-variant-numeric: tabular-nums lining-nums;
+        letter-spacing: 0.04em;
+        opacity: 0.82;
+      }
+      .loader-unit {
+        margin-left: 0.2em;
+        font-size: 0.62em;
+        vertical-align: 0.38em;
+        opacity: 0.6;
+      }
+      .loader-bar {
+        position: relative;
+        width: min(620px, 72vw);
+        height: 1px;
+        background: color-mix(in srgb, currentColor 16%, transparent);
+      }
+      .loader-bar::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: #c9a45c;
+        transform: scaleX(var(--loaded, 0));
+        transform-origin: left;
+      }
+      [data-theme='day'] .loader-bar::after {
+        background: #7a1f2b;
+      }
+    </style>
     <script>
       // Set theme and language before first paint so the page never flashes the wrong one.
       (function () {
@@ -31,6 +84,28 @@
     </script>
   </head>
   <body>
+    <div id="loader" role="status" aria-label="Loading">
+      <span class="loader-figure" aria-hidden="true"><span class="loader-count">0</span><span class="loader-unit">%</span></span>
+      <span class="loader-bar" aria-hidden="true"></span>
+    </div>
+    <script>
+      // The bar creeps forward by itself until the page's code arrives and takes it over (src/lib/loader.ts).
+      (function () {
+        var el = document.getElementById('loader');
+        var count = el.querySelector('.loader-count');
+        var state = { shown: 0, stop: function () { cancelAnimationFrame(frame); } };
+        var frame = 0;
+        function tick() {
+          frame = requestAnimationFrame(tick);
+          state.shown += (0.3 - state.shown) * 0.012;
+          el.style.setProperty('--loaded', state.shown.toFixed(4));
+          count.textContent = String(Math.round(state.shown * 100));
+        }
+        document.documentElement.classList.add('is-loading');
+        window.__loader = state;
+        tick();
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
