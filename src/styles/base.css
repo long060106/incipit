@@ -107,11 +107,11 @@ img {
   height: 640svh;
 }
 
-/* Three screens more at the top, which the opening window takes to widen
-   (OPENING_SCREENS in App.tsx). */
+/* Three screens more at the top, which the opening window takes to widen, and three quarters
+   of a screen on which the open hero holds still (OPENING_SCREENS and HOLD_SCREENS in App.tsx). */
 .scroll-track[data-opening] {
-  height: 940vh;
-  height: 940svh;
+  height: 1015vh;
+  height: 1015svh;
 }
 
 @media (prefers-reduced-motion: reduce) {
