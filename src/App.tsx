@@ -31,6 +31,11 @@ const TRAVEL_MS = 5200;
 const OPENING_MS = 11000;
 /** How many screens of scroll the opening takes (the scroll track in base.css is this much taller). */
 const OPENING_SCREENS = 3;
+/**
+ * How many screens of scroll the open hero then holds still for, so that a scroll through the
+ * opening comes to rest on it and does not run on into the intro (also in base.css).
+ */
+const HOLD_SCREENS = 0.75;
 /** How much of the gap to the scroll position the intro closes each 60th of a second. Lower is a longer, softer drift. */
 const FOLLOW = 0.085;
 /** The same, for a first pass that rounds off each notch of the wheel before the intro follows it. */
@@ -334,7 +339,8 @@ export default function App() {
         soft += (y - soft) * share(SOFTEN, dt);
         shown += (soft - shown) * share(FOLLOW, dt);
       }
-      progress = reduced || max <= lead + 1 ? 1 : clamp01((shown - lead) / (max - lead));
+      const begin = lead + (opening ? window.innerHeight * HOLD_SCREENS : 0);
+      progress = reduced || max <= begin + 1 ? 1 : clamp01((shown - begin) / (max - begin));
       unveil = lead ? clamp01(shown / lead) : 1;
       lines += ((glide ? 0 : 1) - lines) * share(0.1, dt);
       if (lines > 0.999) lines = 1;
