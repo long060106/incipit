@@ -31,8 +31,31 @@ const TRAVEL_MS = 5200;
 const OPENING_MS = 11000;
 /** How many screens of scroll the opening takes (the scroll track in base.css is this much taller). */
 const OPENING_SCREENS = 3;
-/** How much of the gap to the scroll position the intro closes each frame. Lower is a longer, softer drift. */
-const FOLLOW = 0.075;
+/** How much of the gap to the scroll position the intro closes each 60th of a second. Lower is a longer, softer drift. */
+const FOLLOW = 0.085;
+/** The same, for a first pass that rounds off each notch of the wheel before the intro follows it. */
+const SOFTEN = 0.2;
+/** A follow rate per 60th of a second, as the share to close over a frame that took `dt` ms. */
+const share = (rate: number, dt: number) => 1 - Math.pow(1 - rate, Math.min(dt, 100) / (1000 / 60));
+
+/**
+ * The elements that read each value the scroll writes. The values are registered in stage.css
+ * as properties that do not inherit and are written straight onto their readers: written onto
+ * the stage, every one of them made the browser restyle every cover on the wall, every frame.
+ */
+const READERS: Record<string, string> = {
+  '--open': '.hero-letter, .hero-def, .hero-actions',
+  '--zoom': '.wall, .glow, .hands',
+  '--part': '.hand-rail',
+  '--hero': '.hero, .hero-word, .hero-def, .hand, .wordmark',
+  '--wall-opacity': '.wall-plane',
+  '--line-1': '.line-1',
+  '--line-1-y': '.line-1',
+  '--line-2': '.line-2',
+  '--line-2-y': '.line-2',
+  '--line-3': '.line-3',
+  '--line-3-y': '.line-3',
+};
 
 /** Below this width the filter panel is a sheet that rises from the bottom edge. */
 const NARROW = window.matchMedia('(max-width: 899px)');
@@ -263,7 +286,22 @@ export default function App() {
     let progress = -1;
     /** How far the opening window has got, 0 to 1, eased like `progress`. */
     let unveil = -1;
+    /** The scroll position the page shows: the real one, softened and then followed. */
+    let soft = -1;
+    let shown = -1;
+    let before = performance.now();
     let applied = '';
+    const readers = new Map<string, HTMLElement[]>();
+    const written = new Map<string, string>();
+    const put = (name: string, value: string) => {
+      if (written.get(name) === value) return;
+      written.set(name, value);
+      const selector = READERS[name];
+      if (!selector) return stage.style.setProperty(name, value);
+      let elements = readers.get(name);
+      if (!elements) readers.set(name, (elements = [...document.querySelectorAll<HTMLElement>(selector)]));
+      for (const element of elements) element.style.setProperty(name, value);
+    };
     // 1 while the reader scrolls through the intro's three lines; eases to 0 during a glide,
     // which carries the hero straight into the wall without them.
     let lines = 1;
@@ -285,14 +323,20 @@ export default function App() {
         if (elapsed >= 1) travel.current = null;
       }
 
-      const target = reduced || max <= lead + 1 ? 1 : clamp01((window.scrollY - lead) / (max - lead));
-      const unveilTarget = lead ? clamp01(window.scrollY / lead) : 1;
-      // A glide is already eased, so follow it exactly; hand scrolling gets a little lag.
-      if (progress < 0 || glide || Math.abs(target - progress) < 0.0004) progress = target;
-      else progress += (target - progress) * FOLLOW;
-      if (unveil < 0 || glide || Math.abs(unveilTarget - unveil) < 0.0004) unveil = unveilTarget;
-      else unveil += (unveilTarget - unveil) * FOLLOW;
-      lines += ((glide ? 0 : 1) - lines) * 0.1;
+      // A glide is already eased, so follow it exactly. Hand scrolling comes in notches: a
+      // first pass rounds each one off, and the page follows that with a little lag, at the
+      // same pace whatever the frame rate.
+      const dt = now - before;
+      before = now;
+      const y = window.scrollY;
+      if (shown < 0 || glide || (Math.abs(y - shown) < 0.4 && Math.abs(y - soft) < 0.4)) soft = shown = y;
+      else {
+        soft += (y - soft) * share(SOFTEN, dt);
+        shown += (soft - shown) * share(FOLLOW, dt);
+      }
+      progress = reduced || max <= lead + 1 ? 1 : clamp01((shown - lead) / (max - lead));
+      unveil = lead ? clamp01(shown / lead) : 1;
+      lines += ((glide ? 0 : 1) - lines) * share(0.1, dt);
       if (lines > 0.999) lines = 1;
       else if (lines < 0.001) lines = 0;
 
@@ -323,9 +367,9 @@ export default function App() {
         const widen = easeInOutSine(span(unveil, 0, 0.92));
         const inset = (edge: number) => `${((1 - widen) * edge).toFixed(2)}%`;
         stage.style.clipPath = widen < 1 ? `inset(${inset(26)} ${inset(34)} ${inset(38)} ${inset(34)})` : '';
-        stage.style.setProperty('--open', unveil.toFixed(4));
-        stage.style.setProperty('--zoom', (1.5 - widen * 0.5).toFixed(4));
-        stage.style.setProperty('--part', easeInOutSine(span(unveil, 0.08, 0.9)).toFixed(4));
+        put('--open', unveil.toFixed(4));
+        put('--zoom', (1.5 - widen * 0.5).toFixed(4));
+        put('--part', easeInOutSine(span(unveil, 0.08, 0.9)).toFixed(4));
         wallRef.current?.setClearing(span(unveil, 0.3, 0.85));
         if (unveil > 0.9 !== live.current.opened) setOpened(unveil > 0.9);
       }
@@ -341,13 +385,12 @@ export default function App() {
       // The wall steps back while the lines are read, then comes forward.
       const veil = span(p, 0.1, 0.22) * (1 - span(p, 0.86, 0.97)) * lines;
 
-      const { style } = stage;
-      style.setProperty('--hero', hero.toFixed(3));
-      style.setProperty('--ui', ui.toFixed(3));
-      style.setProperty('--wall-opacity', (1 - veil * 0.8).toFixed(3));
+      put('--hero', hero.toFixed(3));
+      put('--ui', ui.toFixed(3));
+      put('--wall-opacity', (1 - veil * 0.8).toFixed(3));
       windows.forEach(([enter, leave], i) => {
-        style.setProperty(`--line-${i + 1}`, (enter * (1 - leave) * lines).toFixed(3));
-        style.setProperty(`--line-${i + 1}-y`, `${((1 - enter) * 28 - leave * 28).toFixed(1)}px`);
+        put(`--line-${i + 1}`, (enter * (1 - leave) * lines).toFixed(3));
+        put(`--line-${i + 1}-y`, `${((1 - enter) * 28 - leave * 28).toFixed(1)}px`);
       });
       stage.dataset.scene = hero > 0.5 ? 'hero' : ui >= 1 ? 'gallery' : 'lines';
       if (hero > 0.5 !== live.current.inHero) setInHero(hero > 0.5);

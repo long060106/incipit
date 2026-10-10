@@ -1,3 +1,73 @@
+/*
+  The values the scroll writes each frame (App.tsx). They do not inherit, and App writes each
+  onto the elements that read it, so a change restyles those few elements and not the wall.
+*/
+@property --open {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --zoom {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1.5;
+}
+
+@property --part {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --hero {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --wall-opacity {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --line-1 {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --line-1-y {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --line-2 {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --line-2-y {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --line-3 {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --line-3-y {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
 /* The stage is fixed to the viewport. JS writes the scroll-driven values below onto it. */
 .stage {
   position: fixed;
