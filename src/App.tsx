@@ -381,6 +381,14 @@ export default function App() {
       if (blocked || !gallery || event.ctrlKey) return;
 
       const scroller = (event.target as Element).closest<HTMLElement>('[data-scroll]');
+      if (scroller && scroller.scrollWidth > scroller.clientWidth + 1) {
+        // The tray of results runs sideways: a plain mouse wheel slides it along.
+        const unit = event.deltaMode === 1 ? 32 : event.deltaMode === 2 ? scroller.clientWidth : 1;
+        const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+        scroller.scrollLeft += delta * unit;
+        event.preventDefault();
+        return;
+      }
       if (scroller) {
         // Lists inside the panel scroll themselves, but never pull the page along at their ends.
         const atEnd =
