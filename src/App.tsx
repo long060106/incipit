@@ -1,0 +1,531 @@
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
+import { flushSync } from 'react-dom';
+import { BookSheet } from './components/BookSheet';
+import { Header, type Theme } from './components/Header';
+import { IndexDialog } from './components/IndexDialog';
+import { Intro } from './components/Intro';
+import { Panel } from './components/Panel';
+import { Tray } from './components/Tray';
+import { WallStage, type WallHandle } from './components/WallStage';
+import { BOOKS, BOOKS_BY_ID } from './data/books';
+import type { KeywordId, Mood } from './data/types';
+import { useI18n } from './i18n';
+import { Light } from './lib/light';
+import { EMPTY_FILTERS, matchBooks, type Filters } from './lib/match';
+import type { CellState, CoverOrigin } from './lib/wall';
+
+const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
+/** Progress of `p` through the window [from, to], clamped to 0–1. */
+const span = (p: number, from: number, to: number) => clamp01((p - from) / (to - from));
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const easeInOutSine = (t: number) => 0.5 - Math.cos(Math.PI * t) / 2;
+const mix = (a: number, b: number, t: number) => a + (b - a) * t;
+
+const maxScroll = () => document.documentElement.scrollHeight - window.innerHeight;
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/** How long the glide between the hero and the gallery takes over its full distance. */
+const TRAVEL_MS = 5200;
+/** How long the page takes to open itself on arrival, if the reader does not scroll first. */
+const OPENING_MS = 11000;
+/** How many screens of scroll the opening takes (the scroll track in base.css is this much taller). */
+const OPENING_SCREENS = 3;
+/** How much of the gap to the scroll position the intro closes each frame. Lower is a longer, softer drift. */
+const FOLLOW = 0.075;
+
+/** Below this width the filter panel is a sheet that rises from the bottom edge. */
+const NARROW = window.matchMedia('(max-width: 899px)');
+
+function useTheme(): [Theme, (event?: MouseEvent) => void] {
+  const [theme, setTheme] = useState<Theme>(() => (document.documentElement.dataset.theme === 'day' ? 'day' : 'night'));
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', theme === 'day' ? '#f4f0e8' : '#0c0c0d');
+    try {
+      localStorage.setItem('incipit:theme', theme);
+    } catch {
+      // Storage can be unavailable (private mode); the choice then lasts for this visit only.
+    }
+  }, [theme]);
+
+  const toggle = useCallback(
+    (event?: MouseEvent) => {
+      const next: Theme = theme === 'night' ? 'day' : 'night';
+      const root = document.documentElement;
+      const apply = () => {
+        root.dataset.theme = next;
+        flushSync(() => setTheme(next));
+      };
+      if (!document.startViewTransition || prefersReducedMotion()) {
+        apply();
+        return;
+      }
+      // The other room opens out in a circle from the switch that was pressed.
+      const box = event?.currentTarget.getBoundingClientRect();
+      const x = box ? box.left + box.width / 2 : window.innerWidth;
+      const y = box ? box.top + box.height / 2 : 0;
+      root.style.setProperty('--reveal-x', `${x}px`);
+      root.style.setProperty('--reveal-y', `${y}px`);
+      root.style.setProperty(
+        '--reveal-r',
+        `${Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))}px`,
+      );
+      root.classList.add('is-switching-theme');
+      document.startViewTransition(apply).finished.finally(() => root.classList.remove('is-switching-theme'));
+    },
+    [theme],
+  );
+
+  return [theme, toggle];
+}
+
+const bookFromHash = () => {
+  const id = /^#book=([\w-]+)$/.exec(window.location.hash)?.[1];
+  return id && BOOKS_BY_ID.has(id) ? id : null;
+};
+
+/** The open book lives in the URL hash, so a book can be linked to and Back closes it. */
+function useOpenBook() {
+  const [bookId, setBookId] = useState(bookFromHash);
+
+  useEffect(() => {
+    const sync = () => setBookId(bookFromHash());
+    window.addEventListener('popstate', sync);
+    window.addEventListener('hashchange', sync);
+    return () => {
+      window.removeEventListener('popstate', sync);
+      window.removeEventListener('hashchange', sync);
+    };
+  }, []);
+
+  const open = useCallback((id: string) => {
+    // Going from one open book to another replaces the entry, so Back still closes the sheet.
+    if (bookFromHash()) history.replaceState(history.state, '', `#book=${id}`);
+    else history.pushState({ sheet: true }, '', `#book=${id}`);
+    setBookId(id);
+  }, []);
+
+  const close = useCallback(() => {
+    if (history.state?.sheet) {
+      history.back();
+    } else {
+      // Arrived straight on a book link: there is no earlier entry of ours to go back to.
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+      setBookId(null);
+    }
+  }, []);
+
+  return { bookId, open, close };
+}
+
+const EXIT_MS = 240;
+
+/**
+ * Holds on to a value for a moment after it clears, so whatever showed it can animate out.
+ * `leaving` is true during that moment.
+ */
+function useLingering<T>(value: T | null, ms = EXIT_MS): { shown: T | null; leaving: boolean } {
+  const [held, setHeld] = useState(value);
+  if (value !== null && value !== held) setHeld(value);
+
+  useEffect(() => {
+    if (value !== null) return;
+    const id = window.setTimeout(() => setHeld(null), ms);
+    return () => window.clearTimeout(id);
+  }, [value, ms]);
+
+  return { shown: value ?? held, leaving: value === null && held !== null };
+}
+
+/** A programmatic glide of the page scroll, eased over time rather than left to the browser. */
+interface Travel {
+  from: number;
+  to: number;
+  start: number;
+  duration: number;
+  /** Shapes the scroll over time; without it the scroll moves at an even pace. */
+  ease?: (t: number) => number;
+}
+
+export default function App() {
+  const { t } = useI18n();
+  const [theme, toggleTheme] = useTheme();
+  const { bookId, open: openBookById, close: closeBook } = useOpenBook();
+  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [indexOpen, setIndexOpen] = useState(false);
+  // On a wide screen the panel starts open and can be minimised to its title bar; on a
+  // narrow one it starts as a closed sheet.
+  const [panelOpen, setPanelOpen] = useState(() => !NARROW.matches);
+  // On a wide screen the page opens through a small window over its first stretch of scroll.
+  // Not when the visit starts on a book, or the reader has asked for less motion.
+  const [opening] = useState(() => !NARROW.matches && !bookFromHash() && !prefersReducedMotion());
+  /** False until that window has opened all the way. */
+  const [opened, setOpened] = useState(!opening);
+  const [inGallery, setInGallery] = useState(false);
+  const [inHero, setInHero] = useState(true);
+  /** Where the cover of the book being opened was on screen, for its flight into the sheet. */
+  const [flight, setFlight] = useState<{ bookId: string; origin: CoverOrigin } | null>(null);
+
+  const stageRef = useRef<HTMLElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const wordRef = useRef<HTMLHeadingElement>(null);
+  const wallRef = useRef<WallHandle>(null);
+  const travel = useRef<Travel | null>(null);
+
+  const book = bookId ? BOOKS_BY_ID.get(bookId) ?? null : null;
+  const dialogOpen = Boolean(book) || indexOpen;
+  const live = useRef({ inGallery, inHero, dialogOpen, opened });
+  live.current = { inGallery, inHero, dialogOpen, opened };
+
+  const sheet = useLingering(book);
+  const index = useLingering(indexOpen ? true : null);
+
+  const result = useMemo(() => matchBooks(BOOKS, filters), [filters]);
+
+  const states = useMemo(() => {
+    if (!result.active) return null;
+    const fits = new Set(result.fits.map(({ book: fit }) => fit.id));
+    return new Map<string, CellState>(BOOKS.map(({ id }) => [id, fits.has(id) ? 'lit' : 'dim']));
+  }, [result]);
+
+  const countLabel = !result.active
+    ? t('countAll', { n: BOOKS.length })
+    : result.fits.length === 0
+      ? t('countNone')
+      : result.fits.length === 1
+        ? t('countFitOne')
+        : t('countFit', { n: result.fits.length });
+
+  // Every visit starts at the top, on the hero, even after a reload. Only a link straight
+  // to a book skips the intro.
+  useLayoutEffect(() => {
+    history.scrollRestoration = 'manual';
+    window.scrollTo(0, bookFromHash() ? maxScroll() : 0);
+  }, []);
+
+  // The page behind a dialog must not scroll.
+  useEffect(() => {
+    document.documentElement.classList.toggle('is-locked', dialogOpen);
+  }, [dialogOpen]);
+
+  // Crossing between the two layouts puts the panel back in that layout's resting state.
+  useEffect(() => {
+    const reset = () => setPanelOpen(!NARROW.matches);
+    NARROW.addEventListener('change', reset);
+    return () => NARROW.removeEventListener('change', reset);
+  }, []);
+
+  // Hold the opening sequence until the display face has loaded, so the name rises in
+  // its real letterforms.
+  useEffect(() => {
+    let cancelled = false;
+    let selfOpen = 0;
+    // Through the opening window the covers drift across the middle of the page, behind the
+    // two fingertips; they stand back to its edges as the hands draw apart.
+    if (opening) wallRef.current?.setClearing(0, true);
+    const start = () => {
+      if (cancelled || !stageRef.current || stageRef.current.dataset.ready) return;
+      stageRef.current.dataset.ready = 'true';
+      if (!opening) return;
+      // The opening belongs to the scroll, but the page plays it by itself on arrival:
+      // unless the reader is already scrolling, it glides down that first stretch.
+      selfOpen = window.setTimeout(() => {
+        if (window.scrollY > 2 || travel.current) return;
+        travel.current = {
+          from: 0,
+          to: window.innerHeight * OPENING_SCREENS,
+          start: performance.now(),
+          duration: OPENING_MS,
+          // The window has its own easing over the scroll. A soft one here on top of it
+          // keeps the opening unhurried from end to end, with no rush in the middle.
+          ease: easeInOutSine,
+        };
+      }, 700);
+    };
+    const timeout = window.setTimeout(start, 1400);
+    document.fonts.ready.then(start);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeout);
+      window.clearTimeout(selfOpen);
+    };
+  }, [opening]);
+
+  // Scroll position drives the intro. Each frame eases towards it and writes the result
+  // to CSS variables on the stage and to the wall.
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const reduced = prefersReducedMotion();
+    let progress = -1;
+    /** How far the opening window has got, 0 to 1, eased like `progress`. */
+    let unveil = -1;
+    let applied = '';
+    // 1 while the reader scrolls through the intro's three lines; eases to 0 during a glide,
+    // which carries the hero straight into the wall without them.
+    let lines = 1;
+    let frame = 0;
+    const light = glowRef.current && wordRef.current ? new Light(glowRef.current, wordRef.current) : null;
+
+    const tick = (now: number) => {
+      frame = requestAnimationFrame(tick);
+      const max = maxScroll();
+      // The first stretch of scroll opens the window; the intro proper starts below it.
+      const lead = opening ? window.innerHeight * OPENING_SCREENS : 0;
+
+      const glide = travel.current;
+      if (glide) {
+        // Between hero and gallery the scroll moves at an even pace, and the easing lives in
+        // the glide's own timeline below. The opening carries its easing in the scroll.
+        const elapsed = clamp01((now - glide.start) / glide.duration);
+        window.scrollTo(0, glide.from + (glide.to - glide.from) * (glide.ease ? glide.ease(elapsed) : elapsed));
+        if (elapsed >= 1) travel.current = null;
+      }
+
+      const target = reduced || max <= lead + 1 ? 1 : clamp01((window.scrollY - lead) / (max - lead));
+      const unveilTarget = lead ? clamp01(window.scrollY / lead) : 1;
+      // A glide is already eased, so follow it exactly; hand scrolling gets a little lag.
+      if (progress < 0 || glide || Math.abs(target - progress) < 0.0004) progress = target;
+      else progress += (target - progress) * FOLLOW;
+      if (unveil < 0 || glide || Math.abs(unveilTarget - unveil) < 0.0004) unveil = unveilTarget;
+      else unveil += (unveilTarget - unveil) * FOLLOW;
+      lines += ((glide ? 0 : 1) - lines) * 0.1;
+      if (lines > 0.999) lines = 1;
+      else if (lines < 0.001) lines = 0;
+
+      const p = progress;
+
+      // Two timelines over the same scroll. Read by hand, the hero gives way to three lines
+      // of text before the wall forms. On a glide there is nothing to read, so the hero
+      // dissolves straight into covers that are already on their way. `lines` blends the two.
+      const hero = mix(1 - span(p, 0, 0.3), 1 - span(p, 0.03, 0.2), lines);
+
+      // The light moves on its own, whether or not the page is scrolling. Its glow stays on
+      // behind the three lines and goes out as the wall closes up.
+      light?.step(now, hero, 1 - span(p, 0.5, 0.9));
+
+      const key = `${progress.toFixed(5)}|${lines.toFixed(3)}|${unveil.toFixed(4)}`;
+      if (key === applied) return;
+      applied = key;
+
+      if (opening) {
+        // The window widens from a patch around the two fingertips to the whole page, at the
+        // pace the scene behind it pulls back; the two figures draw apart and, in the
+        // stylesheet, the name rises between them (--open).
+        //
+        // Each figure is a cut-out that ends somewhere, and the window must never show that
+        // end. Pulling back brings the ends in and parting carries them out, so the parting
+        // keeps step with the pull-back, and the ends are past the edges of the page well
+        // before the window gets there.
+        const widen = easeInOutSine(span(unveil, 0, 0.92));
+        const inset = (edge: number) => `${((1 - widen) * edge).toFixed(2)}%`;
+        stage.style.clipPath = widen < 1 ? `inset(${inset(26)} ${inset(34)} ${inset(38)} ${inset(34)})` : '';
+        stage.style.setProperty('--open', unveil.toFixed(4));
+        stage.style.setProperty('--zoom', (1.5 - widen * 0.5).toFixed(4));
+        stage.style.setProperty('--part', easeInOutSine(span(unveil, 0.08, 0.9)).toFixed(4));
+        wallRef.current?.setClearing(span(unveil, 0.3, 0.85));
+        if (unveil > 0.9 !== live.current.opened) setOpened(unveil > 0.9);
+      }
+
+      const ui = mix(span(p, 0.84, 1), span(p, 0.93, 1), lines);
+      const assemble = mix(easeInOutSine(span(p, 0.04, 0.92)), easeInOut(span(p, 0.26, 0.97)), lines);
+      // Each line rises in, holds, then lifts away.
+      const windows = [
+        [span(p, 0.2, 0.27), span(p, 0.38, 0.44)],
+        [span(p, 0.44, 0.51), span(p, 0.6, 0.66)],
+        [span(p, 0.66, 0.73), span(p, 0.86, 0.93)],
+      ];
+      // The wall steps back while the lines are read, then comes forward.
+      const veil = span(p, 0.1, 0.22) * (1 - span(p, 0.86, 0.97)) * lines;
+
+      const { style } = stage;
+      style.setProperty('--hero', hero.toFixed(3));
+      style.setProperty('--ui', ui.toFixed(3));
+      style.setProperty('--wall-opacity', (1 - veil * 0.8).toFixed(3));
+      windows.forEach(([enter, leave], i) => {
+        style.setProperty(`--line-${i + 1}`, (enter * (1 - leave) * lines).toFixed(3));
+        style.setProperty(`--line-${i + 1}-y`, `${((1 - enter) * 28 - leave * 28).toFixed(1)}px`);
+      });
+      stage.dataset.scene = hero > 0.5 ? 'hero' : ui >= 1 ? 'gallery' : 'lines';
+      if (hero > 0.5 !== live.current.inHero) setInHero(hero > 0.5);
+
+      wallRef.current?.setAssemble(assemble);
+
+      const gallery = p > 0.985;
+      if (gallery !== live.current.inGallery) setInGallery(gallery);
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(frame);
+      light?.destroy();
+    };
+  }, [opening]);
+
+  useEffect(() => {
+    // Any scroll of the reader's own takes over from a glide in progress.
+    const stopTravel = () => {
+      travel.current = null;
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) stopTravel();
+    };
+
+    // Once the intro has played out, the wheel moves the wall instead of the page.
+    const onWheel = (event: WheelEvent) => {
+      stopTravel();
+      const { inGallery: gallery, dialogOpen: blocked } = live.current;
+      if (blocked || !gallery || event.ctrlKey) return;
+
+      const scroller = (event.target as Element).closest<HTMLElement>('[data-scroll]');
+      if (scroller) {
+        // Lists inside the panel scroll themselves, but never pull the page along at their ends.
+        const atEnd =
+          event.deltaY < 0
+            ? scroller.scrollTop <= 0
+            : scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+        if (atEnd) event.preventDefault();
+        return;
+      }
+
+      const unit = event.deltaMode === 1 ? 32 : event.deltaMode === 2 ? window.innerHeight : 1;
+      if (wallRef.current?.wheel(event.deltaX * unit, event.deltaY * unit)) event.preventDefault();
+    };
+
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('touchstart', stopTravel, { passive: true });
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', stopTravel);
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, []);
+
+  const scrollPage = useCallback((dy: number) => window.scrollBy(0, dy), []);
+
+  /** Glides the page to `to`, taking time in proportion to the distance. */
+  const travelTo = useCallback((to: number) => {
+    const max = maxScroll();
+    const distance = Math.abs(to - window.scrollY);
+    if (prefersReducedMotion() || max <= 1 || distance < 2) {
+      window.scrollTo(0, to);
+      return;
+    }
+    travel.current = {
+      from: window.scrollY,
+      to,
+      start: performance.now(),
+      duration: Math.max(1100, TRAVEL_MS * (distance / max)),
+    };
+  }, []);
+
+  const goToGallery = useCallback(() => travelTo(maxScroll()), [travelTo]);
+  // Home is the hero with the window open, below the stretch where the opening plays.
+  const goToIntro = useCallback(
+    () => travelTo(opening ? window.innerHeight * OPENING_SCREENS : 0),
+    [travelTo, opening],
+  );
+
+  const openBook = useCallback(
+    (id: string, origin: CoverOrigin | null = null) => {
+      setFlight(origin ? { bookId: id, origin } : null);
+      openBookById(id);
+    },
+    [openBookById],
+  );
+
+  const openFromIndex = useCallback(
+    (id: string) => {
+      setIndexOpen(false);
+      openBook(id);
+    },
+    [openBook],
+  );
+
+  const applyMood = useCallback(
+    (mood: Mood) => {
+      setFilters({ ...EMPTY_FILTERS, mood: { ...mood } });
+      closeBook();
+    },
+    [closeBook],
+  );
+
+  const pickTheme = useCallback(
+    (theme: KeywordId) => {
+      setFilters({ ...EMPTY_FILTERS, keywords: [theme] });
+      closeBook();
+    },
+    [closeBook],
+  );
+
+  const resetFilters = useCallback(() => setFilters(EMPTY_FILTERS), []);
+
+  return (
+    <>
+      <div className="scroll-track" data-opening={opening ? 'window' : undefined} aria-hidden="true" />
+
+      <main
+        className="stage"
+        ref={stageRef}
+        data-scene="hero"
+        data-gallery={inGallery}
+        data-opening={opening ? 'window' : undefined}
+      >
+        {/* The light of the opening page: behind the covers, which stand out against it. */}
+        <div className="glow" ref={glowRef} aria-hidden="true">
+          <div className="glow-field">
+            <i />
+            <i />
+            <i />
+          </div>
+        </div>
+        <WallStage
+          ref={wallRef}
+          states={states}
+          interactive={inGallery}
+          paused={dialogOpen}
+          onOpen={openBook}
+          onPageScroll={scrollPage}
+        />
+        <Intro active={inHero && opened && !dialogOpen} onBrowse={goToGallery} wordRef={wordRef} />
+        <Header
+          theme={theme}
+          showHome={!inHero}
+          onToggleTheme={toggleTheme}
+          onOpenIndex={() => setIndexOpen(true)}
+          onHome={goToIntro}
+        />
+
+        <Panel
+          active={inGallery}
+          filters={filters}
+          onChange={setFilters}
+          countLabel={countLabel}
+          open={panelOpen}
+          onToggle={() => setPanelOpen((value) => !value)}
+        />
+        <Tray active={inGallery} result={result} onOpenBook={openBook} onReset={resetFilters} />
+        {!result.active && <p className="hint">{t('dragHint')}</p>}
+
+        {sheet.shown && (
+          <BookSheet
+            book={sheet.shown}
+            leaving={sheet.leaving}
+            origin={flight?.bookId === sheet.shown.id ? flight.origin : null}
+            onClose={closeBook}
+            onOpenBook={openBook}
+            onUseMood={applyMood}
+            onPickTheme={pickTheme}
+          />
+        )}
+        {index.shown && (
+          <IndexDialog leaving={index.leaving} onClose={() => setIndexOpen(false)} onOpenBook={openFromIndex} />
+        )}
+      </main>
+    </>
+  );
+}

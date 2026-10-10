@@ -1,0 +1,597 @@
+/*
+  The book sheet. Size follows importance:
+    title  >  verdict and the four figures  >  lead paragraph  >  section headings
+    >  running text  >  labels and the reference block.
+*/
+.sheet {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  width: min(1100px, 100%);
+  height: min(820px, 100%);
+  overflow: hidden;
+}
+
+.sheet-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  background: var(--raised);
+}
+
+.sheet-close svg {
+  transition: transform 0.5s var(--ease-out);
+}
+
+.sheet-close:hover svg {
+  transform: rotate(90deg);
+}
+
+.sheet-cover {
+  --pad: clamp(24px, 4vw, 56px);
+  position: relative;
+  min-height: 0;
+  background: var(--bg);
+  transition: background-color 0.5s ease;
+}
+
+/* The cover comes up from the wall's grey into colour. */
+.sheet-cover img {
+  position: absolute;
+  inset: var(--pad);
+  width: calc(100% - var(--pad) * 2);
+  height: calc(100% - var(--pad) * 2);
+  object-fit: contain;
+  filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.45));
+  animation: develop 1.1s var(--ease-out);
+}
+
+@keyframes develop {
+  from {
+    filter: grayscale(1) brightness(0.7) drop-shadow(0 18px 34px rgba(0, 0, 0, 0));
+    transform: scale(0.97);
+  }
+}
+
+/* When the cover flew in from the wall it has already developed on the way. */
+.sheet-cover img.is-landing {
+  animation: none;
+}
+
+/* The stand-in that carries a cover from where it was pressed to its place in the sheet. */
+.flyer {
+  position: fixed;
+  z-index: 40;
+  max-width: none;
+  border-radius: 2px;
+  object-fit: cover;
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.sheet-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.sheet-content {
+  flex: 1 0 auto;
+  padding: clamp(28px, 3.6vw, 56px);
+  padding-top: clamp(44px, 4.4vw, 64px);
+}
+
+/* ── Getting the book: always in reach, pinned under the text ──────────────── */
+
+.sheet-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  /* Written first for the keyboard, shown last. */
+  order: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px 18px;
+  padding: 14px clamp(28px, 3.6vw, 56px);
+  border-top: 1px solid var(--line);
+  background: var(--raised);
+}
+
+.actions-note {
+  flex: 1;
+  max-width: 34ch;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+/* ── First: what it is ────────────────────────────────────────────────────── */
+
+.sheet-title {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(clamp(2.4rem, 4.2vw, 3.9rem) * var(--display-scale));
+  line-height: 0.96;
+  letter-spacing: var(--display-tracking);
+  text-wrap: balance;
+}
+
+.sheet-author {
+  margin-top: 0.8rem;
+  color: var(--muted);
+}
+
+/* Set in the display face, like the opening paragraph of a catalogue entry. */
+.sheet-lead {
+  max-width: 27em;
+  margin-top: 1.6rem;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(1.625rem * var(--display-scale));
+  line-height: 1.28;
+  letter-spacing: var(--display-tracking);
+  text-wrap: pretty;
+}
+
+/* ── Second: the figures and the verdict ──────────────────────────────────── */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 2.25rem;
+  border-block: 1px solid var(--line);
+}
+
+/* Label first in the markup, figure first on screen. */
+.stats > div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1.15rem 1rem 1.2rem 0;
+}
+
+.stats > div + div {
+  padding-left: 1rem;
+  border-left: 1px solid var(--line);
+}
+
+.stats dd {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  min-height: calc(2.6rem * var(--display-scale));
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(2.6rem * var(--display-scale));
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.stat-unit {
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.stats dt {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+
+/* Reading level as five beads, as many filled as the book is demanding. */
+.stats .stat-pips {
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-pips span {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+}
+
+.stat-pips .is-on {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+/* "Read it if" is the sentence the sheet exists for; "Skip it if" is its footnote. */
+.verdict {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  margin-top: 2.25rem;
+}
+
+.verdict h2,
+.sheet-reference h3,
+.facts dt,
+.advice dt {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.verdict h2 {
+  margin-bottom: 0.6rem;
+}
+
+.verdict-yes {
+  padding-right: 2rem;
+}
+
+.verdict-yes p {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(clamp(1.75rem, 2.6vw, 2.25rem) * var(--display-scale));
+  line-height: 1.08;
+  letter-spacing: var(--display-tracking);
+  text-wrap: pretty;
+}
+
+.verdict-no {
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--line);
+}
+
+.verdict-no p {
+  line-height: 1.45;
+}
+
+/* ── Third: what reading it is like ───────────────────────────────────────── */
+
+.sheet-section {
+  margin-top: 3rem;
+}
+
+.sheet-section > h2 {
+  margin-bottom: 1rem;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(1.5rem * var(--display-scale));
+  line-height: 1.1;
+  letter-spacing: var(--display-tracking);
+}
+
+.advice > div {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 14px;
+}
+
+.advice > div + div {
+  margin-top: 0.8rem;
+}
+
+.advice dt {
+  padding-top: 0.25rem;
+}
+
+.advice dd {
+  max-width: 52ch;
+}
+
+.mood-profile {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.mood-profile li {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr 5.5rem;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.9375rem;
+}
+
+.mood-profile li > span:last-child {
+  text-align: right;
+}
+
+.mood-track {
+  position: relative;
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.mood-dot {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translate(-50%, -50%);
+}
+
+.similar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.similar button {
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.similar-cover {
+  display: block;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--surface);
+}
+
+.similar-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.similar button:hover .similar-cover img {
+  transform: scale(1.05);
+}
+
+.similar-title {
+  display: block;
+  margin-top: 0.6rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.similar-author {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+/* ── Last: reference, set smaller on a tinted ground ──────────────────────── */
+
+.sheet-reference {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 3rem;
+  padding: 1.5rem;
+  border-radius: 3px;
+  background: var(--faint);
+  font-size: 0.9375rem;
+}
+
+.sheet-reference h3 {
+  margin-bottom: 0.6rem;
+}
+
+.reference-note {
+  max-width: 52ch;
+  margin-bottom: 0.7rem;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.facts dd {
+  margin-top: 0.1rem;
+}
+
+.facts-note {
+  display: block;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+/* ── Index ────────────────────────────────────────────────────────────────── */
+
+.index {
+  display: flex;
+  width: min(820px, 100%);
+  max-height: min(840px, 100%);
+  overflow: hidden;
+}
+
+.index-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(28px, 4vw, 56px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.index-head h1 {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(3rem * var(--display-scale));
+  line-height: 1;
+}
+
+.index-head p {
+  margin-top: 0.6rem;
+  color: var(--muted);
+}
+
+.index-list {
+  margin-top: 1.75rem;
+  columns: 2;
+  column-gap: 2.5rem;
+}
+
+.index-list li {
+  break-inside: avoid;
+}
+
+.index-list button {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 0 0.65rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+/* A title steps forward from the margin when pointed at. */
+.index-book {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(1.3125rem * var(--display-scale));
+  line-height: 1.12;
+  transition: color 0.25s ease, transform 0.5s var(--ease-out);
+}
+
+.index-author {
+  display: block;
+  margin-top: 0.1rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  transition: transform 0.5s var(--ease-out) 0.03s;
+}
+
+.index-list button:hover .index-book {
+  color: var(--accent);
+}
+
+.index-list button:hover .index-book,
+.index-list button:hover .index-author {
+  transform: translateX(10px);
+}
+
+.about {
+  margin-top: 2.5rem;
+}
+
+.about h2 {
+  margin-bottom: 0.6rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.about p {
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* ── Small screens: the sheet fills the screen and scrolls as one column ──── */
+
+@media (max-width: 799px) {
+  .scrim {
+    padding: 0;
+  }
+
+  .sheet,
+  .index {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .sheet {
+    display: block;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .sheet-close {
+    position: fixed;
+  }
+
+  .sheet-cover {
+    --pad: 24px;
+    height: 34svh;
+  }
+
+  .sheet-cover img {
+    top: 56px;
+    height: calc(100% - 56px - var(--pad));
+  }
+
+  /* The sheet itself scrolls here, and the action bar pins to its bottom edge. */
+  .sheet-body {
+    overflow: visible;
+  }
+
+  .sheet-content {
+    padding: 28px 20px 40px;
+  }
+
+  .sheet-actions {
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .sheet-actions .button {
+    flex: 1;
+  }
+
+  .actions-note {
+    display: none;
+  }
+
+  .sheet-lead {
+    font-size: calc(1.4375rem * var(--display-scale));
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stats > div:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .stats > div:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+
+  .verdict {
+    grid-template-columns: 1fr;
+  }
+
+  .verdict-yes {
+    padding-right: 0;
+  }
+
+  .verdict-no {
+    margin-top: 1.5rem;
+    padding: 1.25rem 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .similar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 14px;
+  }
+
+  .sheet-reference {
+    padding: 1.25rem;
+  }
+
+  .index-list {
+    columns: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-cover img {
+    animation: none;
+  }
+}

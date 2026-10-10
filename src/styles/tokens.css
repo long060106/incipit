@@ -1,0 +1,107 @@
+/*
+  Two rooms, one building.
+  Night: a gallery after closing. Near-black walls, brass, covers lit one at a time.
+  Day: a reading room. Limestone and paper, oxblood leather, covers as grey prints.
+*/
+
+:root {
+  --font-sans: 'Hanken Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ease-out: cubic-bezier(0.16, 0.84, 0.24, 1);
+
+  --header-h: 72px;
+  --panel-w: 348px;
+  --handle-h: 58px;
+  --gutter: clamp(16px, 2.2vw, 32px);
+}
+
+:root,
+:root[data-theme='night'] {
+  color-scheme: dark;
+
+  --bg: #0c0c0d;
+  --surface: #151516;
+  --raised: #141415;
+  --text: #ece8df;
+  --muted: #918d85;
+  --faint: rgba(236, 232, 223, 0.08);
+  --line: rgba(236, 232, 223, 0.15);
+  --line-strong: rgba(236, 232, 223, 0.34);
+  --accent: #c9a45c;
+  --on-accent: #0c0c0d;
+  --glass: rgba(13, 13, 14, 0.84);
+  --scrim: rgba(4, 4, 5, 0.76);
+  --dialog-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
+
+  --cover-rest-bright: 0.68;
+  --cover-rest-contrast: 1.06;
+  --cover-rest-opacity: 1;
+  --cover-dim-opacity: 0.16;
+  --cover-lit-shadow: 0 22px 60px rgba(0, 0, 0, 0.7), 0 0 64px rgba(201, 164, 92, 0.22);
+
+  /* The light of the opening page: lamp brass, ember and bordeaux leather. */
+  --glow-1: 204 168 98;
+  --glow-1-a: 0.4;
+  --glow-2: 176 92 52;
+  --glow-2-a: 0.27;
+  --glow-3: 116 42 60;
+  --glow-3-a: 0.34;
+  /* The cursor is God's pointing hand from the ceiling, and Adam's over anything that can
+     be pressed (scripts/make-cursor.mjs). The two numbers are the hotspot, the fingertip. */
+  --cursor: image-set(url("/cursors/hand-god.png") 1x, url("/cursors/hand-god@2x.png") 2x) 2 3, auto;
+  --cursor-press: image-set(url("/cursors/hand-adam.png") 1x, url("/cursors/hand-adam@2x.png") 2x) 4 3, pointer;
+  /* The name where the light falls on it, and where it does not reach. */
+  /* The two painted hands of the opening page, dimmed to sit in the dark room. */
+  --hand-filter: brightness(0.8) saturate(0.82);
+  --word-hot: #f5dca8;
+  --word-far: color-mix(in oklab, var(--text) 58%, var(--bg));
+
+  --font-display: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
+  --display-weight: 400;
+  --display-scale: 1;
+  --display-tracking: -0.012em;
+  /* The name grows with the page as long as the page is tall enough for it, so that the two
+     figures reaching in from the edges keep their size against it. */
+  --hero-size: clamp(6rem, min(27vw, 46vh), 40rem);
+}
+
+:root[data-theme='day'] {
+  color-scheme: light;
+
+  --bg: #f4f0e8;
+  --surface: #e9e3d7;
+  --raised: #faf7f1;
+  --text: #1b1a17;
+  --muted: #6b665d;
+  --faint: rgba(27, 26, 23, 0.06);
+  --line: rgba(27, 26, 23, 0.16);
+  --line-strong: rgba(27, 26, 23, 0.4);
+  --accent: #7a1f2b;
+  --on-accent: #f8f4ed;
+  --glass: rgba(246, 242, 234, 0.9);
+  --scrim: rgba(226, 220, 208, 0.82);
+  --dialog-shadow: 0 30px 90px rgba(60, 48, 30, 0.22);
+
+  --cover-rest-bright: 1.05;
+  --cover-rest-contrast: 0.9;
+  --cover-rest-opacity: 0.74;
+  --cover-dim-opacity: 0.18;
+  --cover-lit-shadow: 0 20px 44px rgba(50, 38, 22, 0.32);
+
+  /* Daylight on paper, honey and a trace of rose. */
+  --glow-1: 255 253 246;
+  --glow-1-a: 0.92;
+  --glow-2: 226 186 118;
+  --glow-2-a: 0.34;
+  --glow-3: 178 88 96;
+  --glow-3-a: 0.17;
+  --hand-filter: none;
+  --word-hot: var(--accent);
+  --word-far: color-mix(in oklab, var(--text) 56%, var(--bg));
+
+  --font-display: 'Cormorant Garamond', 'Instrument Serif', Georgia, serif;
+  --display-weight: 500;
+  /* Cormorant has a small x-height; set it larger so both rooms read at the same size. */
+  --display-scale: 1.13;
+  --display-tracking: -0.018em;
+  --hero-size: clamp(5.5rem, min(25vw, 43vh), 37rem);
+}

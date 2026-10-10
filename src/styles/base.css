@@ -1,0 +1,428 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  interpolate-size: allow-keywords;
+  /* The page scroll is a timeline for the intro, not a document, so it shows no scrollbar. */
+  scrollbar-width: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+html.is-locked {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  /* Small type comes in three sizes only: 0.8125rem labels, 0.9375rem controls, 1.0625rem reading text. */
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: var(--cursor-press);
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+/* The site's own cursor; text fields keep the system's caret. */
+html {
+  cursor: var(--cursor);
+}
+
+a,
+summary,
+select,
+label,
+input[type='range'],
+input[type='checkbox'] {
+  cursor: var(--cursor-press);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Scroll length of the intro. The stage itself is fixed and reads this as progress. */
+.scroll-track {
+  height: 640vh;
+  height: 640svh;
+}
+
+/* Three screens more at the top, which the opening window takes to widen
+   (OPENING_SCREENS in App.tsx). */
+.scroll-track[data-opening] {
+  height: 940vh;
+  height: 940svh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-track {
+    height: 100vh;
+    height: 100svh;
+  }
+}
+
+/* ── Controls ─────────────────────────────────────────────────────────────── */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 1.35rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.25s var(--ease-out), border-color 0.25s ease;
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+.button-large {
+  min-height: 52px;
+  padding: 0 1.7rem;
+  font-size: 1.0625rem;
+}
+
+.button-quiet {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+.button-quiet:hover {
+  border-color: var(--text);
+}
+
+/* A button's label rolls up into a copy of itself on hover. The copy is a text-shadow. */
+.roll {
+  display: inline-block;
+  height: 1.5em;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+.roll > span {
+  display: block;
+  text-shadow: 0 1.5em 0 currentColor;
+  transition: transform 0.55s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .button:hover .roll > span {
+    transform: translateY(-1.5em);
+  }
+}
+
+.text-button,
+.text-link {
+  color: var(--text);
+  font-size: 0.9375rem;
+  text-decoration: none;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Underlined text inside a link or text button. On hover the accent draws across the rule. */
+.u {
+  padding-bottom: 3px;
+  background-image: linear-gradient(var(--accent), var(--accent)), linear-gradient(var(--line-strong), var(--line-strong));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px, 100% 1px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size 0.55s var(--ease-out);
+}
+
+:is(a, button):hover > .u,
+:is(a, button):focus-visible > .u {
+  background-size: 100% 1px, 100% 1px;
+}
+
+.text-button:disabled {
+  color: var(--muted);
+  cursor: var(--cursor);
+  opacity: 0.55;
+}
+
+.text-button:disabled > .u {
+  background-size: 0 0, 0 0;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.icon-button:hover {
+  background: var(--faint);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/*
+  Chips and option buttons take colour like ink: the fill spreads from the point of the
+  press (--ink-x/--ink-y, recorded in lib/ink.ts). --ink is registered so it can animate;
+  where that is unsupported the fill simply switches.
+*/
+@property --ink {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+.chip,
+.segmented button {
+  background-image: radial-gradient(
+    circle at var(--ink-x, 50%) var(--ink-y, 50%),
+    var(--accent) calc(var(--ink) - 1%),
+    transparent var(--ink)
+  );
+  transition:
+    --ink 0.55s var(--ease-out),
+    border-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.2s var(--ease-out);
+}
+
+.chip:active,
+.segmented button:active {
+  transform: scale(0.96);
+}
+
+.chip[aria-pressed='true'],
+.segmented button[aria-pressed='true'] {
+  --ink: 160%;
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.chip {
+  min-height: 32px;
+  padding: 0 0.8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+}
+
+.chip:hover {
+  border-color: var(--text);
+}
+
+.chip-more {
+  border-style: dashed;
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 0.5rem;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.link-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.6rem;
+}
+
+/* ── Changing rooms ───────────────────────────────────────────────────────── */
+
+/* Night and day swap in a circle that opens from the switch. Colours must not also
+   cross-fade underneath, or the incoming room would be seen half-changed. */
+.is-switching-theme *,
+.is-switching-theme *::before,
+.is-switching-theme *::after {
+  transition: none !important;
+}
+
+.is-switching-theme::view-transition-old(root),
+.is-switching-theme::view-transition-new(root) {
+  mix-blend-mode: normal;
+  animation: none;
+}
+
+.is-switching-theme::view-transition-new(root) {
+  animation: room-reveal 0.95s var(--ease-out);
+}
+
+@keyframes room-reveal {
+  from {
+    clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+  }
+  to {
+    clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+  }
+}
+
+/* ── Dialogs ──────────────────────────────────────────────────────────────── */
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--scrim);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  touch-action: none;
+  animation: scrim-in 0.3s ease-out;
+}
+
+.dialog {
+  position: relative;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  box-shadow: var(--dialog-shadow);
+  outline: none;
+  animation: dialog-in 0.55s var(--ease-out);
+}
+
+.scrim.is-leaving {
+  pointer-events: none;
+  animation: scrim-out 0.24s ease-in forwards;
+}
+
+.scrim.is-leaving .dialog {
+  animation: dialog-out 0.24s ease-in forwards;
+}
+
+@keyframes scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+.dialog.has-flight {
+  animation-name: dialog-fade;
+}
+
+@keyframes dialog-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes scrim-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Sinks back towards the wall it came from. */
+@keyframes dialog-out {
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim,
+  .dialog,
+  .scrim.is-leaving,
+  .scrim.is-leaving .dialog {
+    animation: none;
+  }
+
+  .scrim.is-leaving {
+    opacity: 0;
+  }
+}
