@@ -1,0 +1,995 @@
+/* The stage is fixed to the viewport. JS writes the scroll-driven values below onto it. */
+.stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg);
+  transition: background-color 0.5s ease;
+
+  --hero: 1;
+  --line-1: 0;
+  --line-1-y: 0px;
+  --line-2: 0;
+  --line-2-y: 0px;
+  --line-3: 0;
+  --line-3-y: 0px;
+  --ui: 0;
+  --wall-opacity: 1;
+}
+
+/* ── The light behind the opening page ────────────────────────────────────── */
+
+/*
+  Three soft fields of colour sit behind the covers, each drifting on its own slow loop.
+  JS fades the whole thing with the scroll (.glow) and leans it towards the cursor
+  (.glow-field).
+*/
+.glow {
+  position: absolute;
+  inset: 0;
+  /* Its own copy of the wall colour, so the grain below has something solid to work on. */
+  background: var(--bg);
+  isolation: isolate;
+  pointer-events: none;
+  transition: background-color 0.5s ease;
+}
+
+/*
+  A fine grain over the light. It stays still while the light moves under it, like light
+  across paper, and it breaks up the faint rings a smooth gradient would otherwise show.
+  Overlay leaves the average tone alone, in the dark room and the light one.
+*/
+.glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1.2 1.2 1.2 0 -1.3  1.2 1.2 1.2 0 -1.3  1.2 1.2 1.2 0 -1.3  0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E") 0 0 / 220px 220px;
+  mix-blend-mode: overlay;
+  opacity: 0.26;
+}
+
+.glow-field {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+/* One field of colour: --c is its colour, --a its strength, and the rest places it. */
+.glow-field i {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
+  /* Many stops along a cosine curve: with only a few, each one shows as a faint ring. */
+  background: radial-gradient(
+    closest-side,
+    rgb(var(--c) / var(--a)),
+    rgb(var(--c) / calc(var(--a) * 0.965)) 12%,
+    rgb(var(--c) / calc(var(--a) * 0.865)) 24%,
+    rgb(var(--c) / calc(var(--a) * 0.713)) 36%,
+    rgb(var(--c) / calc(var(--a) * 0.531)) 48%,
+    rgb(var(--c) / calc(var(--a) * 0.345)) 60%,
+    rgb(var(--c) / calc(var(--a) * 0.181)) 72%,
+    rgb(var(--c) / calc(var(--a) * 0.062)) 84%,
+    rgb(var(--c) / calc(var(--a) * 0.015)) 92%,
+    rgb(var(--c) / 0)
+  );
+  animation: glow-drift var(--t) ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.glow-field i:nth-child(1) {
+  --c: var(--glow-1);
+  --a: var(--glow-1-a);
+  --x: 46%;
+  --y: 50%;
+  --w: 74vw;
+  --h: 64vh;
+  --t: 23s;
+  --dx: 4vw;
+  --dy: -3vh;
+  --grow: 1.08;
+}
+
+.glow-field i:nth-child(2) {
+  --c: var(--glow-2);
+  --a: var(--glow-2-a);
+  --x: 22%;
+  --y: 68%;
+  --w: 50vw;
+  --h: 60vh;
+  --t: 31s;
+  --dx: -5vw;
+  --dy: 4vh;
+  --grow: 1.14;
+}
+
+.glow-field i:nth-child(3) {
+  --c: var(--glow-3);
+  --a: var(--glow-3-a);
+  --x: 74%;
+  --y: 34%;
+  --w: 58vw;
+  --h: 60vh;
+  --t: 27s;
+  --dx: 5vw;
+  --dy: 5vh;
+  --grow: 0.9;
+}
+
+@keyframes glow-drift {
+  from {
+    transform: translate3d(calc(var(--dx) * -1), calc(var(--dy) * -1), 0) scale(1);
+  }
+  to {
+    transform: translate3d(var(--dx), var(--dy), 0) scale(var(--grow));
+  }
+}
+
+/* ── Cover wall ───────────────────────────────────────────────────────────── */
+
+.wall {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* During the intro a cover can be pressed but the page still scrolls; in the gallery the
+   wall takes the drag itself. */
+.wall.is-interactive {
+  touch-action: none;
+  cursor: grab;
+}
+
+.wall.is-dragging {
+  cursor: grabbing;
+}
+
+/* Edges fall away into the wall colour, so the grid has no visible end. */
+.wall::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, var(--bg) 0, transparent 16%, transparent 80%, var(--bg) 100%),
+    radial-gradient(ellipse at center, transparent 50%, var(--bg) 130%);
+  opacity: 0.9;
+}
+
+.wall-plane {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: var(--wall-opacity);
+  will-change: transform;
+}
+
+.cell {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--cell-w);
+  height: var(--cell-h);
+  cursor: var(--cursor-press);
+  will-change: transform;
+}
+
+.wall.is-interactive .cell {
+  cursor: inherit;
+}
+
+/*
+  --near (0 to 1) is set by the wall on scattered covers as the cursor approaches, or as one
+  is called forward. It carries a cover from its resting grey towards full colour.
+*/
+.cell-cover {
+  --rest-filter: grayscale(calc(1 - var(--near, 0)))
+    brightness(calc(var(--cover-rest-bright) + (1 - var(--cover-rest-bright)) * var(--near, 0)))
+    contrast(var(--cover-rest-contrast));
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--surface);
+  filter: var(--rest-filter);
+  opacity: calc(var(--cover-rest-opacity) + (1 - var(--cover-rest-opacity)) * var(--near, 0));
+  transition:
+    filter 0.75s var(--ease-out) var(--delay, 0ms),
+    opacity 0.75s var(--ease-out) var(--delay, 0ms),
+    transform 0.75s var(--ease-out) var(--delay, 0ms),
+    box-shadow 0.75s var(--ease-out) var(--delay, 0ms);
+}
+
+.cell-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.cell-cover img.is-loaded {
+  opacity: 1;
+}
+
+/* Shown until the cover image arrives, and if it never does. */
+.cell-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 11%;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: max(0.8125rem, calc(var(--cell-w) * 0.12));
+  line-height: 1.08;
+}
+
+.cell-fallback span:last-child {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.2;
+}
+
+.cell[data-state='lit'] {
+  z-index: 2;
+}
+
+.cell[data-state='lit'] .cell-cover {
+  filter: none;
+  opacity: 1;
+  transform: scale(1.07);
+  box-shadow: var(--cover-lit-shadow);
+  /* A lamp coming on: it overshoots a little before it settles. */
+  animation: warm 1.2s var(--ease-out) var(--delay, 0ms) backwards;
+}
+
+@keyframes warm {
+  0% {
+    filter: var(--rest-filter);
+  }
+  45% {
+    filter: brightness(1.3) saturate(1.12);
+  }
+  100% {
+    filter: none;
+  }
+}
+
+.cell[data-state='dim'] .cell-cover {
+  opacity: var(--cover-dim-opacity);
+  transform: scale(0.96);
+}
+
+@media (hover: hover) {
+  .wall:not(.is-dragging) .cell:hover {
+    z-index: 3;
+  }
+
+  .wall:not(.is-dragging) .cell:hover .cell-cover {
+    filter: none;
+    opacity: 1;
+    transform: scale(1.05);
+    transition-duration: 0.35s;
+    transition-delay: 0ms;
+  }
+}
+
+/* Title card that follows the cursor over the wall. */
+.wall-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 6;
+  display: grid;
+  gap: 3px;
+  max-width: 280px;
+  padding: 9px 13px 10px;
+  border-radius: 2px;
+  background: var(--text);
+  color: var(--bg);
+  pointer-events: none;
+  opacity: 0;
+  /* Hangs from its top-left corner, so it swings from there as it trails the cursor. */
+  transform-origin: 0 0;
+  transition: opacity 0.2s ease;
+}
+
+.wall-label.is-visible {
+  opacity: 1;
+}
+
+.wall-label-title {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(1.25rem * var(--display-scale));
+  line-height: 1.05;
+}
+
+.wall-label-author {
+  font-size: 0.8125rem;
+  opacity: 0.72;
+}
+
+/* ── Intro ────────────────────────────────────────────────────────────────── */
+
+.intro {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: var(--header-h) var(--gutter);
+  pointer-events: none;
+}
+
+.hero,
+.line {
+  grid-area: 1 / 1;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  opacity: var(--hero);
+  transform: scale(calc(1 + (1 - var(--hero)) * 0.16));
+}
+
+.hero-word {
+  /* Positioned so each letter can be measured against it (lib/light.ts). */
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: var(--hero-size);
+  line-height: 0.84;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  /* Leans a few pixels against the light, in front of the covers that lean further. */
+  transform: translate3d(calc(var(--lean-x, 0) * -12px), calc(var(--lean-y, 0) * -8px), 0);
+}
+
+/*
+  The two figures, Adam on the left and God on the right, cut from one picture and shown at
+  one scale (scripts/make-hands.mjs). Each rail is the size of the word, so sliding it by
+  half its own width brings a fingertip from the end of the word to its middle: that is
+  where the hands start, almost touching, before they draw apart.
+*/
+.hands,
+.hand-rail {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* In front of the letters: each fingertip rests on the end of the word. */
+.hands {
+  z-index: 1;
+}
+
+.hand-rail {
+  /* How far the fingertip overlaps the word, and how far the rail slides to close the gap. */
+  --overlap: 0.035em;
+  --travel: calc(50% - var(--overlap) - 0.03em);
+  /* Adam's width: from the word to the edge of the page and a little past it, so the edge
+     of the page, not the end of the cut-out, is where he stops. */
+  --figure: calc(50vw - 50% + var(--overlap) + 3vw);
+}
+
+.hand {
+  position: absolute;
+  top: 68%;
+  width: var(--figure);
+  filter: var(--hand-filter);
+  /* Level with the fingertip (56% down the picture), and withdrawing off the page as the
+     hero scrolls away. */
+  transform: translate(calc((1 - var(--hero)) * var(--away)), -56%);
+}
+
+.hand-rail-left .hand {
+  --away: -30vw;
+  right: calc(100% - var(--overlap));
+}
+
+/* God's piece of the picture is 1.494 times as wide as Adam's. */
+.hand-rail-right .hand {
+  --away: 30vw;
+  left: calc(100% - var(--overlap));
+  width: calc(var(--figure) * 1.494);
+}
+
+.hand img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* The picture stops at Adam's waist. He fades out there instead of ending in a cut. */
+.hand-rail-left .hand img {
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 93%);
+  mask-image: linear-gradient(to bottom, #000 72%, transparent 93%);
+}
+
+.stage[data-ready] .hands {
+  animation: fade-in 0.8s ease 0.15s backwards;
+}
+
+/* Once apart they never quite rest: each drifts a little towards the other and back. */
+.stage[data-ready] .hand img {
+  animation: hand-breath 6.5s ease-in-out 4.2s infinite alternate;
+}
+
+.hand-rail-left {
+  --reach: 1;
+}
+
+.hand-rail-right {
+  --reach: -1;
+}
+
+@keyframes hands-part {
+  from {
+    transform: translateX(calc(var(--reach) * var(--travel)));
+  }
+}
+
+@keyframes hand-breath {
+  to {
+    transform: translateX(calc(var(--reach) * 0.045em));
+  }
+}
+
+.hero-letter,
+.hero-glyph {
+  display: inline-block;
+}
+
+/*
+  The light falls on the name. Every letter paints its own part of one gradient centred on
+  the light (--lx/--ly, in the word's coordinates; --ox/--oy is where this letter sits in
+  the word). Nearest the light the letters take a warm tint, and they fade with distance.
+  Without background-clip the name is simply set in the text colour.
+*/
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero-glyph {
+    /* The box is padded out past the glyph, or its overhangs and descender would be cut. */
+    margin: -0.16em -0.09em -0.3em;
+    padding: 0.16em 0.09em 0.3em;
+    background-image: radial-gradient(
+      circle at calc(var(--lx, 50%) - var(--ox, 0px)) calc(var(--ly, 50%) - var(--oy, 0px)),
+      var(--word-hot),
+      var(--text) 0.45em,
+      var(--word-far) 2.5em
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.hero-def {
+  max-width: 46rem;
+  /* The word's tight line box lets its descender hang below; leave room for it. */
+  margin-top: calc(var(--hero-size) * 0.14 + 0.75rem);
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(clamp(1.2rem, 1.9vw, 1.7rem) * var(--display-scale));
+  line-height: 1.2;
+}
+
+.hero-def i {
+  font-style: italic;
+}
+
+.hero-def-class {
+  margin: 0 0.7em;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: clamp(2rem, 4vw, 3.25rem);
+}
+
+.stage[data-scene='hero'] .hero-actions {
+  pointer-events: auto;
+}
+
+.hero-hint {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.line {
+  max-width: 17ch;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(clamp(2.5rem, 5.6vw, 5rem) * var(--display-scale));
+  line-height: 1.02;
+  letter-spacing: var(--display-tracking);
+  text-align: center;
+  text-wrap: balance;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Covers drift behind these lines. A pool of the page's own colour lies under each one,
+   densest behind the words and gone before its edge, so no cover shows through a letter. */
+.line::before {
+  content: '';
+  position: absolute;
+  inset: -55% -45%;
+  z-index: -1;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--bg) 92%, transparent) 0%,
+    color-mix(in oklab, var(--bg) 84%, transparent) 45%,
+    color-mix(in oklab, var(--bg) 46%, transparent) 72%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.line-1 {
+  opacity: var(--line-1);
+  transform: translateY(var(--line-1-y));
+}
+
+.line-2 {
+  opacity: var(--line-2);
+  transform: translateY(var(--line-2-y));
+}
+
+.line-3 {
+  opacity: var(--line-3);
+  transform: translateY(var(--line-3-y));
+}
+
+.line-sub {
+  max-width: 30ch;
+  margin: 1.5rem auto 0;
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+
+/* ── Opening sequence: plays once, when the display face has loaded ────────── */
+
+.stage:not([data-ready]) .glow,
+.stage:not([data-ready]) .hero,
+.stage:not([data-ready]) .header,
+.stage:not([data-ready]) .wall-plane {
+  visibility: hidden;
+}
+
+/* The name rises through a slit, a letter at a time. */
+.stage[data-ready] .hero-letter {
+  animation: letter-rise 1.15s var(--ease-out) backwards;
+  animation-delay: calc(var(--i) * 75ms + 120ms);
+}
+
+@keyframes letter-rise {
+  from {
+    clip-path: inset(0 -12% 100% -12%);
+    transform: translateY(0.45em);
+  }
+  to {
+    clip-path: inset(-20% -12% -45% -12%);
+    transform: translateY(0);
+  }
+}
+
+.stage[data-ready] .hero-def {
+  animation: settle-in 1s var(--ease-out) 0.85s backwards;
+}
+
+.stage[data-ready] .hero-actions {
+  animation: settle-in 1s var(--ease-out) 1.05s backwards;
+}
+
+.stage[data-ready] .header {
+  animation: fade-in 0.9s ease 0.7s backwards;
+}
+
+/* The covers come up out of the dark behind it, and the light after them. */
+.stage[data-ready] .wall-plane {
+  animation: fade-in 2.4s ease 0.35s backwards;
+}
+
+.stage[data-ready] .glow-field {
+  animation: fade-in 3.2s ease 0.5s backwards;
+}
+
+/*
+  On a wide screen the page opens through a small window, over its first stretch of scroll:
+  covers adrift and two fingertips about to touch, seen close. As the reader scrolls (or as
+  the page scrolls itself on arrival) the window widens to the whole page, the scene pulls
+  back, the two figures draw apart and the name rises in the space they leave. Scrolling
+  back up closes it again. App writes the window itself and these onto the stage:
+    --open  0 to 1, the whole opening      --zoom  how close the scene is, 1.5 down to 1
+    --part  0 to 1, the hands drawing apart
+*/
+.stage[data-opening] .wall,
+.stage[data-opening] .glow {
+  transform: scale(var(--zoom, 1.5));
+  /* The middle of the name, which sits a little above the middle of the page. */
+  transform-origin: 50% 42%;
+}
+
+.stage[data-opening] .hands {
+  transform: scale(var(--zoom, 1.5));
+}
+
+.stage[data-opening] .hand-rail {
+  transform: translateX(calc(var(--reach) * var(--travel) * (1 - var(--part, 0))));
+}
+
+/*
+  Each letter rises through its slit over its own stretch of the scroll: the middle of the
+  name first, in the gap the fingertips leave, and outwards as the hands clear the way.
+*/
+.stage[data-opening][data-ready] .hero-letter {
+  --rise: clamp(0, calc((var(--open, 0) - 0.33 - var(--d) * 0.13) / 0.2), 1);
+  --risen: calc(1 - (1 - var(--rise)) * (1 - var(--rise)));
+  animation: none;
+  clip-path: inset(calc(var(--risen) * -20%) -40% calc(100% - var(--risen) * 145%) -40%);
+  transform: translateY(calc((1 - var(--risen)) * 0.45em));
+}
+
+.stage[data-opening][data-ready] .hero-def,
+.stage[data-opening][data-ready] .hero-actions {
+  animation: none;
+  opacity: clamp(0, calc((var(--open, 0) - 0.8) * 5), 1);
+}
+
+.stage[data-opening][data-ready] .wall-plane {
+  animation: fade-in 0.9s ease 0.1s backwards;
+}
+
+.stage[data-opening][data-ready] .glow-field {
+  animation: fade-in 1.2s ease 0.1s backwards;
+}
+
+@keyframes settle-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-h);
+  padding: 0 var(--gutter);
+  pointer-events: none;
+}
+
+.header > * {
+  pointer-events: auto;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(1.875rem * var(--display-scale));
+  line-height: 1;
+  letter-spacing: -0.02em;
+  /* Takes over from the large hero word as that one fades. */
+  opacity: calc(1 - var(--hero));
+}
+
+.stage[data-scene='hero'] .wordmark {
+  pointer-events: none;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.header-link {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9375rem;
+}
+
+.header-link:hover {
+  color: var(--accent);
+}
+
+.lang {
+  --lang-w: 2.1rem;
+  position: relative;
+  display: flex;
+  margin: 0 0.25rem;
+}
+
+.lang button {
+  width: var(--lang-w);
+  padding: 0.5rem 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.lang button[aria-pressed='true'] {
+  color: var(--text);
+}
+
+/* One underline that slides between the two languages. */
+.lang::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--lang-w) / 2 - 0.55rem);
+  top: calc(50% + 0.65rem);
+  width: 1.1rem;
+  height: 1px;
+  background: var(--accent);
+  transition: transform 0.5s var(--ease-out);
+}
+
+.lang[data-lang='fr']::after {
+  transform: translateX(var(--lang-w));
+}
+
+/* The sun or moon turns into place when the room changes. */
+.theme-icon {
+  display: grid;
+  animation: turn-in 0.7s var(--ease-out);
+}
+
+@keyframes turn-in {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+}
+
+/* ── Results tray and hint ────────────────────────────────────────────────── */
+
+.tray {
+  position: absolute;
+  left: calc(var(--gutter) * 2 + var(--panel-w));
+  right: var(--gutter);
+  bottom: var(--gutter);
+  z-index: 4;
+  width: fit-content;
+  max-width: calc(100% - var(--gutter) * 3 - var(--panel-w));
+  margin-inline: auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  /* Leaves with the rest of the gallery chrome if the reader scrolls back into the intro. */
+  opacity: var(--ui);
+  animation: tray-in 0.45s var(--ease-out);
+}
+
+@keyframes tray-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.tray-note {
+  margin: 0 2px 10px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.tray-list {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.tray-list::-webkit-scrollbar {
+  display: none;
+}
+
+.tray-list li {
+  animation: tray-item 0.55s var(--ease-out) backwards;
+  animation-delay: calc(var(--i) * 40ms + 90ms);
+}
+
+@keyframes tray-item {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+}
+
+.tray-list button {
+  display: block;
+  width: 52px;
+  height: 78px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--surface);
+  transition: transform 0.25s var(--ease-out);
+}
+
+.tray-list button:hover {
+  transform: translateY(-3px);
+}
+
+.tray-list img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tray-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 14px 16px;
+  font-size: 0.9375rem;
+}
+
+.tray-empty strong {
+  font-weight: 600;
+}
+
+.hint {
+  position: absolute;
+  right: var(--gutter);
+  bottom: var(--gutter);
+  z-index: 4;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  opacity: var(--ui);
+  pointer-events: none;
+}
+
+@media (max-width: 899px) {
+  :root {
+    --header-h: 60px;
+  }
+
+  /* Matches the theme selectors' specificity so it wins over both. */
+  :root[data-theme] {
+    --hero-size: 33vw;
+  }
+
+  .wordmark {
+    font-size: calc(1.625rem * var(--display-scale));
+  }
+
+  /* No room beside the word here: the two figures meet above it, smaller, and the edges of
+     the screen cut them shorter. They arrive almost touching and draw apart. */
+  .hand-rail {
+    --travel: 9%;
+    --figure: 50vw;
+  }
+
+  .stage[data-ready] .hand-rail {
+    animation: hands-part 4.5s cubic-bezier(0.3, 0, 0.1, 1) 0.5s backwards;
+  }
+
+  .hand {
+    top: -62%;
+  }
+
+  .hand-rail-left .hand {
+    right: 60%;
+  }
+
+  .hand-rail-right .hand {
+    left: 60%;
+  }
+
+  /* On a tall screen the fields of light lie wide and low rather than standing up. */
+  .glow-field i:nth-child(1) {
+    --x: 50%;
+    --w: 150vw;
+    --h: 52vh;
+  }
+
+  .glow-field i:nth-child(2) {
+    --x: 16%;
+    --y: 73%;
+    --w: 124vw;
+    --h: 42vh;
+  }
+
+  .glow-field i:nth-child(3) {
+    --x: 86%;
+    --y: 29%;
+    --w: 124vw;
+    --h: 42vh;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tray {
+    left: 0;
+    right: 0;
+    bottom: var(--handle-h);
+    width: auto;
+    max-width: none;
+    padding: 10px 12px;
+    border-width: 1px 0 0;
+    border-radius: 0;
+    opacity: var(--ui);
+  }
+
+  .tray-list button {
+    width: 46px;
+    height: 69px;
+  }
+
+  .hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell-cover {
+    transition-duration: 0.01s;
+    transition-delay: 0ms;
+  }
+
+  .cell[data-state='lit'] .cell-cover,
+  .tray,
+  .tray-list li,
+  .theme-icon,
+  .glow-field i,
+  .stage[data-ready] .hand img,
+  .stage[data-ready] .hands,
+  .stage[data-ready] .hand-rail,
+  .stage[data-ready] .glow-field,
+  .stage[data-ready] .hero-letter,
+  .stage[data-ready] .hero-def,
+  .stage[data-ready] .hero-actions,
+  .stage[data-ready] .header,
+  .stage[data-ready] .wall-plane {
+    animation: none;
+  }
+}

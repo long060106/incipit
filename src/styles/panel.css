@@ -1,0 +1,665 @@
+/* The instrument: search, mood sliders, themes and the quieter filters. */
+.panel {
+  position: absolute;
+  left: var(--gutter);
+  top: var(--header-h);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  width: var(--panel-w);
+  /* A definite height open and closed, so minimising can glide from one to the other. */
+  height: calc(100% - var(--header-h) - var(--gutter));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  opacity: var(--ui);
+  transform: translateX(calc((1 - var(--ui)) * -28px));
+  pointer-events: none;
+  transition: height 0.6s var(--ease-out);
+}
+
+.stage[data-gallery='true'] .panel {
+  pointer-events: auto;
+}
+
+/* The title bar. It is all that is left of a closed panel, and it opens and closes it. */
+.panel-handle {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  height: var(--handle-h);
+  padding: 0 18px 0 22px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+/* The panel clips its contents, so the focus ring is drawn inside the bar. */
+.panel-handle:focus-visible {
+  outline-offset: -4px;
+}
+
+.panel-handle-label,
+.panel-handle-count {
+  display: flex;
+  align-items: center;
+}
+
+.panel-handle-count {
+  gap: 8px;
+  color: var(--muted);
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.panel-handle-count svg {
+  transition: transform 0.45s var(--ease-out);
+}
+
+.panel-show {
+  display: none;
+}
+
+/* ── Wide screens: the panel minimises to its title bar ───────────────────── */
+
+@media (min-width: 900px) {
+  .panel {
+    --handle-h: 52px;
+  }
+
+  .panel:not(.is-open) {
+    /* The bar plus the panel's own border. */
+    height: calc(var(--handle-h) + 2px);
+  }
+
+  .panel-handle {
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease;
+  }
+
+  .panel.is-open .panel-handle {
+    border-bottom-color: var(--line);
+  }
+
+  .panel-handle:hover .panel-handle-count {
+    color: var(--text);
+  }
+
+  /* Open, the count is in the foot; the bar only carries it once the foot is gone. */
+  .panel-handle-figure {
+    transition: opacity 0.3s ease;
+  }
+
+  .panel.is-open .panel-handle-figure {
+    opacity: 0;
+  }
+
+  .panel.is-open .panel-handle-count svg {
+    transform: rotate(180deg);
+  }
+
+  .panel-body,
+  .panel-foot {
+    transition: opacity 0.4s ease 0.12s;
+  }
+
+  /* Faded out, then taken out of the tab order once the panel has closed over them. */
+  .panel:not(.is-open) .panel-body,
+  .panel:not(.is-open) .panel-foot {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0s 0.6s;
+  }
+}
+
+.panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 22px 22px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.panel-section {
+  margin-top: 28px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.panel h2 {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.panel-heading p {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  text-align: right;
+}
+
+.panel-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--line);
+}
+
+.panel-count {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(1.375rem * var(--display-scale));
+  line-height: 1;
+}
+
+/* The figure ticks into place when it changes. */
+.panel-count > span {
+  display: inline-block;
+  animation: tick-in 0.5s var(--ease-out);
+}
+
+@keyframes tick-in {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(0.45em);
+  }
+}
+
+/* ── Search ───────────────────────────────────────────────────────────────── */
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 2px 10px;
+  border-bottom: 1px solid var(--line-strong);
+  color: var(--muted);
+  transition: border-color 0.2s ease;
+}
+
+.search:focus-within {
+  border-color: var(--accent);
+}
+
+/* The input has no outline of its own, so the ring is drawn around the whole field. */
+.search:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+
+.search input::placeholder {
+  color: var(--muted);
+}
+
+.search input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+/* ── Moods to start from ──────────────────────────────────────────────────── */
+
+.quick {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.quick button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 66px;
+  padding: 9px 4px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  font-size: 0.8125rem;
+  line-height: 1.15;
+  text-align: center;
+  text-wrap: balance;
+  transition: border-color 0.2s ease, background-color 0.25s ease;
+}
+
+.quick svg {
+  color: var(--muted);
+  transition: color 0.2s ease, transform 0.4s var(--ease-out);
+}
+
+.quick button:hover {
+  border-color: var(--text);
+}
+
+.quick button:hover svg {
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.quick button[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+}
+
+.quick button[aria-pressed='true'] svg {
+  color: var(--accent);
+}
+
+/* ── Mood sliders ─────────────────────────────────────────────────────────── */
+
+.mood + .mood {
+  margin-top: 8px;
+}
+
+.mood-ends {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 20px;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  transition: color 0.2s ease;
+}
+
+.mood-ends > span {
+  transition: color 0.2s ease, opacity 0.25s ease;
+}
+
+.mood.is-set .mood-ends > span {
+  color: var(--text);
+}
+
+/* The word the bead is nearer to stands forward; the other steps back. */
+.mood.is-set .mood-ends > span:first-child {
+  opacity: calc(1 - var(--v) * 0.5);
+}
+
+.mood.is-set .mood-ends > span:last-child {
+  opacity: calc(0.5 + var(--v) * 0.5);
+}
+
+.mood-clear {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+
+.mood-clear:hover {
+  color: var(--accent);
+}
+
+.mood input[type='range'] {
+  display: block;
+  width: 100%;
+  height: 30px;
+  margin: 0;
+  /* A short tick marks the middle of the scale. */
+  background: linear-gradient(var(--line-strong), var(--line-strong)) center / 1px 9px no-repeat;
+  cursor: var(--cursor-press);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mood input[type='range']::-webkit-slider-runnable-track {
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.mood input[type='range']::-moz-range-track {
+  height: 1px;
+  background: var(--line-strong);
+}
+
+/* Untouched: a hollow ring at rest in the middle. Set: a filled brass bead. */
+.mood input[type='range']::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  margin-top: -7.5px;
+  border: 1px solid var(--muted);
+  border-radius: 50%;
+  background: var(--bg);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.3s var(--ease-out),
+    transform 0.3s var(--ease-out);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Held, the bead swells and its halo widens. */
+.mood input[type='range']:active::-webkit-slider-thumb {
+  box-shadow: 0 0 0 9px color-mix(in srgb, var(--accent) 16%, transparent);
+  transform: scale(1.2);
+}
+
+.mood input[type='range']::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--muted);
+  border-radius: 50%;
+  background: var(--bg);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mood.is-set input[type='range']::-webkit-slider-thumb {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.mood.is-set input[type='range']::-moz-range-thumb {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.mood input[type='range']:focus-visible {
+  outline-offset: 0;
+}
+
+/* ── More filters ─────────────────────────────────────────────────────────── */
+
+.more summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  cursor: var(--cursor-press);
+  list-style: none;
+}
+
+.more summary::-webkit-details-marker {
+  display: none;
+}
+
+.more summary svg {
+  transition: transform 0.45s var(--ease-out);
+}
+
+/* Opens and closes with a glide where the browser can animate to `auto`. */
+.more::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition: block-size 0.5s var(--ease-out), content-visibility 0.5s allow-discrete;
+}
+
+.more[open]::details-content {
+  block-size: auto;
+}
+
+.more[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.field {
+  margin-top: 16px;
+}
+
+.field label,
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.field select {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9375rem;
+}
+
+.field select option {
+  background: var(--raised);
+  color: var(--text);
+}
+
+/* ── Country: a field to type in, with the matching names listed under it ─── */
+
+.combo {
+  position: relative;
+}
+
+.combo-box {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 4px 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  transition: border-color 0.2s ease;
+}
+
+.combo-box:focus-within {
+  border-color: var(--accent);
+}
+
+.combo-box:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.combo input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9375rem;
+  outline: none;
+  cursor: text;
+}
+
+.combo input::placeholder {
+  color: var(--muted);
+}
+
+.combo-clear {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 3px;
+  color: var(--muted);
+}
+
+.combo-clear:hover {
+  color: var(--text);
+}
+
+.combo-clear svg {
+  width: 14px;
+  height: 14px;
+}
+
+.combo-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 5;
+  max-height: 228px;
+  margin: 0;
+  padding: 4px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  background: var(--raised);
+  box-shadow: 0 14px 34px rgb(0 0 0 / 0.32);
+  list-style: none;
+}
+
+.combo-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 8px;
+  border-radius: 2px;
+  font-size: 0.9375rem;
+  cursor: var(--cursor-press);
+}
+
+.combo-list li[data-active='true'] {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.combo-list li[aria-selected='true'] {
+  color: var(--accent);
+}
+
+.combo-count {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.combo-list .combo-empty {
+  color: var(--muted);
+  font-size: 0.875rem;
+  cursor: var(--cursor);
+}
+
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.segmented button {
+  min-height: 32px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  font-size: 0.8125rem;
+}
+
+.segmented button:hover {
+  border-color: var(--text);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: 0.9375rem;
+  cursor: var(--cursor-press);
+}
+
+.check input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+/* ── Small screens: the panel becomes a sheet that rises from the bottom ──── */
+
+@media (max-width: 899px) {
+  .panel {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: auto;
+    height: min(84svh, 720px);
+    border-width: 1px 0 0;
+    border-radius: 16px 16px 0 0;
+    opacity: 1;
+    /* Closed: only the handle shows. It slides up into place as the intro ends. */
+    transform: translateY(calc(100% - var(--handle-h) * var(--ui)));
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  .panel.is-open {
+    transform: translateY(0);
+  }
+
+  .panel-handle {
+    padding: 0 18px;
+  }
+
+  /* The sheet opens upwards, so its arrow points the other way from the wide panel's. */
+  .panel-handle-count svg {
+    transform: rotate(180deg);
+  }
+
+  .panel.is-open .panel-handle-count svg {
+    transform: none;
+  }
+
+  .panel-body {
+    padding: 8px 18px 14px;
+  }
+
+  .panel-foot {
+    padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .panel-foot .panel-count {
+    display: none;
+  }
+
+  .panel-show {
+    display: inline-flex;
+  }
+
+  /* Keep the hidden part out of the tab order while the sheet is closed. */
+  .panel:not(.is-open) .panel-body,
+  .panel:not(.is-open) .panel-foot {
+    visibility: hidden;
+    transition: visibility 0s 0.5s;
+  }
+
+  .panel.is-open ~ .tray {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    transition: none;
+  }
+
+  .panel-count > span {
+    animation: none;
+  }
+}

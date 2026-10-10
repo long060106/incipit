@@ -1,0 +1,87 @@
+/*
+  Touch sizing. Loaded last so it wins over the compact desktop sizes.
+  On a finger-driven or narrow screen every control gets at least a 44px target.
+*/
+@media (pointer: coarse), (max-width: 899px) {
+  .chip,
+  .segmented button {
+    min-height: 44px;
+    padding-inline: 1rem;
+  }
+
+  .lang {
+    --lang-w: 44px;
+  }
+
+  .lang button {
+    min-height: 44px;
+  }
+
+  .header-link,
+  .wordmark,
+  .more summary,
+  .check {
+    min-height: 44px;
+  }
+
+  .header-link,
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .text-button,
+  .text-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .field select {
+    height: 44px;
+  }
+
+  .search {
+    padding-bottom: 0;
+  }
+
+  .search input {
+    height: 44px;
+  }
+
+  .check input {
+    width: 22px;
+    height: 22px;
+  }
+
+  .mood input[type='range'] {
+    height: 44px;
+  }
+
+  .mood input[type='range']::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+    margin-top: -10.5px;
+  }
+
+  .mood input[type='range']::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* The label row stays compact; the tap area of "Clear" reaches past it instead. */
+  .mood-clear {
+    position: relative;
+  }
+
+  .mood-clear::after {
+    content: '';
+    position: absolute;
+    inset: -12px -16px;
+  }
+}
