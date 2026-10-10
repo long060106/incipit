@@ -11,6 +11,7 @@ import { BOOKS, BOOKS_BY_ID } from './data/books';
 import type { KeywordId, Mood } from './data/types';
 import { useI18n } from './i18n';
 import { Light } from './lib/light';
+import { runLoader } from './lib/loader';
 import { EMPTY_FILTERS, matchBooks, type Filters } from './lib/match';
 import type { CellState, CoverOrigin } from './lib/wall';
 
@@ -218,8 +219,8 @@ export default function App() {
     return () => NARROW.removeEventListener('change', reset);
   }, []);
 
-  // Hold the opening sequence until the display face has loaded, so the name rises in
-  // its real letterforms.
+  // Hold the opening sequence until the load screen has counted in the display face and the
+  // pictures of the first screen, so the name rises in its real letterforms.
   useEffect(() => {
     let cancelled = false;
     let selfOpen = 0;
@@ -245,11 +246,10 @@ export default function App() {
         };
       }, 700);
     };
-    const timeout = window.setTimeout(start, 1400);
-    document.fonts.ready.then(start);
+    const stopLoader = runLoader(start);
     return () => {
       cancelled = true;
-      window.clearTimeout(timeout);
+      stopLoader();
       window.clearTimeout(selfOpen);
     };
   }, [opening]);
