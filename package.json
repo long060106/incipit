@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "catalog": "node scripts/fetch-catalog.mjs",
     "covers": "node scripts/fetch-covers.mjs",
-    "books": "node scripts/fetch-books.mjs"
+    "books": "node scripts/fetch-books.mjs",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "react": "^19.3.0",
@@ -22,6 +23,7 @@
     "playwright-core": "^1.64.0",
     "sharp": "^0.35.5",
     "typescript": "^7.0.2",
-    "vite": "^8.3.4"
+    "vite": "^8.3.4",
+    "wrangler": "^4.149.0"
   }
 }
