@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && tsc --noEmit -p worker && vite build",
     "preview": "vite preview",
     "catalog": "node scripts/fetch-catalog.mjs",
     "covers": "node scripts/fetch-covers.mjs",
     "books": "node scripts/fetch-books.mjs",
     "geo": "node scripts/make-geo.mjs",
+    "texts": "node scripts/fetch-texts.mjs",
+    "context": "node scripts/fetch-context.mjs",
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
@@ -20,6 +22,7 @@
     "topojson-client": "^3.1.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261011.1",
     "@types/d3-geo": "^3.1.1",
     "@types/geojson": "^7946.0.16",
     "@types/react": "^19.3.0",
@@ -27,6 +30,7 @@
     "@types/topojson-client": "^3.1.5",
     "@types/topojson-specification": "^1.0.5",
     "@vitejs/plugin-react": "^6.1.2",
+    "cheerio": "^1.2.0",
     "i18n-iso-countries": "^7.14.0",
     "playwright-core": "^1.64.0",
     "sharp": "^0.35.5",

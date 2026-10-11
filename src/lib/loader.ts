@@ -9,9 +9,10 @@ type Handoff = { shown: number; stop: () => void };
 
 /**
  * The load screen in index.html: a bar that fills as the fonts and the pictures of the first
- * screen arrive. `onDone` is called as it starts to fade. Returns a cleanup.
+ * screen arrive. `onDone` is called as it starts to fade. Returns a cleanup. The inner pages
+ * pass a short `least`, so that going from one to another is not held up by the bar.
  */
-export function runLoader(onDone: () => void): () => void {
+export function runLoader(onDone: () => void, least = MIN_MS): () => void {
   const el = document.getElementById('loader');
   if (!el) {
     onDone();
@@ -52,7 +53,7 @@ export function runLoader(onDone: () => void): () => void {
       }
     }
     const target = now - began > MAX_MS ? 1 : base + (1 - base) * (loaded / total);
-    shown = Math.min(target, shown + (now - last) / MIN_MS);
+    shown = Math.min(target, shown + (now - last) / least);
     last = now;
     el.style.setProperty('--loaded', shown.toFixed(4));
     if (count) count.textContent = String(Math.round(shown * 100));

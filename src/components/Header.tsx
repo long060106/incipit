@@ -1,5 +1,6 @@
-import type { MouseEvent } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { SITE_NAME, useI18n } from '../i18n';
+import { PAGE_LINKS, pageUrl } from '../pages/PageHeader';
 import { MoonIcon, SunIcon } from './Icons';
 
 export type Theme = 'night' | 'day';
@@ -15,6 +16,42 @@ interface HeaderProps {
 
 export function Header({ theme, showHome, onToggleTheme, onOpenIndex, onHome }: HeaderProps) {
   const { t, lang, setLang } = useI18n();
+  // On a narrow screen the links to the other pages fold into one menu.
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = (event: Event) => {
+      if (event instanceof KeyboardEvent ? event.key === 'Escape' : !menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener('pointerdown', close);
+    document.addEventListener('keydown', close);
+    return () => {
+      document.removeEventListener('pointerdown', close);
+      document.removeEventListener('keydown', close);
+    };
+  }, [menuOpen]);
+
+  const links = (
+    <>
+      {PAGE_LINKS.map((link) => (
+        <a key={link.id} className="header-link" href={pageUrl(link.id)}>
+          {t(link.label)}
+        </a>
+      ))}
+      <button
+        type="button"
+        className="header-link"
+        onClick={() => {
+          setMenuOpen(false);
+          onOpenIndex();
+        }}
+      >
+        {t('index')}
+      </button>
+    </>
+  );
 
   return (
     <header className="header">
@@ -22,9 +59,13 @@ export function Header({ theme, showHome, onToggleTheme, onOpenIndex, onHome }: 
         {SITE_NAME}
       </button>
       <nav className="header-actions">
-        <button type="button" className="header-link" onClick={onOpenIndex}>
-          {t('index')}
-        </button>
+        <div className="header-links">{links}</div>
+        <div className="header-menu" ref={menuRef}>
+          <button type="button" className="header-link" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>
+            {t('menu')}
+          </button>
+          {menuOpen && <div className="header-menu-list">{links}</div>}
+        </div>
         <div className="lang" role="group" aria-label={t('language')} data-lang={lang}>
           <button type="button" lang="en" aria-pressed={lang === 'en'} onClick={() => setLang('en')}>
             EN

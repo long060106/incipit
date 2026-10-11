@@ -24,6 +24,16 @@ const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 
 const maxScroll = () => document.documentElement.scrollHeight - window.innerHeight;
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** True when the reader comes back from one of the site's own pages: the opening is not played again. */
+const cameFromInside = () => {
+  const [entry] = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+  if (entry?.type === 'back_forward') return true;
+  try {
+    return entry?.type === 'navigate' && !!document.referrer && new URL(document.referrer).origin === location.origin;
+  } catch {
+    return false;
+  }
+};
 
 /** How long the glide between the hero and the gallery takes over its full distance. */
 const TRAVEL_MS = 5200;
@@ -190,7 +200,7 @@ export default function App() {
   const [panelOpen, setPanelOpen] = useState(() => !NARROW.matches);
   // On a wide screen the page opens through a small window over its first stretch of scroll.
   // Not when the visit starts on a book, or the reader has asked for less motion.
-  const [opening] = useState(() => !NARROW.matches && !bookFromHash() && !prefersReducedMotion());
+  const [opening] = useState(() => !NARROW.matches && !bookFromHash() && !prefersReducedMotion() && !cameFromInside());
   /** False until that window has opened all the way. */
   const [opened, setOpened] = useState(!opening);
   const [inGallery, setInGallery] = useState(false);
@@ -274,7 +284,7 @@ export default function App() {
         };
       }, 700);
     };
-    const stopLoader = runLoader(start);
+    const stopLoader = runLoader(start, cameFromInside() ? 450 : undefined);
     return () => {
       cancelled = true;
       stopLoader();

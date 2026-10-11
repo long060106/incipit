@@ -6,6 +6,18 @@ export const SITE_NAME = 'Incipit';
 const STRINGS = {
   // Header
   index: { en: 'Index', fr: 'Index' },
+  menu: { en: 'Menu', fr: 'Menu' },
+  navFirst: { en: 'First pages', fr: 'Premières pages' },
+  navGlobe: { en: 'Globe', fr: 'Globe' },
+  navNotebook: { en: 'Notebook', fr: 'Carnet' },
+  readHere: { en: 'Read it here', fr: 'Lire ici' },
+  readOn: { en: 'Continue reading', fr: 'Reprendre la lecture' },
+  downloadShort: { en: 'Download', fr: 'Télécharger' },
+  around: { en: 'Around the book', fr: 'Autour du livre' },
+  aroundNote: { en: 'Background from Wikipedia: the book, its author, and the time and place it is set in.', fr: 'Repères tirés de Wikipédia : le livre, son auteur, l’époque et le lieu du récit.' },
+  wikiBook: { en: 'The book', fr: 'Le livre' },
+  wikiAuthor: { en: 'The author', fr: 'L’auteur' },
+  wikiSetting: { en: 'The setting', fr: 'Le cadre' },
   switchToDay: { en: 'Switch to day mode', fr: 'Passer en mode jour' },
   switchToNight: { en: 'Switch to night mode', fr: 'Passer en mode nuit' },
   language: { en: 'Language', fr: 'Langue' },

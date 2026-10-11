@@ -1,0 +1,9 @@
+<p>Socrates, who is the narrator.</p>
+<p>Glaucon.</p>
+<p>Adeimantus.</p>
+<p>Polemarchus.</p>
+<p>Cephalus.</p>
+<p>Thrasymachus.</p>
+<p>Cleitophon.</p>
+<p>And others who are mute auditors.</p>
+<p>The scene is laid in the house of Cephalus at the Piraeus; and the whole dialogue is narrated by Socrates the day after it actually took place to Timaeus, Hermocrates, Critias, and a nameless person, who are introduced in the Timaeus.</p>

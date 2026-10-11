@@ -1,0 +1,139 @@
+/* First pages (/first-pages): the opening lines of a book, alone on the page. */
+
+.first {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.first-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.25rem;
+  width: 100%;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 2rem var(--gutter) 5rem;
+}
+
+.first-lines {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(1.4375rem, 2.3vw, 1.9375rem);
+  line-height: 1.42;
+  text-wrap: pretty;
+  animation: first-in 1.4s var(--ease-out) both;
+}
+
+.first-lines p {
+  margin: 0;
+}
+
+.first-lines p + p {
+  margin-top: 0.75em;
+}
+
+.first-lines .is-verse {
+  white-space: pre-line;
+}
+
+/* The first letter stands large, as on the first page of a chapter. */
+.first-lines p:first-child::first-letter {
+  float: left;
+  margin: 0.06em 0.09em 0 0;
+  font-family: var(--font-display);
+  font-size: 3.1em;
+  line-height: 0.8;
+  color: var(--accent);
+}
+
+@keyframes first-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+}
+
+.first-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  text-align: center;
+}
+
+.first-choice {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.first-book {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 1.75rem;
+  align-items: center;
+  width: 100%;
+  padding-top: 2.25rem;
+  border-top: 1px solid var(--line);
+  animation: first-in 1.1s var(--ease-out) both;
+}
+
+.first-book img {
+  width: 132px;
+  height: 198px;
+  object-fit: cover;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.first-book h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.02;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+.first-author {
+  margin: 0.625rem 0 0;
+  font-size: 1.0625rem;
+}
+
+.first-place {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.first-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .first-stage {
+    justify-content: flex-start;
+    gap: 1.75rem;
+    padding-top: 1.5rem;
+  }
+
+  .first-book {
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+
+  .first-book img {
+    width: 96px;
+    height: 144px;
+  }
+}
