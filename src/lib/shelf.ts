@@ -98,6 +98,11 @@ const newId = () => Math.random().toString(36).slice(2, 10) + Date.now().toStrin
 export const shelf = {
   place: (bookId: string) => rows[`place:${bookId}`]?.v as Place | undefined,
   setPlace: (bookId: string, place: Place) => put(`place:${bookId}`, place),
+
+  /** The paragraph the reader put a ribbon on: one for each book. */
+  bookmark: (bookId: string) => rows[`bookmark:${bookId}`]?.v as { section: number; offset: number } | undefined,
+  setBookmark: (bookId: string, at: { section: number; offset: number }) => put(`bookmark:${bookId}`, at),
+  clearBookmark: (bookId: string) => drop(`bookmark:${bookId}`),
   /** Books with a place kept, most recently read first. */
   reading: () =>
     Object.entries(rows)

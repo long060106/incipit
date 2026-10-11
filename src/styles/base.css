@@ -7,11 +7,14 @@
 html {
   interpolate-size: allow-keywords;
   /* The page scroll is a timeline for the intro, not a document, so it shows no scrollbar. */
-  scrollbar-width: none;
   -webkit-text-size-adjust: 100%;
 }
 
-html::-webkit-scrollbar {
+html:not(.is-reading) {
+  scrollbar-width: none;
+}
+
+html:not(.is-reading)::-webkit-scrollbar {
   display: none;
 }
 
@@ -426,4 +429,9 @@ img {
   .scrim.is-leaving {
     opacity: 0;
   }
+}
+
+/* In the reader the page is a document again, and has a scrollbar to take hold of. */
+html.is-reading {
+  scrollbar-color: var(--line-strong) transparent;
 }
