@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BOOKS } from '../data/books';
 import type { L } from '../data/types';
 import { useI18n } from '../i18n';
 import { coverUrl } from '../lib/links';
 import { fold } from '../lib/match';
+import { addOwnBook, removeOwnBook, useOwnBooks } from '../lib/mybooks';
 import { useShelf, type Mark } from '../lib/shelf';
 import { CardPanel } from '../notes/CardPanel';
 import { bookOf, markLine, markUrl, NOTE_TEXT, TiePicker } from '../notes/notes';
@@ -32,6 +33,15 @@ const TEXT = {
   choose: { en: 'Choose a note on the left.', fr: 'Choisissez une note à gauche.' },
 
   percent: { en: '{n}% read', fr: '{n} % lus' },
+  own: { en: 'Your own books', fr: 'Vos propres livres' },
+  addBook: { en: 'Add a book', fr: 'Ajouter un livre' },
+  opening: { en: 'Opening…', fr: 'Ouverture…' },
+  ownNote: {
+    en: 'Add an EPUB or a text file from your device to read it here, with your place, marks and notes. The file stays in this browser: it is not sent anywhere and nobody else can see it.',
+    fr: 'Ajoutez un fichier EPUB ou texte de votre appareil pour le lire ici, avec votre page, vos marques et vos notes. Le fichier reste dans ce navigateur : il n’est envoyé nulle part et personne d’autre ne le voit.',
+  },
+  unsupported: { en: 'Only EPUB and plain-text files can be opened (not PDF, MOBI or protected files).', fr: 'Seuls les fichiers EPUB et texte peuvent être ouverts (ni PDF, ni MOBI, ni fichiers protégés).' },
+  addFailed: { en: 'That file could not be opened. It may be damaged or protected.', fr: 'Ce fichier n’a pas pu être ouvert. Il est peut-être endommagé ou protégé.' },
   ties: { en: '{n} tied', fr: '{n} liées' },
 } satisfies Record<string, L>;
 
@@ -54,7 +64,20 @@ export default function Notebook() {
   }, []);
 
   const marks = shelf.marks();
+  const own = useOwnBooks();
   const reading = shelf.reading().filter((entry) => BY_ID.has(entry.bookId));
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [adding, setAdding] = useState<'busy' | 'unsupported' | 'failed' | null>(null);
+  const add = async (file: File | undefined) => {
+    if (!file) return;
+    setAdding('busy');
+    try {
+      const book = await addOwnBook(file);
+      location.href = `${pageUrl('')}read/${book.id}`;
+    } catch (error) {
+      setAdding(error instanceof Error && error.message === 'unsupported' ? 'unsupported' : 'failed');
+    }
+  };
   const wanted = fold(query.trim());
   const shown = wanted
     ? marks.filter((mark) => fold(`${mark.quote ?? ''} ${mark.note} ${bookOf(mark)?.title ?? ''} ${bookOf(mark)?.author ?? ''}`).includes(wanted))
@@ -96,6 +119,38 @@ export default function Notebook() {
               </ul>
             </section>
           )}
+
+          <section>
+            <div className="notebook-row">
+              <p className="page-eyebrow">{tl(TEXT.own)}</p>
+              <button type="button" className="text-button" onClick={() => fileRef.current?.click()} disabled={adding === 'busy'}>
+                + {tl(adding === 'busy' ? TEXT.opening : TEXT.addBook)}
+              </button>
+              <input ref={fileRef} type="file" accept=".epub,.txt,application/epub+zip,text/plain" hidden onChange={(event) => void add(event.target.files?.[0])} />
+            </div>
+            {own.length > 0 && (
+              <ul className="notebook-own">
+                {own.map((book) => {
+                  const place = shelf.place(book.id);
+                  return (
+                    <li key={book.id}>
+                      <a href={`${pageUrl('')}read/${book.id}`}>
+                        <strong>{book.title}</strong>
+                        <small>
+                          {[book.author, place && tl(TEXT.percent).replace('{n}', String(Math.round(place.through * 100)))].filter(Boolean).join(' · ')}
+                        </small>
+                      </a>
+                      <button type="button" className="text-button" onClick={() => void removeOwnBook(book.id)}>
+                        {tl(NOTE_TEXT.remove)}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            {(adding === 'unsupported' || adding === 'failed') && <p className="card-problem">{tl(adding === 'unsupported' ? TEXT.unsupported : TEXT.addFailed)}</p>}
+            <p className="card-note">{tl(TEXT.ownNote)}</p>
+          </section>
 
           <section>
             <div className="notebook-row">

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BOOKS } from '../data/books';
 import type { L } from '../data/types';
 import { useI18n } from '../i18n';
+import { isOwn, ownBook, ownText, type OwnText } from '../lib/mybooks';
 import { useShelf } from '../lib/shelf';
 import { bookOf, markLine, markUrl, NOTE_TEXT, TiePicker } from '../notes/notes';
 import { pageUrl, useQuickLoader } from '../pages/PageHeader';
@@ -16,7 +17,7 @@ import './reader.css';
 */
 
 interface TextIndex {
-  from: 'standardebooks' | 'gutenberg';
+  from: 'standardebooks' | 'gutenberg' | 'own';
   source: string;
   start: number;
   sections: { title: string; part?: string; words: number }[];
@@ -45,6 +46,7 @@ const TEXT = {
   },
   home: { en: 'Back to the books', fr: 'Retour aux livres' },
   credit: { en: 'Text in the public domain, from', fr: 'Texte du domaine public, d’après' },
+  ownCopy: { en: 'Your own copy, kept in this browser only.', fr: 'Votre propre exemplaire, conservé dans ce seul navigateur.' },
   marksHere: { en: 'Your marks in this book', fr: 'Vos marques dans ce livre' },
   select: { en: 'Select any words to mark them.', fr: 'Sélectionnez des mots pour les marquer.' },
 } satisfies Record<string, L>;
@@ -85,7 +87,13 @@ export default function ReaderPage() {
       // The width then lasts for this visit only.
     }
   };
-  const book = useMemo(() => BOOKS.find((entry) => entry.id === bookId()), []);
+  // A book of the catalogue, or one the reader added from their own device (src/lib/mybooks.ts).
+  const book = useMemo(() => {
+    const id = bookId();
+    const found = isOwn(id) ? ownBook(id) : BOOKS.find((entry) => entry.id === id);
+    return found ? { id: found.id, title: found.title, author: found.author, own: isOwn(id) } : undefined;
+  }, []);
+  const ownSections = useRef<OwnText['sections']>([]);
   const [index, setIndex] = useState<TextIndex | null>(null);
   const [failed, setFailed] = useState(false);
   const [section, setSection] = useState(0);
@@ -115,8 +123,14 @@ export default function ReaderPage() {
   // The list of sections, then the place to start: the address, the kept place, or the story's start.
   useEffect(() => {
     if (!book) return;
-    fetch(`${base}/index.json`)
-      .then((response) => (response.ok ? response.json() : Promise.reject()))
+    const loading: Promise<TextIndex> = book.own
+      ? ownText(book.id).then((text) => {
+          if (!text) throw new Error('gone');
+          ownSections.current = text.sections;
+          return { from: 'own', source: '', start: 0, sections: text.sections.map(({ title, words }) => ({ title, words })) };
+        })
+      : fetch(`${base}/index.json`).then((response) => (response.ok ? response.json() : Promise.reject()));
+    loading
       .then((loaded: TextIndex) => {
         const place = hashPlace() ?? shelf.place(book.id) ?? { section: loaded.start, offset: 0 };
         landing.current = place;
@@ -133,8 +147,10 @@ export default function ReaderPage() {
     setHtml(null);
     setPicked(null);
     setOpen(null);
-    fetch(`${base}/${section}.txt`)
-      .then((response) => (response.ok ? response.text() : Promise.reject()))
+    (book?.own
+      ? Promise.resolve(ownSections.current[section]?.html ?? '')
+      : fetch(`${base}/${section}.txt`).then((response) => (response.ok ? response.text() : Promise.reject()))
+    )
       .then((text) => !stale && setHtml(text))
       .catch(() => !stale && setFailed(true));
     return () => {
@@ -345,7 +361,7 @@ export default function ReaderPage() {
       <div className="reader-progress" style={{ transform: `scaleX(${through})` }} />
 
       <header className="reader-bar" data-hidden={barHidden && !tocOpen}>
-        <a className="reader-back" href={`${pageUrl('')}#book=${book.id}`} aria-label={tl(TEXT.backToBook)}>
+        <a className="reader-back" href={book.own ? pageUrl('notebook') : `${pageUrl('')}#book=${book.id}`} aria-label={tl(book.own ? TEXT.notebook : TEXT.backToBook)}>
           <span aria-hidden="true">←</span>
           <span className="reader-book">{book.title}</span>
         </a>
@@ -415,7 +431,7 @@ export default function ReaderPage() {
         {here && (
           <header className="reader-head">
             <p className="page-eyebrow">
-              {book.author} · {book.title}
+              {[book.author, book.title].filter(Boolean).join(' · ')}
             </p>
             {here.part && <p className="reader-part">{here.part}</p>}
             {here.title && <h1>{here.title}</h1>}
@@ -441,11 +457,18 @@ export default function ReaderPage() {
               <span>{tl(TEXT.through).replace('{n}', String(Math.round(through * 100)))}</span>
             </div>
             <p className="reader-credit">
-              {tl(TEXT.credit)}{' '}
-              <a href={index.source} target="_blank" rel="noopener noreferrer">
-                {SOURCE[index.from]}
-              </a>
-              . {bookMarks.length === 0 && tl(TEXT.select)}
+              {index.from === 'own' ? (
+                tl(TEXT.ownCopy)
+              ) : (
+                <>
+                  {tl(TEXT.credit)}{' '}
+                  <a href={index.source} target="_blank" rel="noopener noreferrer">
+                    {SOURCE[index.from]}
+                  </a>
+                  .
+                </>
+              )}{' '}
+              {bookMarks.length === 0 && tl(TEXT.select)}
             </p>
           </footer>
         )}
