@@ -48,7 +48,7 @@ const MAX_ROWS_PER_SYNC = 2000;
 const MAX_ROWS_PER_CARD = 20_000;
 const MAX_VALUE = 20_000; // characters of JSON in one record
 const MAX_CARDS_PER_DAY = 30; // from one address
-const KEY = /^(mark|place):[A-Za-z0-9-]{1,80}$/;
+const KEY = /^(mark|place|bookmark):[A-Za-z0-9-]{1,80}$/;
 const BOOK = /^[a-z0-9-]{1,80}$/;
 const MAX_ARTICLES = 12;
 // Crockford's alphabet: no I, L, O or U, so a code survives being read aloud or copied by hand.

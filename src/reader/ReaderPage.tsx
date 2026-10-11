@@ -27,6 +27,10 @@ const TEXT = {
   notebook: { en: 'Notebook', fr: 'Carnet' },
   smaller: { en: 'Smaller text', fr: 'Texte plus petit' },
   larger: { en: 'Larger text', fr: 'Texte plus grand' },
+  ribbon: { en: 'Bookmark', fr: 'Signet' },
+  toRibbon: { en: 'Go to your bookmark', fr: 'Aller à votre signet' },
+  narrower: { en: 'Narrower page', fr: 'Page plus étroite' },
+  wider: { en: 'Wider page', fr: 'Page plus large' },
   mark: { en: 'Mark', fr: 'Marquer' },
   note: { en: 'Mark and note', fr: 'Marquer et noter' },
   next: { en: 'Next', fr: 'Suite' },
@@ -48,6 +52,9 @@ const TEXT = {
 const SOURCE = { standardebooks: 'Standard Ebooks', gutenberg: 'Project Gutenberg' };
 const SIZES = [1.125, 1.25, 1.375, 1.5, 1.6875, 1.875];
 const SIZE_KEY = 'incipit:read-size';
+/** How wide the column of text may be, in rem; the reader steps between these. */
+const WIDTHS = [32, 42, 54, 68, 86];
+const WIDTH_KEY = 'incipit:read-width';
 
 const bookId = () => decodeURIComponent(location.pathname.split('/')[2] ?? '');
 /** "#12:3400" asks for section 12 at character 3400. */
@@ -60,6 +67,24 @@ export default function ReaderPage() {
   const { tl } = useI18n();
   const shelf = useShelf();
   useQuickLoader();
+  // Elsewhere the site hides the page's scrollbar; a book needs one to take hold of.
+  useEffect(() => {
+    document.documentElement.classList.add('is-reading');
+    return () => document.documentElement.classList.remove('is-reading');
+  }, []);
+  const [width, setWidth] = useState(() => {
+    const kept = Number(localStorage.getItem(WIDTH_KEY));
+    return WIDTHS.includes(kept) ? kept : WIDTHS[2];
+  });
+  const widen = (step: number) => {
+    const next = WIDTHS[Math.min(WIDTHS.length - 1, Math.max(0, WIDTHS.indexOf(width) + step))];
+    setWidth(next);
+    try {
+      localStorage.setItem(WIDTH_KEY, String(next));
+    } catch {
+      // The width then lasts for this visit only.
+    }
+  };
   const book = useMemo(() => BOOKS.find((entry) => entry.id === bookId()), []);
   const [index, setIndex] = useState<TextIndex | null>(null);
   const [failed, setFailed] = useState(false);
@@ -82,6 +107,9 @@ export default function ReaderPage() {
   /** The text the reader was last put in place on, so that it happens once for each. */
   const landedOn = useRef<string | null>(null);
   const [jump, setJump] = useState(0);
+  /** The section on the page, for callbacks that outlive a render. */
+  const shown = useRef(0);
+  shown.current = section;
   const base = `${import.meta.env.BASE_URL}texts/${book?.id}`;
 
   // The list of sections, then the place to start: the address, the kept place, or the story's start.
@@ -116,6 +144,9 @@ export default function ReaderPage() {
 
   const marks = book ? shelf.marksIn(book.id, section) : [];
   const marksKey = marks.map((mark) => `${mark.id}:${mark.note ? 1 : 0}:${mark.links.length}`).join(',');
+  /** The one paragraph of the book the reader has put a ribbon on. */
+  const ribbon = book ? shelf.bookmark(book.id) : undefined;
+  const ribbonHere = ribbon?.section === section ? ribbon.offset : -1;
 
   // The text goes onto the page by hand, so that marks can be painted into it.
   useEffect(() => {
@@ -124,8 +155,18 @@ export default function ReaderPage() {
     article.innerHTML = html;
     paintMarks(article, marks);
     blocks.current = blockOffsets(article);
+    blocks.current.find((entry) => entry.from === ribbonHere)?.el.setAttribute('data-ribbon', 'true');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [html, marksKey]);
+  }, [html, marksKey, ribbonHere]);
+
+  /** Puts the ribbon on a paragraph, or takes it off if it is already there. */
+  const setRibbon = (offset: number) => {
+    if (!book) return;
+    if (ribbonHere === offset) shelf.clearBookmark(book.id);
+    else shelf.setBookmark(book.id, { section, offset });
+  };
+  /** The paragraph at the top of the screen. */
+  const topBlock = () => blocks.current.find((entry) => entry.el.getBoundingClientRect().bottom > 96) ?? blocks.current[0];
 
   // Once a section arrives, go to the place asked for; otherwise to its top.
   useEffect(() => {
@@ -226,9 +267,10 @@ export default function ReaderPage() {
     landedOn.current = null;
     setTocOpen(false);
     setOpen(null);
+    // Already in that section, the text is on the page and only the place changes. Otherwise
+    // the place waits for the new section's text.
+    if (to === shown.current) setJump((count) => count + 1);
     setSection(to);
-    // Already in that section, the text is on the page and only the place changes.
-    setJump((count) => count + 1);
     if (!asked) history.replaceState(history.state, '', location.pathname);
   }, []);
 
@@ -261,6 +303,9 @@ export default function ReaderPage() {
   };
 
   const onArticleClick = (event: React.MouseEvent) => {
+    // A press in the margin beside a paragraph, where its ribbon hangs, moves the ribbon there.
+    const beside = blocks.current.find((entry) => entry.el === event.target);
+    if (beside && event.clientX < beside.el.getBoundingClientRect().left) return setRibbon(beside.from);
     const el = (event.target as HTMLElement).closest<HTMLElement>('mark[data-id]');
     if (!el || !window.getSelection()?.isCollapsed) return;
     const rect = el.getBoundingClientRect();
@@ -296,7 +341,7 @@ export default function ReaderPage() {
   const bookMarks = shelf.marks().filter((mark) => mark.bookId === book.id);
 
   return (
-    <div className="reader" style={{ '--read-size': `${size}rem` } as React.CSSProperties}>
+    <div className="reader" style={{ '--read-size': `${size}rem`, '--read-width': `${width}rem` } as React.CSSProperties}>
       <div className="reader-progress" style={{ transform: `scaleX(${through})` }} />
 
       <header className="reader-bar" data-hidden={barHidden && !tocOpen}>
@@ -307,6 +352,15 @@ export default function ReaderPage() {
         <nav className="page-nav">
           <button type="button" onClick={() => setTocOpen((value) => !value)} aria-expanded={tocOpen}>
             {tl(TEXT.contents)}
+          </button>
+          <button type="button" onClick={() => topBlock() && setRibbon(topBlock().from)} aria-pressed={ribbonHere >= 0 && topBlock()?.from === ribbonHere}>
+            {tl(TEXT.ribbon)}
+          </button>
+          <button type="button" className="reader-size reader-width" onClick={() => widen(-1)} aria-label={tl(TEXT.narrower)} title={tl(TEXT.narrower)} disabled={width === WIDTHS[0]}>
+            →←
+          </button>
+          <button type="button" className="reader-size reader-width" onClick={() => widen(1)} aria-label={tl(TEXT.wider)} title={tl(TEXT.wider)} disabled={width === WIDTHS.at(-1)}>
+            ←→
           </button>
           <button type="button" className="reader-size" onClick={() => resize(-1)} aria-label={tl(TEXT.smaller)} disabled={size === SIZES[0]}>
             A−
@@ -322,6 +376,12 @@ export default function ReaderPage() {
         <>
           <div className="reader-scrim" onClick={() => setTocOpen(false)} />
           <aside className="reader-toc" data-scroll>
+            {ribbon && (
+              <button type="button" className="reader-toc-ribbon" onClick={() => go(ribbon.section, ribbon.offset, true)}>
+                <span className="page-eyebrow">{tl(TEXT.toRibbon)}</span>
+                <span>{index.sections[ribbon.section]?.title || '·'}</span>
+              </button>
+            )}
             <p className="page-eyebrow">{tl(TEXT.contents)}</p>
             <ol>
               {index.sections.map((entry, at) => (
