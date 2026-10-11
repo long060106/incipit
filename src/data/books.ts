@@ -6320,6 +6320,45 @@ export const BOOKS: Book[] = [
       },
     },
   },
+  {
+    id: 'animal-farm',
+    title: 'Animal Farm',
+    author: 'George Orwell',
+    year: 1945,
+    pages: 128,
+    language: 'en',
+    genres: ['fantasy', 'literary'],
+    keywords: ['power', 'society', 'freedom', 'justice'],
+    setting: { place: { en: 'Manor Farm, somewhere in England', fr: 'La Ferme du Manoir, quelque part en Angleterre' }, countries: ['GB'] },
+    mood: { tone: 85, voice: 50, intensity: 60, pace: 70, strange: 55 },
+    difficulty: 2,
+    rating: { value: 4.17, count: 596 },
+    cover: 11261770,
+    olKey: '/works/OL1168007W',
+    borrow: 'animalfarmfairys0000geor',
+    description: {
+      en: 'The animals of Manor Farm drive out the farmer and run the place themselves, all equal. Then the pigs learn to read, and the rules on the barn wall begin to change overnight.',
+      fr: 'Les animaux de la Ferme du Manoir chassent le fermier et dirigent eux-mêmes les lieux, tous égaux. Puis les cochons apprennent à lire, et les règles peintes sur le mur de la grange se mettent à changer pendant la nuit.',
+    },
+    advice: {
+      pace: {
+        en: 'Quick and plain, told like a children’s story. An afternoon is enough.',
+        fr: 'Vif et simple, raconté comme une histoire pour enfants. Un après-midi suffit.',
+      },
+      headsUp: {
+        en: 'Animals are worked to death and killed, and the ending offers no way out. It is the Russian Revolution in a farmyard.',
+        fr: 'Des animaux meurent à la tâche ou sont exécutés, et la fin ne laisse aucune issue. C’est la révolution russe dans une cour de ferme.',
+      },
+      readIf: {
+        en: 'You want to see, in a hundred pages, how a revolution is taken over by the ones who shout loudest.',
+        fr: 'Vous voulez voir, en cent pages, comment une révolution est confisquée par ceux qui crient le plus fort.',
+      },
+      skipIf: {
+        en: 'You want characters with inner lives; these are types, on purpose.',
+        fr: 'Vous voulez des personnages avec une vie intérieure ; ceux-ci sont des types, à dessein.',
+      },
+    },
+  },
 ];
 
 export const BOOKS_BY_ID = new Map(BOOKS.map((book) => [book.id, book]));

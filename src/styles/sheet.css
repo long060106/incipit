@@ -260,6 +260,44 @@
   letter-spacing: var(--display-tracking);
 }
 
+/* Around the book: a short list of Wikipedia articles. */
+.around {
+  border-top: 1px solid var(--faint);
+}
+
+.around a {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: baseline;
+  padding: 0.6875rem 0;
+  border-bottom: 1px solid var(--faint);
+  color: inherit;
+  text-decoration: none;
+  transition: padding 0.45s var(--ease-out), color 0.3s ease;
+}
+
+.around a:hover {
+  padding-left: 0.5rem;
+  color: var(--accent);
+}
+
+.around-kind {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.around a svg {
+  align-self: center;
+  color: var(--muted);
+}
+
+.around-note {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
 .advice > div {
   display: grid;
   grid-template-columns: 5.5rem 1fr;

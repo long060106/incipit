@@ -38,6 +38,8 @@ export interface GlobeOptions {
 
 export interface GlobeHandle {
   select: (code: string | null) => void;
+  /** Changes which countries are lit, when the reader moves to another period. */
+  setCounts: (counts: Map<string, number>) => void;
   destroy: () => void;
 }
 
@@ -84,7 +86,8 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
   const path = geoPath(projection, context);
   const graticule = geoGraticule10();
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const most = Math.max(1, ...options.counts.values());
+  let counts = options.counts;
+  let most = Math.max(1, ...counts.values());
 
   let coarse: World | null = null;
   let fine: World | null = null;
@@ -160,7 +163,7 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
 
     if (world) {
       for (const country of world.countries) {
-        const count = options.counts.get(country.code) ?? 0;
+        const count = counts.get(country.code) ?? 0;
         const lit = country.code === selected;
         const under = country.code === hovered;
         if (!count && !lit && !under) continue;
@@ -185,14 +188,14 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
         context.beginPath();
         path(marked.shape);
         context.lineWidth = 1.1;
-        context.strokeStyle = options.counts.has(marked.code) || marked.code === selected ? colours.accent : colours.text;
+        context.strokeStyle = counts.has(marked.code) || marked.code === selected ? colours.accent : colours.text;
         context.stroke();
       }
 
       // A pin for every country with books, so that the small ones can be found too.
       context.fillStyle = colours.accent;
       for (const country of world.countries) {
-        if (!options.counts.has(country.code)) continue;
+        if (!counts.has(country.code)) continue;
         const point = visible(country.centre);
         if (!point) continue;
         context.beginPath();
@@ -224,7 +227,7 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
     let nearest: string | null = null;
     let reach = PIN_REACH;
     for (const country of world.countries) {
-      if (!options.counts.has(country.code)) continue;
+      if (!counts.has(country.code)) continue;
       const point = visible(country.centre);
       if (!point) continue;
       const distance = Math.hypot(point[0] - x, point[1] - y);
@@ -237,7 +240,7 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
     if (!lonLat) return nearest;
     const inside = world.countries.find((country) => inBounds(country.bounds, lonLat) && geoContains(country.shape, lonLat));
     // Inside a large country the country wins; a pin only reaches out over sea and small neighbours.
-    if (inside && options.counts.has(inside.code)) return inside.code;
+    if (inside && counts.has(inside.code)) return inside.code;
     return nearest ?? inside?.code ?? null;
   };
 
@@ -341,7 +344,7 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
     if (event.type === 'pointercancel') return;
     const at = local(event);
     const code = countryAt(at.x, at.y);
-    select(code && options.counts.has(code) ? code : null);
+    select(code && counts.has(code) ? code : null);
     options.onSelect(selected);
   };
 
@@ -359,7 +362,7 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
     if (code !== hovered) {
       hovered = code;
       dirty = true;
-      canvas.dataset.over = code && options.counts.has(code) ? 'book' : code ? 'land' : 'sea';
+      canvas.dataset.over = code && counts.has(code) ? 'book' : code ? 'land' : 'sea';
     }
     options.onHover(code, code ? at : null);
   };
@@ -410,6 +413,11 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
 
   return {
     select,
+    setCounts(next) {
+      counts = next;
+      most = Math.max(1, ...counts.values());
+      dirty = true;
+    },
     destroy() {
       stopped = true;
       cancelAnimationFrame(frame);

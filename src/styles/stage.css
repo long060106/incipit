@@ -797,6 +797,59 @@
   color: var(--accent);
 }
 
+a.header-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* On a narrow screen the same links hang from one button. */
+.header-menu {
+  position: relative;
+  display: none;
+}
+
+.header-menu-list {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  right: 0;
+  display: grid;
+  min-width: 11rem;
+  padding: 0.5rem 0;
+  border: 1px solid var(--line);
+  background: var(--raised);
+  box-shadow: var(--dialog-shadow);
+  animation: menu-in 0.35s var(--ease-out) both;
+}
+
+.header-menu-list .header-link {
+  padding: 0.625rem 1.125rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (max-width: 860px) {
+  .header-links {
+    display: none;
+  }
+
+  .header-menu {
+    display: block;
+  }
+}
+
 .lang {
   --lang-w: 2.1rem;
   position: relative;

@@ -1,0 +1,100 @@
+import type { Book, L } from './types';
+
+/*
+  When each story takes place, for travelling the globe by period as well as by place.
+  Most books are set about when they were written, so the year they came out stands for
+  them. The ones below are not: historical novels, memoirs of an earlier time, old tales.
+  A span of years is given by a year near its middle. Editorial, like the mood scores.
+*/
+const SET_IN: Record<string, number> = {
+  'the-hunchback-of-notre-dame': 1482,
+  frankenstein: 1795,
+  'the-count-of-monte-cristo': 1830,
+  'the-great-gatsby': 1922,
+  'mrs-dalloway': 1923,
+  'the-phantom-of-the-opera': 1881,
+  'one-hundred-years-of-solitude': 1900,
+  beloved: 1873,
+  'never-let-me-go': 1995,
+  'norwegian-wood': 1969,
+  'the-name-of-the-rose': 1327,
+  educated: 1995,
+  'things-fall-apart': 1895,
+  'the-sorrow-of-war': 1970,
+  'romance-of-the-three-kingdoms': 220,
+  'the-odyssey': -1180,
+  'wuthering-heights': 1790,
+  siddhartha: -500,
+  'heart-of-darkness': 1890,
+  'the-adventures-of-sherlock-holmes': 1888,
+  dubliners: 1900,
+  'the-kite-runner': 1975,
+  pachinko: 1935,
+  'the-shadow-of-the-wind': 1950,
+  'the-god-of-small-things': 1969,
+  'my-brilliant-friend': 1955,
+  'nineteen-eighty-four': 1984,
+  'les-miserables': 1825,
+  'the-three-musketeers': 1625,
+  'war-and-peace': 1810,
+  'great-expectations': 1825,
+  'a-tale-of-two-cities': 1785,
+  middlemarch: 1830,
+  'the-adventures-of-huckleberry-finn': 1845,
+  'the-scarlet-letter': 1645,
+  'the-call-of-the-wild': 1897,
+  'the-age-of-innocence': 1875,
+  'little-women': 1863,
+  'narrative-of-the-life-of-frederick-douglass': 1830,
+  'treasure-island': 1760,
+  candide: 1755,
+  'the-iliad': -1190,
+  'the-prince': 1500,
+  germinal: 1866,
+  'swanns-way': 1890,
+  ulysses: 1904,
+  'the-arabian-nights': 800,
+  'the-home-and-the-world': 1905,
+  'my-brilliant-career': 1895,
+  circe: -1200,
+  'to-kill-a-mockingbird': 1935,
+  'harry-potter-and-the-philosophers-stone': 1991,
+  'life-of-pi': 1977,
+  'the-book-thief': 1941,
+  'the-master-and-margarita': 1935,
+  'the-unbearable-lightness-of-being': 1968,
+  'the-house-of-the-spirits': 1950,
+  persepolis: 1985,
+  'born-a-crime': 1990,
+  homegoing: 1850,
+  'palace-walk': 1918,
+  'my-name-is-red': 1591,
+  'wild-swans': 1945,
+  'the-sympathizer': 1975,
+  'the-tale-of-kieu': 1550,
+  'mans-search-for-meaning': 1944,
+  'the-diary-of-a-young-girl': 1943,
+  'wide-sargasso-sea': 1835,
+  'this-earth-of-mankind': 1898,
+  'like-water-for-chocolate': 1912,
+  'a-gentleman-in-moscow': 1935,
+  'the-godfather': 1950,
+};
+
+/** The year a book's story is set in, or about. */
+export const settingYear = (book: Book) => SET_IN[book.id] ?? book.year;
+
+/** The stops of the globe's timeline: each runs from the one before it up to `until`. */
+export const ERAS: { until: number; label: L }[] = [
+  { until: 500, label: { en: 'Antiquity', fr: 'Antiquité' } },
+  { until: 1500, label: { en: 'Middle Ages', fr: 'Moyen Âge' } },
+  { until: 1700, label: { en: '1500–1700', fr: '1500–1700' } },
+  { until: 1800, label: { en: '1700–1800', fr: '1700–1800' } },
+  { until: 1850, label: { en: '1800–1850', fr: '1800–1850' } },
+  { until: 1900, label: { en: '1850–1900', fr: '1850–1900' } },
+  { until: 1945, label: { en: '1900–1945', fr: '1900–1945' } },
+  { until: 2000, label: { en: '1945–2000', fr: '1945–2000' } },
+  { until: Infinity, label: { en: '2000–today', fr: '2000–aujourd’hui' } },
+];
+
+export const eraOf = (book: Book) => ERAS.findIndex((era) => settingYear(book) < era.until);

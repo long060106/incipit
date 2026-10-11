@@ -3,9 +3,12 @@ import { BOOKS } from '../data/books';
 import type { Book, KeywordId, Mood } from '../data/types';
 import { AXES, DIFFICULTY, GENRES, KEYWORDS, LANGUAGES } from '../data/vocab';
 import { useI18n } from '../i18n';
+import { READABLE } from '../data/texts';
 import { bookLinks, coverUrl } from '../lib/links';
+import { useShelf } from '../lib/shelf';
 import { MIN_RATINGS, similarBooks } from '../lib/match';
 import { coverOrigin, type CoverOrigin } from '../lib/wall';
+import { Around } from './Around';
 import { Dialog } from './Dialog';
 import { CloseIcon, DownloadIcon, ExternalIcon } from './Icons';
 import { Roll } from './Roll';
@@ -36,6 +39,7 @@ interface BookSheetProps {
  */
 export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMood, onPickTheme }: BookSheetProps) {
   const { t, tl, lang } = useI18n();
+  const shelf = useShelf();
   const links = bookLinks(book);
   const similar = useMemo(() => similarBooks(book, BOOKS), [book]);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -125,6 +129,7 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
       : book.original
         ? t('translationNote')
         : t('libraryNote');
+  const readable = READABLE.has(book.id);
   const rated = book.rating.count >= MIN_RATINGS;
   const rating = book.rating.value.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
@@ -146,13 +151,19 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
       <div className="sheet-body" ref={scrollRef} data-scroll>
         {/* First in the markup so the keyboard reaches it first; CSS pins it to the bottom. */}
         <div className="sheet-actions">
+          {readable && (
+            // Its text is on the site: reading starts here, at the place kept from last time.
+            <a className="button button-large" href={`${import.meta.env.BASE_URL}read/${book.id}`} data-outbound="read-here">
+              <Roll>{shelf.place(book.id) ? t('readOn') : t('readHere')}</Roll>
+            </a>
+          )}
           {links.pdf ? (
             // The file itself, named after the book. No new tab: the browser just saves it.
-            <a className="button button-large" href={links.pdf} download={links.pdfName} data-outbound="pdf">
+            <a className={readable ? 'button button-large button-quiet' : 'button button-large'} href={links.pdf} download={links.pdfName} data-outbound="pdf">
               <DownloadIcon />
-              <Roll>{t('downloadBook')}</Roll>
+              <Roll>{readable ? t('downloadShort') : t('downloadBook')}</Roll>
             </a>
-          ) : links.readOnline ? (
+          ) : readable ? null : links.readOnline ? (
             // Out of copyright, but its PDF has not been made yet.
             <a className="button button-large" href={links.readOnline} target="_blank" rel="noopener noreferrer" data-outbound="read">
               <Roll>{t('readOnline')}</Roll>
@@ -267,6 +278,8 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
               ))}
             </ul>
           </section>
+
+          <Around bookId={book.id} />
 
           <section className="sheet-reference" aria-label={t('details')}>
             <dl className="facts">

@@ -1,12 +1,25 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "incipit",
+  // The server (worker/index.ts) answers /api/*; everything else is the built site in ./dist.
+  "main": "worker/index.ts",
   "compatibility_date": "2026-10-06",
   "observability": {
     "enabled": true
   },
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
-  }
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  // Library cards and readers' notebooks. Tables: worker/migrations.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "incipit",
+      "database_id": "c3e1c33e-9c4f-4d0f-86f8-06004523f6a1",
+      "migrations_dir": "worker/migrations"
+    }
+  ]
 }

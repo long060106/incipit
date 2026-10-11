@@ -64,6 +64,7 @@ const SEEDS = [
   ['Dune', 'Frank Herbert'],
   ['Nineteen Eighty-Four', 'George Orwell'],
   ['The Godfather', 'Mario Puzo'],
+  ['Animal Farm', 'George Orwell'],
   ['Les Misérables', 'Victor Hugo'],
   ['The Three Musketeers', 'Alexandre Dumas'],
   ['War and Peace', 'Leo Tolstoy'],
