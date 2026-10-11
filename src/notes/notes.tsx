@@ -3,6 +3,7 @@ import { BOOKS } from '../data/books';
 import type { L } from '../data/types';
 import { useI18n } from '../i18n';
 import { fold } from '../lib/match';
+import { ownBook } from '../lib/mybooks';
 import { useShelf, type Mark } from '../lib/shelf';
 import './notes.css';
 
@@ -22,7 +23,9 @@ export const NOTE_TEXT = {
   open: { en: 'Open in the book', fr: 'Ouvrir dans le livre' },
 } satisfies Record<string, L>;
 
-export const bookOf = (mark: Mark) => (mark.bookId ? BY_ID.get(mark.bookId) : undefined);
+/** The book a mark was made in: one of the catalogue's, or one of the reader's own. */
+export const bookOf = (mark: Mark): { title: string; author: string } | undefined =>
+  mark.bookId ? BY_ID.get(mark.bookId) ?? ownBook(mark.bookId) : undefined;
 
 /** Where a mark is in its book: the address the reader opens at that passage. */
 export const markUrl = (mark: Mark) =>
