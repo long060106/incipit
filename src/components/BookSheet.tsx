@@ -4,12 +4,14 @@ import type { Book, KeywordId, Mood } from '../data/types';
 import { AXES, DIFFICULTY, GENRES, KEYWORDS, LANGUAGES } from '../data/vocab';
 import { useI18n } from '../i18n';
 import { READABLE } from '../data/texts';
+import { useDecided } from '../lib/keeper';
 import { bookLinks, coverUrl } from '../lib/links';
 import { useShelf } from '../lib/shelf';
 import { MIN_RATINGS, similarBooks } from '../lib/match';
 import { coverOrigin, type CoverOrigin } from '../lib/wall';
 import { Around } from './Around';
 import { Dialog } from './Dialog';
+import { Keeper } from './Keeper';
 import { CloseIcon, DownloadIcon, ExternalIcon } from './Icons';
 import { Roll } from './Roll';
 
@@ -40,7 +42,10 @@ interface BookSheetProps {
 export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMood, onPickTheme }: BookSheetProps) {
   const { t, tl, lang } = useI18n();
   const shelf = useShelf();
-  const links = bookLinks(book);
+  // The keeper of the site can switch a book's download off (src/lib/keeper.ts).
+  const decided = useDecided()[book.id];
+  const whole = bookLinks(book);
+  const links = decided?.download === false ? { ...whole, pdf: null, pdfBytes: 0 } : whole;
   const similar = useMemo(() => similarBooks(book, BOOKS), [book]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const coverRef = useRef<HTMLImageElement>(null);
@@ -279,7 +284,8 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
             </ul>
           </section>
 
-          <Around bookId={book.id} />
+          <Around bookId={book.id} articles={decided?.articles} />
+          <Keeper bookId={book.id} hasPdf={!!whole.pdf} />
 
           <section className="sheet-reference" aria-label={t('details')}>
             <dl className="facts">

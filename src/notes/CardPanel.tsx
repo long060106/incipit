@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { L } from '../data/types';
 import { useI18n } from '../i18n';
 import { card, printed, useCard } from '../lib/card';
@@ -40,6 +40,12 @@ const TEXT = {
   },
   yes: { en: 'Yes, erase', fr: 'Oui, effacer' },
   admin: { en: 'Keeper of the library', fr: 'Gardien de la bibliothèque' },
+  claimFirst: { en: 'Take a card (or open yours) to become the keeper of the site.', fr: 'Prenez une carte (ou ouvrez la vôtre) pour devenir le gardien du site.' },
+  claimDone: {
+    en: 'This card now keeps the site. Open any book to find the keeper’s corner at the foot of its sheet.',
+    fr: 'Cette carte garde désormais le site. Ouvrez un livre : le coin du gardien se trouve au bas de sa fiche.',
+  },
+  claimRefused: { en: 'That keeper’s link has already been used, or is not valid.', fr: 'Ce lien de gardien a déjà servi, ou n’est pas valide.' },
 } satisfies Record<string, L>;
 
 export function CardPanel() {
@@ -51,6 +57,22 @@ export function CardPanel() {
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
   const [erasing, setErasing] = useState(false);
+  // The owner of the site arrives once with "#claim=<code>", which makes their card the keeper's.
+  const [claim, setClaim] = useState<'waiting' | 'done' | 'refused' | null>(() => (location.hash.startsWith('#claim=') ? 'waiting' : null));
+
+  useEffect(() => {
+    const onHash = () => location.hash.startsWith('#claim=') && setClaim('waiting');
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  useEffect(() => {
+    if (claim !== 'waiting' || !mine) return;
+    void card.claim(decodeURIComponent(location.hash.slice('#claim='.length))).then((taken) => {
+      setClaim(taken ? 'done' : 'refused');
+      if (taken) history.replaceState(history.state, '', location.pathname);
+    });
+  }, [claim, mine]);
 
   const take = async () => {
     setBusy(true);
@@ -110,6 +132,7 @@ export function CardPanel() {
           </div>
         )}
         {problem && <p className="card-problem">{tl(TEXT[problem])}</p>}
+        {claim === 'waiting' && <p className="card-problem">{tl(TEXT.claimFirst)}</p>}
       </section>
     );
   }
@@ -136,6 +159,8 @@ export function CardPanel() {
         </button>
       </div>
       <p className="card-note">{tl(TEXT.keep)}</p>
+      {claim === 'done' && <p className="card-problem">{tl(TEXT.claimDone)}</p>}
+      {claim === 'refused' && <p className="card-problem">{tl(TEXT.claimRefused)}</p>}
       <p className="card-status" data-status={status}>
         {tl(status === 'syncing' ? TEXT.syncing : status === 'offline' ? TEXT.notReached : status === 'unknown' ? TEXT.gone : TEXT.inStep)}
         {status !== 'syncing' && status !== 'unknown' && (
