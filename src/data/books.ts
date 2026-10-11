@@ -6333,7 +6333,7 @@ export const BOOKS: Book[] = [
     mood: { tone: 85, voice: 50, intensity: 60, pace: 70, strange: 55 },
     difficulty: 2,
     rating: { value: 4.17, count: 596 },
-    cover: 11261770,
+    cover: 8600818,
     olKey: '/works/OL1168007W',
     borrow: 'animalfarmfairys0000geor',
     description: {
