@@ -126,6 +126,32 @@ export const card = {
     }
   },
 
+  /** Asks the server again what this card may do (reader, or keeper of the site). */
+  async refresh(): Promise<void> {
+    if (!kept) return;
+    try {
+      const response = await call('/me', kept.code);
+      if (!response.ok) return;
+      const { role } = (await response.json()) as { role: string };
+      if (kept && kept.role !== role) set({ ...kept, role });
+    } catch {
+      // Stays as it was.
+    }
+  },
+
+  /** Makes this card the keeper's, with the one-time code the owner of the site was given. */
+  async claim(token: string): Promise<boolean> {
+    if (!kept) return false;
+    try {
+      const response = await call('/claim', kept.code, { method: 'POST', body: JSON.stringify({ token }) });
+      if (!response.ok) return false;
+      set({ ...kept, role: 'admin' });
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
   /** Puts the card away on this device. The notebook stays here and on the server. */
   leave() {
     set(null, 'idle');
@@ -161,7 +187,7 @@ export function useCard() {
  */
 export function keepInStep() {
   let timer = 0;
-  if (kept) void sync();
+  if (kept) void sync().then(() => card.refresh());
   watchShelf(() => {
     if (!kept) return;
     window.clearTimeout(timer);

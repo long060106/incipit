@@ -13,7 +13,14 @@
     POST   /api/sync   exchange notebook records           -> { cursor, rows }
     DELETE /api/card   erase the card and all it holds     -> { ok }
 
-  Requests other than the first carry `Authorization: Card <code>`.
+  The keeper of the site holds a card whose role is 'admin', and decides two things about
+  each book: whether its download is offered, and which articles are listed beside it.
+
+    GET    /api/books        what the keeper has decided, for every reader -> { books }
+    PUT    /api/books/<id>   decide it (keeper only)                       -> { book }
+    POST   /api/claim        turn the card presented into the keeper's, with a one-time code
+
+  Requests carry `Authorization: Card <code>`, except making a card and GET /api/books.
 
   Records are the flat rows of src/lib/shelf.ts: a key, a JSON value (absent once deleted)
   and the time the reader last changed it. Between two devices the later change wins.
@@ -42,6 +49,8 @@ const MAX_ROWS_PER_CARD = 20_000;
 const MAX_VALUE = 20_000; // characters of JSON in one record
 const MAX_CARDS_PER_DAY = 30; // from one address
 const KEY = /^(mark|place):[A-Za-z0-9-]{1,80}$/;
+const BOOK = /^[a-z0-9-]{1,80}$/;
+const MAX_ARTICLES = 12;
 // Crockford's alphabet: no I, L, O or U, so a code survives being read aloud or copied by hand.
 const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 const CODE = /^[0-9A-HJKMNP-TV-Z]{20}$/;
@@ -152,11 +161,80 @@ async function sync(request: Request, env: Env, card: Card): Promise<Response> {
   return json({ cursor: now, rows });
 }
 
+interface Article {
+  title: string;
+  url: string;
+}
+
+/** The articles as they will be stored, or null if any of them is not a title and a web address. */
+function articlesFrom(value: unknown): Article[] | null {
+  if (!Array.isArray(value) || value.length > MAX_ARTICLES) return null;
+  const list: Article[] = [];
+  for (const entry of value) {
+    const title = typeof entry?.title === 'string' ? entry.title.trim() : '';
+    const url = typeof entry?.url === 'string' ? entry.url.trim() : '';
+    if (!title || title.length > 160 || url.length > 500 || !/^https?:\/\/[^\s<>"']+$/i.test(url)) return null;
+    list.push({ title, url });
+  }
+  return list;
+}
+
+async function overrides(env: Env): Promise<Response> {
+  const all = await env.DB.prepare('SELECT book, download, articles FROM book_overrides').all<{ book: string; download: number; articles: string }>();
+  const books: Record<string, { download: boolean; articles: Article[] }> = {};
+  for (const row of all.results) books[row.book] = { download: row.download !== 0, articles: JSON.parse(row.articles) };
+  return json({ books });
+}
+
+async function decide(request: Request, env: Env, book: string): Promise<Response> {
+  let body: { download?: unknown; articles?: unknown };
+  try {
+    body = JSON.parse((await request.text()).slice(0, MAX_BODY));
+  } catch {
+    return refuse(400, 'not-json');
+  }
+  const before = await env.DB.prepare('SELECT download, articles FROM book_overrides WHERE book = ?1').bind(book).first<{ download: number; articles: string }>();
+  const download = typeof body.download === 'boolean' ? body.download : before ? before.download !== 0 : true;
+  const articles = body.articles === undefined ? (JSON.parse(before?.articles ?? '[]') as Article[]) : articlesFrom(body.articles);
+  if (!articles) return refuse(400, 'bad-articles');
+  await env.DB.prepare(
+    `INSERT INTO book_overrides (book, download, articles, changed) VALUES (?1, ?2, ?3, ?4)
+     ON CONFLICT (book) DO UPDATE SET download = excluded.download, articles = excluded.articles, changed = excluded.changed`,
+  )
+    .bind(book, download ? 1 : 0, JSON.stringify(articles), Date.now())
+    .run();
+  return json({ book: { download, articles } });
+}
+
+async function claim(request: Request, env: Env, card: Card): Promise<Response> {
+  if (!(await within(env, request, 'claim', 10))) return refuse(429, 'too-many-tries');
+  let token = '';
+  try {
+    token = String(JSON.parse(await request.text()).token ?? '');
+  } catch {
+    return refuse(400, 'not-json');
+  }
+  // Marking the code used and checking that it was still good are one statement, so it works once.
+  const taken = await env.DB.prepare('UPDATE claims SET used = ?2 WHERE id = ?1 AND used IS NULL RETURNING id').bind(await sha256(token), Date.now()).first();
+  if (!taken) return refuse(403, 'not-a-claim');
+  await env.DB.prepare("UPDATE cards SET role = 'admin' WHERE id = ?1").bind(card.id).run();
+  return json({ role: 'admin' });
+}
+
 async function api(request: Request, env: Env, path: string): Promise<Response> {
   if (path === '/api/card' && request.method === 'POST') return makeCard(request, env);
+  if (path === '/api/books' && request.method === 'GET') return overrides(env);
 
   const card = await cardOf(request, env);
   if (!card) return refuse(401, 'no-such-card');
+
+  if (path === '/api/claim' && request.method === 'POST') return claim(request, env, card);
+  if (path.startsWith('/api/books/') && request.method === 'PUT') {
+    const book = path.slice('/api/books/'.length);
+    if (card.role !== 'admin') return refuse(403, 'keeper-only');
+    if (!BOOK.test(book)) return refuse(400, 'bad-book');
+    return decide(request, env, book);
+  }
 
   if (path === '/api/me' && request.method === 'GET') {
     const held = await env.DB.prepare('SELECT COUNT(*) AS n FROM rows WHERE card = ?1 AND value IS NOT NULL').bind(card.id).first<{ n: number }>();

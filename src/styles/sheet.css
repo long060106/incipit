@@ -298,6 +298,69 @@
   font-size: 0.8125rem;
 }
 
+/* The keeper's corner: seen only by the card that keeps the site. */
+.keeper {
+  padding: 1.25rem 1.25rem 1.5rem;
+  border: 1px dashed var(--line-strong);
+}
+
+.keeper > h3 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.keeper .around-note {
+  margin-top: 0;
+}
+
+.keeper-articles li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--faint);
+  font-size: 0.9375rem;
+}
+
+.keeper-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+  margin-top: 0.75rem;
+}
+
+.keeper-form input {
+  min-width: 0;
+  padding: 0.5rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9375rem;
+  outline: none;
+  cursor: text;
+}
+
+.keeper-form input:focus {
+  border-color: var(--accent);
+}
+
+.keeper-problem {
+  margin-top: 0.75rem;
+  color: var(--accent);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 640px) {
+  .keeper-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .advice > div {
   display: grid;
   grid-template-columns: 5.5rem 1fr;

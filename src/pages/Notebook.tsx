@@ -36,7 +36,8 @@ const TEXT = {
 } satisfies Record<string, L>;
 
 const BY_ID = new Map(BOOKS.map((book) => [book.id, book]));
-const hashId = () => location.hash.slice(1) || null;
+/** The note the address asks for ("#<id>"); "#claim=…" is the keeper's link, not a note. */
+const hashId = () => (location.hash.includes('=') ? null : location.hash.slice(1) || null);
 
 export default function Notebook() {
   const { tl } = useI18n();

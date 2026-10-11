@@ -18,6 +18,7 @@ const STRINGS = {
   wikiBook: { en: 'The book', fr: 'Le livre' },
   wikiAuthor: { en: 'The author', fr: 'L’auteur' },
   wikiSetting: { en: 'The setting', fr: 'Le cadre' },
+  article: { en: 'Article', fr: 'Article' },
   switchToDay: { en: 'Switch to day mode', fr: 'Passer en mode jour' },
   switchToNight: { en: 'Switch to night mode', fr: 'Passer en mode nuit' },
   language: { en: 'Language', fr: 'Langue' },
