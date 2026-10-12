@@ -57,8 +57,6 @@ export interface MatchResult {
 /** A book fits a mood when it sits within this average distance (out of 100) of the sliders. */
 const MOOD_TOLERANCE = 24;
 const MIN_SUGGESTIONS = 3;
-/** With a sort order and nothing else chosen, this many books from the top are shown. */
-const TOP = 10;
 
 /** Lower case, accents off: how typed text is compared. */
 export const fold = (text: string) =>
@@ -141,9 +139,8 @@ function ordered(fits: Scored[], filters: Filters): Scored[] {
     filters.sort === 'rating'
       ? (a: Scored, b: Scored) => ratingOf(b.book) - ratingOf(a.book) || b.book.rating.count - a.book.rating.count
       : (a: Scored, b: Scored) => b.book.rating.count - a.book.rating.count;
-  const sorted = [...fits].sort(by);
-  // A sort order on its own is a request for the top of the list, not for every book.
-  return countActive(filters) === 1 ? sorted.slice(0, TOP) : sorted;
+  // An order on its own puts the whole catalogue in that order: the tray lists it from the top.
+  return [...fits].sort(by);
 }
 
 export function matchBooks(books: Book[], filters: Filters): MatchResult {

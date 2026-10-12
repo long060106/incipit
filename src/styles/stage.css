@@ -208,6 +208,25 @@
   -webkit-user-select: none;
 }
 
+/* The lamp carried over the hung wall (lib/wall.ts): a warm pool of light that trails the
+   cursor, in front of the covers it brings back into colour. Only ever moved, never repainted. */
+.wall-lamp {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 198 124 / 0.2), rgb(255 168 88 / 0.07) 46%, transparent);
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+:root[data-theme='day'] .wall-lamp {
+  display: none;
+}
+
 /* During the intro a cover can be pressed but the page still scrolls; in the gallery the
    wall takes the drag itself. The cursor stays the site's own hands throughout. */
 .wall.is-interactive {
@@ -994,6 +1013,203 @@ a.header-link {
   font-weight: 600;
 }
 
+/* The tray's bar: what is in it, the two controls, and the handle it is carried by. */
+.tray {
+  padding: 0;
+  /* Where the reader has carried it (Tray.tsx). Not `transform`, which the entrance uses. */
+  translate: var(--tx, 0) var(--ty, 0);
+}
+
+.tray-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 15rem;
+  padding: 5px 6px 5px 10px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.tray-bar:active {
+  cursor: grabbing;
+}
+
+.tray-bar p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tray-bar strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.tray-grip {
+  flex: none;
+  opacity: 0.55;
+}
+
+.tray-tools {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.tray-tools button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 3px;
+  color: var(--muted);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.tray-tools button:hover,
+.tray-tools button[aria-pressed='true'] {
+  background: var(--faint);
+  color: var(--text);
+}
+
+.tray-note {
+  margin: 2px 14px 10px;
+}
+
+.tray-list {
+  padding: 2px 12px 12px;
+}
+
+.tray-list button {
+  position: relative;
+}
+
+.tray-rank {
+  position: absolute;
+  left: 0;
+  top: 0;
+  min-width: 1.25rem;
+  padding: 1px 4px;
+  border-bottom-right-radius: 2px;
+  background: rgb(0 0 0 / 0.72);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.tray-cap {
+  display: none;
+}
+
+/* Opened out: a sheet of larger covers, each with its title, that scrolls down. */
+.tray[data-size='large'] {
+  width: min(58rem, 100%);
+}
+
+.tray[data-size='large'] .tray-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.25rem, 1fr));
+  gap: 20px 16px;
+  max-height: min(56vh, 34rem);
+  padding: 6px 14px 16px;
+  overflow: hidden auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.tray[data-size='large'] .tray-list button {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+}
+
+.tray[data-size='large'] .tray-cap {
+  display: grid;
+  gap: 1px;
+  margin-top: 7px;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.tray-cap strong {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-weight: 500;
+}
+
+.tray-cap span {
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Standing back from the wall: under the header, clear of the tray at the foot of the page. */
+.zoom {
+  position: absolute;
+  right: var(--gutter);
+  top: calc(var(--header-h) + 0.5rem);
+  z-index: 4;
+  display: grid;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  opacity: var(--ui);
+}
+
+.zoom button {
+  width: 36px;
+  height: 36px;
+  color: var(--text);
+  font-size: 1.125rem;
+  line-height: 1;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.zoom button + button {
+  border-top: 1px solid var(--line);
+}
+
+.zoom button:hover:not(:disabled) {
+  background: var(--faint);
+}
+
+.zoom button:disabled {
+  color: var(--muted);
+  opacity: 0.45;
+  cursor: var(--cursor);
+}
+
+/* The covers are hung again at their new size: they settle in from the size they were. */
+.wall[data-zoomed] .wall-plane {
+  animation: wall-zoom 0.6s var(--ease-out);
+}
+
+.wall[data-zoomed='out'] .wall-plane {
+  --zoom-from: 1.12;
+}
+
+.wall[data-zoomed='in'] .wall-plane {
+  --zoom-from: 0.9;
+}
+
+@keyframes wall-zoom {
+  from {
+    opacity: 0;
+    scale: var(--zoom-from);
+  }
+}
+
 .hint {
   position: absolute;
   right: var(--gutter);
@@ -1083,6 +1299,20 @@ a.header-link {
   .tray-list button {
     width: 46px;
     height: 69px;
+  }
+
+  /* On a phone the tray is a strip across the foot of the page: it opens out and hides, but stays put. */
+  .tray {
+    padding: 0;
+    translate: none;
+  }
+
+  .tray-grip {
+    display: none;
+  }
+
+  .tray-bar {
+    cursor: inherit;
   }
 
   .hint {

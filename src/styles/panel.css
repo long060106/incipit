@@ -140,9 +140,24 @@
   margin-bottom: 14px;
 }
 
+/* The names of the panel's parts are set in the serif, each behind a short gold rule, so that none is passed over. */
 .panel h2 {
-  font-size: 0.8125rem;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: calc(1.3125rem * var(--display-scale));
+  letter-spacing: var(--display-tracking);
+  line-height: 1.2;
+}
+
+.panel h2::before {
+  content: '';
+  flex: none;
+  width: 14px;
+  height: 1px;
+  background: var(--accent);
 }
 
 .panel-heading p {
@@ -387,13 +402,30 @@
 
 /* ── More filters ─────────────────────────────────────────────────────────── */
 
+/* A row to press, drawn as one: the rest of the filters are behind it. */
 .more summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
   cursor: var(--cursor-press);
   list-style: none;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.more summary:hover,
+.more[open] summary {
+  border-color: var(--accent);
+}
+
+.more summary:hover {
+  background: var(--faint);
+}
+
+.more summary svg {
+  color: var(--accent);
 }
 
 .more summary::-webkit-details-marker {
@@ -426,9 +458,10 @@
 .field label,
 .field-label {
   display: block;
-  margin-bottom: 8px;
-  color: var(--muted);
-  font-size: 0.8125rem;
+  margin-bottom: 9px;
+  color: var(--text);
+  font-size: 0.9375rem;
+  font-weight: 500;
 }
 
 .field select {

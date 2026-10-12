@@ -8,6 +8,7 @@ import { isOwn, ownBook, ownText, type OwnText } from '../lib/mybooks';
 import { useShelf } from '../lib/shelf';
 import { bookOf, markLine, markUrl, NOTE_TEXT, TiePicker } from '../notes/notes';
 import { pageUrl, useQuickLoader } from '../pages/PageHeader';
+import { installAmbience } from './ambience';
 import { blockOffsets, paintMarks, selectionIn } from './marks';
 import '../pages/pages.css';
 import './reader.css';
@@ -33,6 +34,8 @@ const TEXT = {
   ribbon: { en: 'Bookmark', fr: 'Signet' },
   toRibbon: { en: 'Go to your bookmark', fr: 'Aller à votre signet' },
   narrower: { en: 'Narrower page', fr: 'Page plus étroite' },
+  lamp: { en: 'Lamp', fr: 'Lampe' },
+  lampHint: { en: 'Stars behind the page and a lamp that follows the mouse. On or off.', fr: 'Des étoiles derrière la page et une lampe qui suit la souris. Allumer ou éteindre.' },
   wider: { en: 'Wider page', fr: 'Page plus large' },
   mark: { en: 'Mark', fr: 'Marquer' },
   note: { en: 'Mark and note', fr: 'Marquer et noter' },
@@ -59,6 +62,7 @@ const SIZE_KEY = 'incipit:read-size';
 /** How wide the column of text may be, in rem; the reader steps between these. */
 const WIDTHS = [32, 42, 54, 68, 86];
 const WIDTH_KEY = 'incipit:read-width';
+const LAMP_KEY = 'incipit:read-lamp';
 
 const bookId = () => decodeURIComponent(location.pathname.split('/')[2] ?? '');
 /** The keeper's code, if this browser holds the keeper's card: a file closed to readers is read with it. */
@@ -106,6 +110,17 @@ export default function ReaderPage() {
     // file or from the one the keeper keeps beside the book.
     return found ? { id: found.id, title: found.title, author: found.author, own: isOwn(id), local: isOwn(id) || !READABLE.has(id) } : undefined;
   }, []);
+  // The room at night: stars behind the page and a lamp on it (./ambience.ts), unless the reader puts it out.
+  const readerRef = useRef<HTMLDivElement>(null);
+  const [lamp, setLamp] = useState(() => localStorage.getItem(LAMP_KEY) !== 'off');
+  useEffect(() => {
+    try {
+      localStorage.setItem(LAMP_KEY, lamp ? 'on' : 'off');
+    } catch {
+      // The choice then lasts for this visit only.
+    }
+    if (lamp && readerRef.current) return installAmbience(readerRef.current);
+  }, [lamp]);
   const ownSections = useRef<OwnText['sections']>([]);
   const [index, setIndex] = useState<TextIndex | null>(null);
   const [failed, setFailed] = useState(false);
@@ -370,7 +385,7 @@ export default function ReaderPage() {
   const bookMarks = shelf.marks().filter((mark) => mark.bookId === book.id);
 
   return (
-    <div className="reader" style={{ '--read-size': `${size}rem`, '--read-width': `${width}rem` } as React.CSSProperties}>
+    <div className="reader" ref={readerRef} style={{ '--read-size': `${size}rem`, '--read-width': `${width}rem` } as React.CSSProperties}>
       <div className="reader-progress" style={{ transform: `scaleX(${through})` }} />
 
       <header className="reader-bar" data-hidden={barHidden && !tocOpen}>
@@ -384,6 +399,9 @@ export default function ReaderPage() {
           </button>
           <button type="button" onClick={() => topBlock() && setRibbon(topBlock().from)} aria-pressed={ribbonHere >= 0 && topBlock()?.from === ribbonHere}>
             {tl(TEXT.ribbon)}
+          </button>
+          <button type="button" className="reader-lamp" onClick={() => setLamp(!lamp)} aria-pressed={lamp} title={tl(TEXT.lampHint)}>
+            {tl(TEXT.lamp)}
           </button>
           <button type="button" className="reader-size reader-width" onClick={() => widen(-1)} aria-label={tl(TEXT.narrower)} title={tl(TEXT.narrower)} disabled={width === WIDTHS[0]}>
             →←

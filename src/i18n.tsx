@@ -91,6 +91,15 @@ const STRINGS = {
   noneTitle: { en: 'No book fits all of that.', fr: 'Aucun livre ne réunit tout cela.' },
   noneBody: { en: 'Loosen a filter, or clear them and start again.', fr: 'Relâchez un filtre, ou effacez tout et recommencez.' },
   dragHint: { en: 'Drag or scroll to wander', fr: 'Faites glisser ou défiler pour flâner' },
+  trayMove: { en: 'Drag to move. Double-click to put it back.', fr: 'Glissez pour déplacer. Double-cliquez pour le remettre en place.' },
+  trayGrow: { en: 'Larger, with titles', fr: 'Plus grand, avec les titres' },
+  trayShrink: { en: 'Back to one row', fr: 'Revenir à une rangée' },
+  trayHide: { en: 'Hide the books', fr: 'Masquer les livres' },
+  trayShow: { en: 'Show the books', fr: 'Afficher les livres' },
+  zoomOut: { en: 'Stand back: see more covers', fr: 'Prendre du recul : voir plus de couvertures' },
+  zoomIn: { en: 'Step closer', fr: 'Se rapprocher' },
+  lampOn: { en: 'Light the lamp', fr: 'Allumer la lampe' },
+  lampOff: { en: 'Put the lamp out', fr: 'Éteindre la lampe' },
 
   // Book sheet
   close: { en: 'Close', fr: 'Fermer' },
