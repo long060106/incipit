@@ -46,6 +46,16 @@
   Requests carry `Authorization: Card <code>`, except making a card, GET /api/books, covers
   and fetching an open file.
 
+  The keeper's card alone changes nothing. The desk has a password, chosen by the keeper the
+  first time; entering it opens the desk for twelve hours in that browser, which is given a
+  random key to send with each of the keeper's requests (`X-Keeper: <key>`). Without that
+  key every keeper-only request above is refused, whatever card is presented.
+
+    GET    /api/lock      is there a password, and is the desk open here   -> { set, open }
+    POST   /api/lock      choose the password, or change it: { password, current? } -> { key }
+    POST   /api/unlock    open the desk: { password }                      -> { key }
+    DELETE /api/unlock    close it again
+
   Records are the flat rows of src/lib/shelf.ts: a key, a JSON value (absent once deleted)
   and the time the reader last changed it. Between two devices the later change wins.
 */
@@ -86,6 +96,10 @@ const FILE_NAME = /^[^\\/:*?"<>|\u0000-\u001f]{1,150}\.(epub|pdf|txt|mobi|azw3)$
 /** The books the catalogue marks as out of copyright: a file put beside one starts open. */
 const FREE = new Set(BOOKS.filter((book) => book.free).map((book) => book.id));
 const KNOWN = new Set(BOOKS.map((book) => book.id));
+const OPEN_FOR = 12 * 60 * 60 * 1000; // milliseconds the desk stays open after the password
+const MIN_PASSWORD = 8;
+const MAX_UNLOCKS_PER_DAY = 30; // tries from one address
+const STRETCH = 100_000; // rounds of PBKDF2
 const MAX_COVER = 400_000; // bytes
 const MAX_ADDED = 500; // books
 const COVER_TYPES = ['image/webp', 'image/jpeg', 'image/png'];
@@ -220,6 +234,100 @@ function articlesFrom(value: unknown): Article[] | null {
     list.push({ title, url });
   }
   return list;
+}
+
+// ---------------------------------------------------------------------------------------
+// The password on the desk
+
+const hex = (bytes: Uint8Array) => [...bytes].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+const unhex = (text: string) => new Uint8Array((text.match(/../g) ?? []).map((pair) => parseInt(pair, 16)));
+
+/** A password as it is kept: stretched with its salt, so that the table alone opens nothing. */
+async function stretched(password: string, salt: Uint8Array): Promise<string> {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+  return hex(new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: STRETCH }, key, 256)));
+}
+
+/** Compares two hashes in the same time whether or not they match. */
+function same(a: string, b: string): boolean {
+  let difference = a.length ^ b.length;
+  for (let at = 0; at < a.length && at < b.length; at++) difference |= a.charCodeAt(at) ^ b.charCodeAt(at);
+  return difference === 0;
+}
+
+const lockRow = (env: Env) => env.DB.prepare('SELECT salt, hash FROM keeper_lock WHERE id = 1').first<{ salt: string; hash: string }>();
+
+async function isPassword(env: Env, password: unknown): Promise<boolean> {
+  const row = await lockRow(env);
+  return !!row && typeof password === 'string' && password.length <= 200 && same(await stretched(password, unhex(row.salt)), row.hash);
+}
+
+/** Whether this request carries the key of a desk that is open for this card. */
+async function deskOpen(request: Request, env: Env, card: Card): Promise<boolean> {
+  const key = request.headers.get('x-keeper') ?? '';
+  if (!/^[0-9a-f]{64}$/.test(key)) return false;
+  const row = await env.DB.prepare('SELECT expires FROM keeper_sessions WHERE id = ?1 AND card = ?2').bind(await sha256(key), card.id).first<{ expires: number }>();
+  return !!row && row.expires > Date.now();
+}
+
+/** Opens the desk for this card: a new key, which is all the browser keeps. */
+async function openDesk(env: Env, card: Card): Promise<Response> {
+  const key = hex(crypto.getRandomValues(new Uint8Array(32)));
+  const now = Date.now();
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM keeper_sessions WHERE expires < ?1').bind(now),
+    env.DB.prepare('INSERT INTO keeper_sessions (id, card, expires) VALUES (?1, ?2, ?3)').bind(await sha256(key), card.id, now + OPEN_FOR),
+  ]);
+  return json({ key, expires: now + OPEN_FOR });
+}
+
+/** What stands between a request and the keeper's desk, or null if nothing does. */
+async function keeperGate(request: Request, env: Env, card: Card): Promise<Response | null> {
+  if (card.role !== 'admin') return refuse(403, 'keeper-only');
+  if (!(await lockRow(env))) return refuse(423, 'no-password');
+  return (await deskOpen(request, env, card)) ? null : refuse(423, 'locked');
+}
+
+async function passwordIn(request: Request): Promise<{ password?: unknown; current?: unknown } | null> {
+  try {
+    const body = JSON.parse((await request.text()).slice(0, 2000));
+    return body && typeof body === 'object' ? body : null;
+  } catch {
+    return null;
+  }
+}
+
+async function choosePassword(request: Request, env: Env, card: Card): Promise<Response> {
+  const body = await passwordIn(request);
+  if (!body) return refuse(400, 'not-json');
+  const { password } = body;
+  if (typeof password !== 'string' || password.length < MIN_PASSWORD || password.length > 200) return refuse(400, 'bad-password');
+  // A password already chosen is changed only from an open desk, or by giving it.
+  if ((await lockRow(env)) && !(await deskOpen(request, env, card))) {
+    if (!(await within(env, request, 'unlock', MAX_UNLOCKS_PER_DAY))) return refuse(429, 'too-many-tries');
+    if (!(await isPassword(env, body.current))) return refuse(403, 'wrong-password');
+  }
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  await env.DB.batch([
+    env.DB.prepare('INSERT OR REPLACE INTO keeper_lock (id, salt, hash, changed) VALUES (1, ?1, ?2, ?3)').bind(hex(salt), await stretched(password, salt), Date.now()),
+    // Every desk opened with the old password is closed.
+    env.DB.prepare('DELETE FROM keeper_sessions'),
+  ]);
+  return openDesk(env, card);
+}
+
+async function unlock(request: Request, env: Env, card: Card): Promise<Response> {
+  if (!(await within(env, request, 'unlock', MAX_UNLOCKS_PER_DAY))) return refuse(429, 'too-many-tries');
+  const body = await passwordIn(request);
+  if (!body) return refuse(400, 'not-json');
+  if (!(await isPassword(env, body.password))) return refuse(403, 'wrong-password');
+  return openDesk(env, card);
+}
+
+async function lockAgain(request: Request, env: Env): Promise<Response> {
+  const key = request.headers.get('x-keeper') ?? '';
+  if (key) await env.DB.prepare('DELETE FROM keeper_sessions WHERE id = ?1').bind(await sha256(key)).run();
+  return json({ ok: true });
 }
 
 interface Edits {
@@ -537,13 +645,23 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
   const card = await cardOf(request, env);
   if (!card) return refuse(401, 'no-such-card');
 
-  if (section === 'files') {
+  if (section === 'lock' || section === 'unlock') {
     if (card.role !== 'admin') return refuse(403, 'keeper-only');
+    if (section === 'lock' && request.method === 'GET') return json({ set: !!(await lockRow(env)), open: await deskOpen(request, env, card) });
+    if (section === 'lock' && request.method === 'POST') return choosePassword(request, env, card);
+    if (section === 'unlock' && request.method === 'POST') return unlock(request, env, card);
+    if (section === 'unlock' && request.method === 'DELETE') return lockAgain(request, env);
+    return refuse(404, 'not-found');
+  }
+  if (section === 'files') {
+    const shut = await keeperGate(request, env, card);
+    if (shut) return shut;
     if (fetching) return piece(env, book, Number(rest));
     return keepFiles(request, env, book, rest);
   }
   if (section === 'added' || section === 'covers') {
-    if (card.role !== 'admin') return refuse(403, 'keeper-only');
+    const shut = await keeperGate(request, env, card);
+    if (shut) return shut;
     if (!BOOK.test(book ?? '') || rest !== undefined) return refuse(400, 'bad-book');
     if (section === 'covers' && request.method === 'PUT') return keepCover(request, env, book);
     if (section === 'added' && request.method === 'PUT') return addBook(request, env, book);
@@ -554,7 +672,8 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
   if (path === '/api/claim' && request.method === 'POST') return claim(request, env, card);
   if (path.startsWith('/api/books/') && request.method === 'PUT') {
     const book = path.slice('/api/books/'.length);
-    if (card.role !== 'admin') return refuse(403, 'keeper-only');
+    const shut = await keeperGate(request, env, card);
+    if (shut) return shut;
     if (!BOOK.test(book)) return refuse(400, 'bad-book');
     return decide(request, env, book);
   }

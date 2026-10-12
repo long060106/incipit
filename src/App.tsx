@@ -555,6 +555,13 @@ export default function App() {
   return (
     <>
       <div className="scroll-track" data-opening={opening ? 'window' : undefined} aria-hidden="true" />
+      {/* While the page is still a small window, a word under it says how it opens. Pressing it opens the page. */}
+      {opening && (
+        <button type="button" className="scroll-cue" data-gone={opened || undefined} onClick={goToIntro} tabIndex={opened ? -1 : 0}>
+          <span>{t('scrollCue')}</span>
+          <i aria-hidden="true" />
+        </button>
+      )}
 
       <main
         className="stage"

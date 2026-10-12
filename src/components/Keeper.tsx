@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { L } from '../data/types';
 import { useI18n } from '../i18n';
 import { useCard } from '../lib/card';
-import { decide, useDecided } from '../lib/keeper';
+import { decide, deskKey, useDecided } from '../lib/keeper';
 
 /*
   The keeper's own corner of a book's sheet, shown only to the card whose role is 'admin':
@@ -19,6 +19,8 @@ const TEXT = {
   add: { en: 'Add', fr: 'Ajouter' },
   remove: { en: 'Remove', fr: 'Retirer' },
   failed: { en: 'Not saved. Check the address and try again.', fr: 'Non enregistré. Vérifiez l’adresse et réessayez.' },
+  locked: { en: 'The desk is locked. Changing a book needs its password.', fr: 'Le bureau est verrouillé. Modifier un livre demande son mot de passe.' },
+  unlock: { en: 'Unlock the desk', fr: 'Déverrouiller le bureau' },
 } satisfies Record<string, L>;
 
 export function Keeper({ bookId, hasPdf }: { bookId: string; hasPdf: boolean }) {
@@ -30,6 +32,20 @@ export function Keeper({ bookId, hasPdf }: { bookId: string; hasPdf: boolean }) 
   const [failed, setFailed] = useState(false);
 
   if (card?.role !== 'admin') return null;
+  // The keeper's card is not enough: the desk must have been opened with its password in this tab.
+  if (!deskKey()) {
+    return (
+      <section className="sheet-section keeper">
+        <h2>{tl(TEXT.title)}</h2>
+        <p className="around-note">
+          {tl(TEXT.locked)}{' '}
+          <a className="text-link" href={`${import.meta.env.BASE_URL}admin`}>
+            {tl(TEXT.unlock)} →
+          </a>
+        </p>
+      </section>
+    );
+  }
   const articles = decided?.articles ?? [];
   const save = async (change: Parameters<typeof decide>[2]) => {
     const taken = await decide(card.code, bookId, change);

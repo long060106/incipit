@@ -641,15 +641,15 @@
   z-index: 1;
 }
 
-/* The lamp: a pool of warm light, wider than it is tall so that it lies along the lines being read. */
+/* The lamp: a small pool of pale light, wider than it is tall so that it lies along the lines being read. */
 .reader-glow {
   left: 0;
   top: 0;
   z-index: 3;
-  width: 78rem;
-  height: 34rem;
+  width: 40rem;
+  height: 17rem;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgb(255 196 122 / 0.15), rgb(255 170 92 / 0.06) 48%, transparent);
+  background: radial-gradient(closest-side, rgb(255 234 204 / 0.05), rgb(255 226 194 / 0.018) 50%, transparent);
   mix-blend-mode: screen;
   opacity: 0;
   will-change: transform, opacity;
@@ -662,7 +662,7 @@
   z-index: 3;
   width: 400vmax;
   height: 400vmax;
-  background: radial-gradient(ellipse 46rem 19rem at center, transparent 55%, rgb(0 0 0 / 0.5) 130%);
+  background: radial-gradient(ellipse 30rem 12rem at center, transparent 50%, rgb(0 0 0 / 0.26) 140%);
   opacity: 0;
   will-change: transform, opacity;
 }
@@ -675,5 +675,5 @@
 }
 
 .reader-bar .reader-lamp[aria-pressed='true'] {
-  color: var(--accent);
+  color: var(--text);
 }

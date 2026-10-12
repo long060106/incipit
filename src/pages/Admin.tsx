@@ -4,7 +4,26 @@ import { BOOKS } from '../data/books';
 import type { Book, L } from '../data/types';
 import { useI18n } from '../i18n';
 import { useCard } from '../lib/card';
-import { decide, dropFile, FILE_KINDS, keepFile, keptFiles, MAX_FILE, megabytes, openFile, printed, saveFile, useDecided, type Edits, type KeptFile } from '../lib/keeper';
+import {
+  choosePassword,
+  decide,
+  deskState,
+  dropFile,
+  FILE_KINDS,
+  keepFile,
+  keptFiles,
+  lockDesk,
+  MAX_FILE,
+  megabytes,
+  openFile,
+  printed,
+  saveFile,
+  unlockDesk,
+  useDecided,
+  type Desk,
+  type Edits,
+  type KeptFile,
+} from '../lib/keeper';
 import { reads } from '../lib/kepttext';
 import { bookLinks } from '../lib/links';
 import { fold } from '../lib/match';
@@ -27,6 +46,27 @@ const TEXT = {
     fr: 'Cette page est réservée au gardien du site. Ouvrez le carnet avec la carte du gardien sur cet appareil, puis revenez.',
   },
   toNotebook: { en: 'Go to the notebook', fr: 'Aller au carnet' },
+  chooseTitle: { en: 'Choose a password for the desk', fr: 'Choisissez un mot de passe pour le bureau' },
+  chooseNote: {
+    en: 'From now on the desk opens only with your card and this password. It is asked for again in each new tab, and after twelve hours. At least 8 characters. Keep it somewhere safe: it cannot be shown to you again.',
+    fr: 'Désormais le bureau ne s’ouvre qu’avec votre carte et ce mot de passe. Il est redemandé dans chaque nouvel onglet, et au bout de douze heures. Au moins 8 caractères. Gardez-le en lieu sûr : il ne peut pas vous être montré de nouveau.',
+  },
+  lockedTitle: { en: 'The desk is locked', fr: 'Le bureau est verrouillé' },
+  lockedNote: { en: 'Enter the password you chose for it.', fr: 'Saisissez le mot de passe que vous lui avez choisi.' },
+  password: { en: 'Password', fr: 'Mot de passe' },
+  newPassword: { en: 'New password', fr: 'Nouveau mot de passe' },
+  again: { en: 'The same again', fr: 'Encore une fois' },
+  setPassword: { en: 'Set the password', fr: 'Définir le mot de passe' },
+  unlock: { en: 'Unlock', fr: 'Déverrouiller' },
+  lockNow: { en: 'Lock the desk', fr: 'Verrouiller le bureau' },
+  change: { en: 'Change the password', fr: 'Changer le mot de passe' },
+  changed: { en: 'The password is changed.', fr: 'Le mot de passe est changé.' },
+  cancel: { en: 'Cancel', fr: 'Annuler' },
+  mismatch: { en: 'The two are not the same.', fr: 'Les deux ne sont pas identiques.' },
+  'bad-password': { en: 'A password needs at least 8 characters.', fr: 'Un mot de passe demande au moins 8 caractères.' },
+  'wrong-password': { en: 'That is not the password.', fr: 'Ce n’est pas le mot de passe.' },
+  'too-many-tries': { en: 'Too many tries from this address today. Try again tomorrow.', fr: 'Trop d’essais depuis cette adresse aujourd’hui. Réessayez demain.' },
+  noAnswer: { en: 'The server gave no answer. Try again in a moment.', fr: 'Le serveur n’a pas répondu. Réessayez dans un instant.' },
   count: { en: '{all} books · {free} out of copyright · {held} in copyright', fr: '{all} livres · {free} libres de droits · {held} sous droits' },
   kept: { en: '{n} files kept · {size} of 400 MB', fr: '{n} fichiers conservés · {size} sur 400 Mo' },
   search: { en: 'Search a title or an author…', fr: 'Chercher un titre ou un auteur…' },
@@ -76,6 +116,60 @@ const TEXT = {
 
 type Show = 'all' | 'free' | 'held' | 'file';
 
+/** The door of the desk: choosing its password the first time (or a new one), or giving it to come in. */
+function Door({ code, choosing, changingFrom, onOpen, onCancel }: { code: string; choosing: boolean; changingFrom?: boolean; onOpen: () => void; onCancel?: () => void }) {
+  const { tl } = useI18n();
+  const [password, setPassword] = useState('');
+  const [again, setAgain] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [problem, setProblem] = useState<L | null>(null);
+
+  const submit = async () => {
+    if (choosing && password !== again) return setProblem(TEXT.mismatch);
+    if (choosing && password.length < 8) return setProblem(TEXT['bad-password']);
+    setBusy(true);
+    setProblem(null);
+    const answer = await (choosing ? choosePassword(code, password) : unlockDesk(code, password));
+    setBusy(false);
+    if (answer === 'open') return onOpen();
+    setProblem(answer === 'bad-password' || answer === 'wrong-password' || answer === 'too-many-tries' ? TEXT[answer] : TEXT.noAnswer);
+  };
+
+  return (
+    <form
+      className="admin-door"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void submit();
+      }}
+    >
+      {!changingFrom && <h1>{tl(choosing ? TEXT.chooseTitle : TEXT.lockedTitle)}</h1>}
+      {!changingFrom && <p>{tl(choosing ? TEXT.chooseNote : TEXT.lockedNote)}</p>}
+      <label>
+        {tl(choosing ? TEXT.newPassword : TEXT.password)}
+        <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={choosing ? 'new-password' : 'current-password'} minLength={choosing ? 8 : undefined} maxLength={200} required autoFocus />
+      </label>
+      {choosing && (
+        <label>
+          {tl(TEXT.again)}
+          <input type="password" value={again} onChange={(event) => setAgain(event.target.value)} autoComplete="new-password" maxLength={200} required />
+        </label>
+      )}
+      <div className="admin-actions">
+        <button type="submit" className="button" disabled={busy}>
+          {tl(choosing ? TEXT.setPassword : TEXT.unlock)}
+        </button>
+        {onCancel && (
+          <button type="button" className="text-button" onClick={onCancel}>
+            {tl(TEXT.cancel)}
+          </button>
+        )}
+      </div>
+      {problem && <p className="card-problem">{tl(problem)}</p>}
+    </form>
+  );
+}
+
 export default function Admin() {
   const { tl } = useI18n();
   const { card } = useCard();
@@ -90,9 +184,16 @@ export default function Admin() {
   const [turn, setTurn] = useState(0);
   const keeper = card?.role === 'admin' ? card.code : null;
 
+  // Holding the keeper's card is not enough: the desk has a password, asked for in each new tab.
+  const [desk, setDesk] = useState<Desk | 'asking' | 'unreachable'>('asking');
+  const [changing, setChanging] = useState(false);
   useEffect(() => {
-    if (keeper) keptFiles(keeper).then(setFiles, () => undefined);
+    if (keeper) void deskState(keeper).then((state) => setDesk(state ?? 'unreachable'));
   }, [keeper]);
+
+  useEffect(() => {
+    if (keeper && desk === 'open') keptFiles(keeper).then(setFiles, () => undefined);
+  }, [keeper, desk]);
 
   const wanted = fold(query.trim());
   const shown = useMemo(
@@ -119,6 +220,21 @@ export default function Admin() {
     );
   }
 
+  if (desk !== 'open') {
+    return (
+      <div className="admin">
+        <PageHeader />
+        <main className="admin-closed">
+          {desk === 'asking' ? null : desk === 'unreachable' ? (
+            <p>{tl(TEXT.noAnswer)}</p>
+          ) : (
+            <Door code={keeper} choosing={desk === 'unset'} onOpen={() => setDesk('open')} />
+          )}
+        </main>
+      </div>
+    );
+  }
+
   const free = BOOKS.filter((book) => book.free).length;
   const keptBytes = Object.values(files).reduce((sum, file) => sum + file.bytes, 0);
   const setFile = (bookId: string, file: KeptFile | null) =>
@@ -139,6 +255,22 @@ export default function Admin() {
           <br />
           {tl(TEXT.kept).replace('{n}', String(Object.keys(files).length)).replace('{size}', megabytes(keptBytes))}
         </p>
+        <div className="admin-actions admin-lock">
+          <button
+            type="button"
+            className="text-button"
+            onClick={async () => {
+              await lockDesk(keeper);
+              setDesk('locked');
+            }}
+          >
+            {tl(TEXT.lockNow)}
+          </button>
+          <button type="button" className="text-button" onClick={() => setChanging(!changing)} aria-expanded={changing}>
+            {tl(TEXT.change)}
+          </button>
+        </div>
+        {changing && <Door code={keeper} choosing changingFrom onOpen={() => setChanging(false)} onCancel={() => setChanging(false)} />}
 
         <div className="admin-tools">
           <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={tl(TEXT.search)} aria-label={tl(TEXT.search)} />

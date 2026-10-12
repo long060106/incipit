@@ -42,13 +42,14 @@
   white-space: pre-line;
 }
 
-/* The first letter stands large, as on the first page of a chapter. */
+/* The first letter stands large, as on the first page of a chapter: a flourished capital, drawn fine. */
 .first-lines p:first-child::first-letter {
   float: left;
-  margin: 0.06em 0.09em 0 0;
-  font-family: var(--font-display);
-  font-size: 3.1em;
-  line-height: 0.8;
+  margin: 0.12em 0.14em 0 0.04em;
+  font-family: var(--font-initial);
+  font-size: 3.6em;
+  font-weight: 400;
+  line-height: 0.78;
   color: var(--accent);
 }
 
