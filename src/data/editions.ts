@@ -103,7 +103,7 @@ export const EDITIONS: Record<string, Edition> = {
   'persuasion': {"from":"standardebooks","bytes":1083048,"librivox":"https://librivox.org/persuasion-by-jane-austen/"},
   'northanger-abbey': {"from":"standardebooks","bytes":1025221,"librivox":"https://librivox.org/northanger-abbey-by-jane-austen/"},
   'the-adventures-of-tom-sawyer': {"from":"standardebooks","bytes":940978,"librivox":"https://librivox.org/tom-sawyer-by-mark-twain/"},
-  'oliver-twist': {"from":null,"bytes":0,"librivox":"https://librivox.org/oliver-twist-by-charles-dickens/"},
+  'oliver-twist': {"from":"gutenberg","bytes":1955126,"librivox":"https://librivox.org/oliver-twist-by-charles-dickens/"},
   'david-copperfield': {"from":"standardebooks","bytes":3992442,"librivox":"https://librivox.org/david-copperfield-by-charles-dickens/"},
   'the-turn-of-the-screw': {"from":"gutenberg","bytes":622585,"librivox":"https://librivox.org/the-turn-of-the-screw-by-henry-james/"},
   'the-awakening': {"from":"standardebooks","bytes":692614,"librivox":"https://librivox.org/the-awakening-by-kate-chopin/"},
