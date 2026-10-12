@@ -1,0 +1,251 @@
+/* The keeper's desk (/admin): the whole catalogue in one list, each book opening into its desk. */
+
+.admin {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.admin-body,
+.admin-closed {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 2rem var(--gutter) 5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.admin-closed {
+  display: grid;
+  place-content: center;
+  justify-items: start;
+  gap: 1.25rem;
+  max-width: 34rem;
+  margin: 0 auto;
+}
+
+.admin h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+
+.admin-count {
+  margin: 0.75rem 0 2rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.admin-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-tools input,
+.admin-entry input,
+.admin-entry textarea {
+  min-width: 0;
+  padding: 0.5rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9375rem;
+  outline: none;
+  cursor: text;
+}
+
+.admin-tools input {
+  flex: 1 1 16rem;
+  max-width: 28rem;
+}
+
+.admin-tools input:focus,
+.admin-entry input:focus,
+.admin-entry textarea:focus {
+  border-color: var(--accent);
+}
+
+.admin-show {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
+.admin-show .text-button {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.admin-show .text-button[aria-pressed='true'] {
+  color: var(--text);
+}
+
+.admin-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-list > li {
+  border-bottom: 1px solid var(--faint);
+}
+
+.admin-list > li[data-open] {
+  border-bottom-color: var(--line);
+}
+
+.admin-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 9rem minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: baseline;
+  width: 100%;
+  padding: 0.75rem 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.admin-row strong {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.125rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-row span,
+.admin-row small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-row small[data-free] {
+  color: var(--text);
+}
+
+.admin-row:hover strong {
+  color: var(--accent);
+}
+
+.admin-desk {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 3rem;
+  padding: 1rem 0 2.5rem;
+}
+
+.admin-desk h2 {
+  margin: 0 0 0.25rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.admin-entry,
+.admin-side,
+.admin-file {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
+.admin-side {
+  gap: 2rem;
+}
+
+.admin-entry label {
+  display: grid;
+  gap: 0.125rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.admin-entry textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.admin-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7rem;
+  gap: 1.5rem;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+}
+
+.admin-actions .text-button,
+.admin-actions .text-link {
+  font-size: 0.8125rem;
+}
+
+.admin-kept {
+  display: grid;
+  gap: 0.125rem;
+  margin: 0;
+}
+
+.admin-kept strong {
+  overflow-wrap: anywhere;
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+.admin-kept small {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 860px) {
+  .admin-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.125rem 1rem;
+  }
+
+  .admin-row small:last-child:empty {
+    display: none;
+  }
+
+  .admin-desk {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+}
+
+.admin .card-note,
+.admin .card-problem {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.admin .card-problem {
+  color: var(--accent);
+}

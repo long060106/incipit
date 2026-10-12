@@ -20,6 +20,7 @@ const PAGES = {
   'first-pages': lazy(() => import('./pages/FirstPages')),
   notebook: lazy(() => import('./pages/Notebook')),
   read: lazy(() => import('./reader/ReaderPage')),
+  admin: lazy(() => import('./pages/Admin')),
 };
 const Page = PAGES[location.pathname.split('/')[1] as keyof typeof PAGES];
 
