@@ -73,6 +73,9 @@
   position: fixed;
   inset: 0;
   overflow: hidden;
+  /* `clip`, where the browser has it: what reaches past the edge (a hand withdrawing, the lamp's
+     glow) must never let the stage be scrolled sideways under the page, as `hidden` can. */
+  overflow: clip;
   background: var(--bg);
   transition: background-color 0.5s ease;
 
@@ -204,6 +207,7 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
+  overflow: clip;
   user-select: none;
   -webkit-user-select: none;
 }

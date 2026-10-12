@@ -589,10 +589,12 @@ export class Wall {
     const lamp = this.lamp;
     const wanted = this.interactive && this.assemble === 1 && this.pointer && !this.paused ? 1 : 0;
     if (this.pointer && wanted) {
+      // The cursor is known by its place in the window; the lamp hangs in the wall's own space.
+      const box = this.root.getBoundingClientRect();
       // It is lit where the cursor is, then follows a little behind it.
       const follow = lamp.lit < 0.02 || this.reducedMotion ? 1 : 0.1;
-      lamp.x += (this.pointer.x - lamp.x) * follow;
-      lamp.y += (this.pointer.y - lamp.y) * follow;
+      lamp.x += (this.pointer.x - box.left - lamp.x) * follow;
+      lamp.y += (this.pointer.y - box.top - lamp.y) * follow;
     }
     lamp.lit += (wanted - lamp.lit) * 0.05;
     if (Math.abs(wanted - lamp.lit) < 0.004) lamp.lit = wanted;
