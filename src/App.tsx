@@ -59,10 +59,10 @@ const share = (rate: number, dt: number) => 1 - Math.pow(1 - rate, Math.min(dt, 
  * the stage, every one of them made the browser restyle every cover on the wall, every frame.
  */
 const READERS: Record<string, string> = {
-  '--open': '.hero-letter, .hero-def, .hero-actions',
+  '--open': '.hero-letter, .hero-def, .hero-actions, .hero-credit',
   '--zoom': '.wall, .glow, .hands',
   '--part': '.hand-rail',
-  '--hero': '.hero, .hero-word, .hero-def, .hand, .wordmark',
+  '--hero': '.hero, .hero-word, .hero-def, .hand, .wordmark, .hero-credit',
   '--wall-opacity': '.wall-plane',
   '--line-1': '.line-1',
   '--line-1-y': '.line-1',
