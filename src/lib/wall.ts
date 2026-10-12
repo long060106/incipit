@@ -76,7 +76,7 @@ const PARALLAX_NEAR = 96;
  * tokens.css, and the narrow-screen rule in stage.css): its type size as a share of the
  * page's width and height, its least and most in px, and how wide the word is in type sizes.
  */
-const NAME = { wide: [0.27, 0.46], narrow: 0.32, least: 96, most: 640, width: 2.42 } as const;
+const NAME = { wide: [0.17, 0.29], narrow: 0.2, least: 60, most: 400, width: 3.84 } as const;
 
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
@@ -455,7 +455,7 @@ export class Wall {
     // below the figure there. Where the fingertips sit against the middle of the page is
     // measured from the page; how tall a figure stands follows from the hand rules in
     // stage.css.
-    const tipY = narrow ? name * -1.57 : name * 0.06 - 66;
+    const tipY = narrow ? this.width * -0.52 : name * 0.06 - 66;
     const figure = (narrow ? this.width * 0.5 : this.width * 0.53 - half * 0.871) * 0.974;
     const band = (above: number, below: number) => {
       const top = tipY - (figure * above + this.cellH * 0.6) * this.clearing;
