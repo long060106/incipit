@@ -43,8 +43,16 @@
     PUT    /api/covers/<id>          its cover, as an image                 (keeper only)
     GET    /api/covers/<id>          the cover, for everyone
 
-  Requests carry `Authorization: Card <code>`, except making a card, GET /api/books, covers
-  and fetching an open file.
+  And the keeper writes the page about who made the site (/about).
+
+    GET    /api/profile              the maker's words, for everyone
+    PUT    /api/profile              write them again                       (keeper only)
+    GET    /api/portrait             the maker's portrait, for everyone
+    PUT    /api/portrait             a new portrait                         (keeper only)
+    DELETE /api/portrait             take it down                           (keeper only)
+
+  Requests carry `Authorization: Card <code>`, except making a card, GET /api/books, covers,
+  the profile and its portrait, and fetching an open file.
 
   The keeper's card alone changes nothing. The desk has a password, chosen by the keeper the
   first time; entering it opens the desk for twelve hours in that browser, which is given a
@@ -477,6 +485,72 @@ async function cover(env: Env, id: string): Promise<Response> {
   });
 }
 
+/** The maker's words as the keeper may write them: short lines, a few paragraphs, a few links. */
+interface Profile {
+  name: string;
+  line: string;
+  why: string;
+  about: string;
+  links: { label: string; url: string }[];
+}
+
+function profileFrom(value: unknown): Profile | null {
+  if (!value || typeof value !== 'object') return null;
+  const given = value as Record<string, unknown>;
+  const text = (key: string, most: number) => (typeof given[key] === 'string' ? (given[key] as string).trim().slice(0, most) : '');
+  const name = text('name', 80);
+  if (!name) return null;
+  const links = (Array.isArray(given.links) ? given.links : [])
+    .slice(0, 8)
+    .map((link) => (link && typeof link === 'object' ? (link as Record<string, unknown>) : {}))
+    .map((link) => ({ label: typeof link.label === 'string' ? link.label.trim().slice(0, 40) : '', url: typeof link.url === 'string' ? link.url.trim().slice(0, 300) : '' }))
+    // Only addresses a link may safely lead to.
+    .filter((link) => link.label && /^(https:\/\/|mailto:)[^\s<>"']+$/i.test(link.url));
+  return { name, line: text('line', 160), why: text('why', 6000), about: text('about', 6000), links };
+}
+
+async function profile(env: Env): Promise<Response> {
+  const [words, picture] = await env.DB.batch<Record<string, unknown>>([
+    env.DB.prepare('SELECT data FROM profile WHERE id = 1'),
+    env.DB.prepare('SELECT changed FROM portrait WHERE id = 1'),
+  ]);
+  return json({
+    profile: words.results[0] ? (JSON.parse(words.results[0].data as string) as Profile) : null,
+    portraitAt: (picture.results[0]?.changed as number | undefined) ?? 0,
+  });
+}
+
+async function writeProfile(request: Request, env: Env): Promise<Response> {
+  let written: Profile | null = null;
+  try {
+    written = profileFrom(JSON.parse((await request.text()).slice(0, MAX_BODY)));
+  } catch {
+    return refuse(400, 'not-json');
+  }
+  if (!written) return refuse(400, 'bad-profile');
+  await env.DB.prepare('INSERT OR REPLACE INTO profile (id, data, changed) VALUES (1, ?1, ?2)').bind(JSON.stringify(written), Date.now()).run();
+  return json({ profile: written });
+}
+
+async function keepPortrait(request: Request, env: Env): Promise<Response> {
+  const type = (request.headers.get('content-type') ?? '').split(';')[0];
+  if (!COVER_TYPES.includes(type)) return refuse(400, 'bad-picture');
+  const data = await request.arrayBuffer();
+  if (!data.byteLength || data.byteLength > MAX_COVER) return refuse(413, 'too-large');
+  const now = Date.now();
+  await env.DB.prepare('INSERT OR REPLACE INTO portrait (id, type, data, changed) VALUES (1, ?1, ?2, ?3)').bind(type, data, now).run();
+  return json({ portraitAt: now });
+}
+
+async function portrait(env: Env): Promise<Response> {
+  const row = await env.DB.prepare('SELECT type, data FROM portrait WHERE id = 1').first<{ type: string; data: ArrayBuffer | number[] }>();
+  if (!row) return refuse(404, 'no-portrait');
+  // As with covers, the address carries the time it was kept (?v=).
+  return new Response(row.data instanceof ArrayBuffer ? row.data : new Uint8Array(row.data), {
+    headers: { 'content-type': row.type, 'x-content-type-options': 'nosniff', 'cache-control': 'public, max-age=31536000, immutable' },
+  });
+}
+
 async function overrides(env: Env): Promise<Response> {
   const [all, kept, more, covers] = await env.DB.batch<Record<string, unknown>>([
     env.DB.prepare('SELECT book, download, articles, edits FROM book_overrides'),
@@ -635,6 +709,8 @@ async function claim(request: Request, env: Env, card: Card): Promise<Response> 
 async function api(request: Request, env: Env, path: string): Promise<Response> {
   if (path === '/api/card' && request.method === 'POST') return makeCard(request, env);
   if (path === '/api/books' && request.method === 'GET') return overrides(env);
+  if (path === '/api/profile' && request.method === 'GET') return profile(env);
+  if (path === '/api/portrait' && request.method === 'GET') return portrait(env);
 
   const [, , section, book, rest] = path.split('/');
   if (section === 'covers' && request.method === 'GET' && BOOK.test(book ?? '')) return cover(env, book);
@@ -658,6 +734,17 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
     if (shut) return shut;
     if (fetching) return piece(env, book, Number(rest));
     return keepFiles(request, env, book, rest);
+  }
+  if (path === '/api/profile' || path === '/api/portrait') {
+    const shut = await keeperGate(request, env, card);
+    if (shut) return shut;
+    if (path === '/api/profile' && request.method === 'PUT') return writeProfile(request, env);
+    if (path === '/api/portrait' && request.method === 'PUT') return keepPortrait(request, env);
+    if (path === '/api/portrait' && request.method === 'DELETE') {
+      await env.DB.prepare('DELETE FROM portrait WHERE id = 1').run();
+      return json({ portraitAt: 0 });
+    }
+    return refuse(404, 'not-found');
   }
   if (section === 'added' || section === 'covers') {
     const shut = await keeperGate(request, env, card);

@@ -29,6 +29,7 @@ import { bookLinks } from '../lib/links';
 import { fold } from '../lib/match';
 import { BookForm } from './BookForm';
 import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { ProfileForm } from './ProfileForm';
 import './admin.css';
 
 /*
@@ -41,6 +42,7 @@ import './admin.css';
 
 const TEXT = {
   title: { en: 'Keeper’s desk', fr: 'Bureau du gardien' },
+  profile: { en: 'Your profile and the About page', fr: 'Votre profil et la page À propos' },
   closed: {
     en: 'This page is for the keeper of the site. Open the notebook with the keeper’s card on this device, then come back.',
     fr: 'Cette page est réservée au gardien du site. Ouvrez le carnet avec la carte du gardien sur cet appareil, puis revenez.',
@@ -187,6 +189,7 @@ export default function Admin() {
   // Holding the keeper's card is not enough: the desk has a password, asked for in each new tab.
   const [desk, setDesk] = useState<Desk | 'asking' | 'unreachable'>('asking');
   const [changing, setChanging] = useState(false);
+  const [profiling, setProfiling] = useState(false);
   useEffect(() => {
     if (keeper) void deskState(keeper).then((state) => setDesk(state ?? 'unreachable'));
   }, [keeper]);
@@ -269,7 +272,15 @@ export default function Admin() {
           <button type="button" className="text-button" onClick={() => setChanging(!changing)} aria-expanded={changing}>
             {tl(TEXT.change)}
           </button>
+          <button type="button" className="text-button" onClick={() => setProfiling(!profiling)} aria-expanded={profiling}>
+            {tl(TEXT.profile)}
+          </button>
         </div>
+        {profiling && (
+          <div className="admin-desk">
+            <ProfileForm code={keeper} onClose={() => setProfiling(false)} />
+          </div>
+        )}
         {changing && <Door code={keeper} choosing changingFrom onOpen={() => setChanging(false)} onCancel={() => setChanging(false)} />}
 
         <div className="admin-tools">

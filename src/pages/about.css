@@ -1,0 +1,133 @@
+/* About the site and its maker (/about): one quiet column, the portrait and name above it. */
+
+.about {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.about-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: clamp(2rem, 6vh, 5rem) var(--gutter) 4rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.about-body > * {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.about-head {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 2.25rem);
+}
+
+.about-portrait {
+  flex: none;
+  width: clamp(6rem, 16vw, 9rem);
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  object-fit: cover;
+}
+
+.about h1 {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  line-height: 1.05;
+}
+
+.about-line {
+  margin: 0.625rem 0 0;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.about h2 {
+  margin: 0 0 1.25rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.about-body > section {
+  margin-top: clamp(2.75rem, 7vh, 4.5rem);
+}
+
+.about-words p {
+  margin: 0 0 1.1em;
+  font-family: var(--font-read);
+  font-size: clamp(1.125rem, 1.6vw, 1.3125rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.about-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-credits dl {
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.about-credits dl > div {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.about-credits dt {
+  color: var(--muted);
+}
+
+.about-credits dd {
+  margin: 0;
+}
+
+.about-count {
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.about-foot {
+  margin-top: clamp(3rem, 8vh, 5rem);
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .about-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .about-credits dl > div {
+    grid-template-columns: 1fr;
+    gap: 0.125rem;
+  }
+}

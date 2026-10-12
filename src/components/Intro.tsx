@@ -1,5 +1,7 @@
 import type { CSSProperties, Ref } from 'react';
 import { SITE_NAME, useI18n } from '../i18n';
+import { useProfile } from '../lib/profile';
+import { pageUrl } from '../pages/PageHeader';
 import { Roll } from './Roll';
 
 const LETTERS = [...SITE_NAME];
@@ -32,6 +34,7 @@ const HAND = `${import.meta.env.BASE_URL}hero/hand`;
  */
 export function Intro({ active, onBrowse, wordRef }: IntroProps) {
   const { t } = useI18n();
+  const [{ profile }] = useProfile();
 
   return (
     <div className="intro">
@@ -73,6 +76,11 @@ export function Intro({ active, onBrowse, wordRef }: IntroProps) {
           <span className="hero-hint">{t('scrollHint')}</span>
         </div>
       </section>
+
+      {/* Who made the site, in one small line at the foot of the first page; the page about it says more. */}
+      <a className="hero-credit" href={pageUrl('about')} inert={!active}>
+        {t('developedBy', { name: profile.name })}
+      </a>
 
       <p className="line line-1">{t('line1')}</p>
       <p className="line line-2">{t('line2')}</p>

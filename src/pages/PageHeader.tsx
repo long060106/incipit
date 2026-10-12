@@ -3,12 +3,13 @@ import { SITE_NAME, useI18n } from '../i18n';
 import { runLoader } from '../lib/loader';
 import './pages.css';
 
-export type PageId = 'first-pages' | 'globe' | 'notebook';
+export type PageId = 'first-pages' | 'globe' | 'notebook' | 'about';
 
-export const PAGE_LINKS: { id: PageId; label: 'navFirst' | 'navGlobe' | 'navNotebook' }[] = [
+export const PAGE_LINKS: { id: PageId; label: 'navFirst' | 'navGlobe' | 'navNotebook' | 'navAbout' }[] = [
   { id: 'first-pages', label: 'navFirst' },
   { id: 'globe', label: 'navGlobe' },
   { id: 'notebook', label: 'navNotebook' },
+  { id: 'about', label: 'navAbout' },
 ];
 
 export const pageUrl = (id: PageId | '') => `${import.meta.env.BASE_URL}${id}`;

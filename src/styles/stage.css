@@ -614,6 +614,31 @@
   font-size: 0.9375rem;
 }
 
+/* The line of credit at the foot of the first page. */
+.hero-credit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  width: fit-content;
+  margin-inline: auto;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  opacity: var(--hero);
+  transition: color 0.3s ease;
+}
+
+.hero-credit:hover {
+  color: var(--text);
+}
+
+.stage[data-scene='hero'] .hero-credit {
+  pointer-events: auto;
+}
+
 .line {
   max-width: 17ch;
   font-family: var(--font-display);
@@ -753,6 +778,10 @@
 }
 
 .stage[data-opening][data-ready] .hero-def,
+.stage[data-opening][data-ready] .hero-credit {
+  opacity: calc(var(--hero) * clamp(0, calc((var(--open, 0) - 0.8) * 5), 1));
+}
+
 .stage[data-opening][data-ready] .hero-actions {
   animation: none;
   opacity: clamp(0, calc((var(--open, 0) - 0.8) * 5), 1);
