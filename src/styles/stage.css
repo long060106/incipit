@@ -1197,6 +1197,37 @@ a.header-link {
   cursor: var(--cursor);
 }
 
+/* The way back to the first page, beside the zoom: the wall itself no longer scrolls up to it. */
+.first-page {
+  position: absolute;
+  right: calc(var(--gutter) + 46px);
+  top: calc(var(--header-h) + 0.5rem);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  color: var(--text);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  opacity: var(--ui);
+  transition: background-color 0.2s ease;
+}
+
+.first-page i {
+  font-style: normal;
+}
+
+.first-page:hover {
+  background: var(--faint);
+}
+
 /* The covers are hung again at their new size: they settle in from the size they were. */
 .wall[data-zoomed] .wall-plane {
   animation: wall-zoom 0.6s var(--ease-out);

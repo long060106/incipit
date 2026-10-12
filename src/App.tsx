@@ -253,10 +253,15 @@ export default function App() {
     window.scrollTo(0, bookFromHash() ? maxScroll() : 0);
   }, []);
 
-  // The page behind a dialog must not scroll.
+  // The page behind a dialog must not scroll. Nor does it once the wall is hung: scrolling up
+  // there would play the whole intro backwards under the finger, so the wall keeps the reader
+  // and the button below takes them back to the first page.
   useEffect(() => {
-    document.documentElement.classList.toggle('is-locked', dialogOpen);
-  }, [dialogOpen]);
+    document.documentElement.classList.toggle('is-locked', dialogOpen || inGallery);
+  }, [dialogOpen, inGallery]);
+  useEffect(() => {
+    if (inGallery && !travel.current) window.scrollTo(0, maxScroll());
+  }, [inGallery]);
 
   // Crossing between the two layouts puts the panel back in that layout's resting state.
   useEffect(() => {
@@ -611,6 +616,10 @@ export default function App() {
           onOpenBook={openBook}
           onReset={resetFilters}
         />
+        <button type="button" className="first-page" onClick={goToIntro} inert={!inGallery}>
+          <i aria-hidden="true">↑</i>
+          {t('firstPage')}
+        </button>
         {/* Standing back from the wall, as far as there are covers to fill it. */}
         <div className="zoom" role="group" inert={!inGallery}>
           <button type="button" onClick={() => setZoom(Math.max(0, zoom - 1))} disabled={zoom === 0} aria-label={t('zoomIn')} title={t('zoomIn')}>

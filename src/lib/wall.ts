@@ -18,9 +18,8 @@ export interface CoverOrigin {
 export interface WallCallbacks {
   onOpen: (bookId: string, origin: CoverOrigin | null) => void;
   /**
-   * A drag moved vertically while the wall could not take it (it is at its top edge, or the
-   * intro is still on screen). The page scrolls by `dy` instead, so the wall and the intro
-   * read as one continuous surface.
+   * A drag moved vertically while the intro is still on screen. The page scrolls by `dy`
+   * instead, so the wall and the intro read as one continuous surface.
    */
   onPageScroll: (dy: number) => void;
 }
@@ -732,13 +731,8 @@ export class Wall {
       return;
     }
     this.targetX += dx;
-    const nextY = this.targetY + dy;
-    if (nextY < 0) {
-      this.callbacks.onPageScroll(nextY);
-      this.targetY = 0;
-    } else {
-      this.targetY = nextY;
-    }
+    // At its top edge the wall stops. The way back to the first page is the button for it.
+    this.targetY = Math.max(0, this.targetY + dy);
   }
 
   // ── Hover label ───────────────────────────────────────────────────────────
