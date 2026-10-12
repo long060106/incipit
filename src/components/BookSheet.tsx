@@ -5,6 +5,7 @@ import { AXES, DIFFICULTY, GENRES, KEYWORDS, LANGUAGES } from '../data/vocab';
 import { useI18n } from '../i18n';
 import { READABLE } from '../data/texts';
 import { saveFile, useDecided } from '../lib/keeper';
+import { reads } from '../lib/kepttext';
 import { bookLinks, coverUrl } from '../lib/links';
 import { useShelf } from '../lib/shelf';
 import { MIN_RATINGS, similarBooks } from '../lib/match';
@@ -46,7 +47,10 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
   const decided = useDecided()[book.id];
   const whole = bookLinks(book);
   const links = decided?.download === false ? { ...whole, pdf: null, pdfBytes: 0 } : whole;
-  const kept = book.free && decided?.download !== false ? decided?.file : undefined;
+  // A file the keeper keeps beside this book and has opened to readers.
+  const kept = decided?.file;
+  // An EPUB or a text file is read on the site, at the book's own address (src/lib/kepttext.ts).
+  const keptReads = reads(kept) && !READABLE.has(book.id);
   const similar = useMemo(() => similarBooks(book, BOOKS), [book]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const coverRef = useRef<HTMLImageElement>(null);
@@ -135,7 +139,7 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
       : book.original
         ? t('translationNote')
         : t('libraryNote');
-  const readable = READABLE.has(book.id);
+  const readable = READABLE.has(book.id) || keptReads;
   const rated = book.rating.count >= MIN_RATINGS;
   const rating = book.rating.value.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
@@ -184,7 +188,6 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
             </a>
           )}
           {kept && (
-            // A file the keeper has put beside this book (only ever a book out of copyright).
             <button type="button" className="button button-large button-quiet" onClick={() => void saveFile(book.id, kept)} data-outbound="file">
               <DownloadIcon />
               <Roll>{kept.name.split('.').pop()!.toUpperCase()}</Roll>
@@ -229,6 +232,7 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
             </div>
           </dl>
 
+          {(book.advice.readIf.en || book.advice.skipIf.en) && (
           <div className="verdict">
             <div className="verdict-yes">
               <h2>{t('readIf')}</h2>
@@ -239,8 +243,10 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
               <p>{tl(book.advice.skipIf)}</p>
             </div>
           </div>
+          )}
 
-          <section className="sheet-section">
+          {/* A book the keeper added may come without advice. */}
+          <section className="sheet-section" hidden={!book.advice.pace.en && !book.advice.headsUp.en}>
             <h2>{t('beforeYouRead')}</h2>
             <dl className="advice">
               <div>

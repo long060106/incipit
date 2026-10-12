@@ -103,12 +103,12 @@
   letter-spacing: 0.08em;
 }
 
-/* The text itself. Cormorant is small on the body, so it is set large. */
+/* The text itself. The sizes the reader chooses between were drawn up for a smaller face; this one is set at 0.86 of them. */
 .reader-text {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 500;
-  font-size: var(--read-size);
-  line-height: 1.55;
+  font-family: var(--font-read);
+  font-weight: 400;
+  font-size: calc(var(--read-size) * 0.86);
+  line-height: 1.62;
   font-variant-numeric: oldstyle-nums;
   hyphens: auto;
   cursor: text;
@@ -556,9 +556,9 @@
 }
 
 .reader-toc .reader-toc-marks button {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-read);
   font-style: italic;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .reader-missing {

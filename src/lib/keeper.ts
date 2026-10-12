@@ -1,16 +1,16 @@
 import { useSyncExternalStore } from 'react';
 import { BOOKS } from '../data/books';
+import { answer } from './added';
 
 /*
   What the keeper of the site has decided about each book, over what the catalogue says:
   whether its download is offered, which articles are listed beside it, corrections to its
-  entry, and a file put beside it. Every reader fetches these once (GET /api/books); only a
+  entry, and a file put beside it, open to every reader or closed to all but the keeper. Every reader fetches these once (GET /api/books); only a
   card whose role is 'admin' can change them (worker/index.ts). With no server, nothing is
   decided and every book is as the catalogue has it.
 
-  A file is kept by the server in pieces and put together again here. The server hands the
-  file of a book out of copyright to anyone, and the file of any other book only to the
-  keeper's own card.
+  A file is kept by the server in pieces and put together again here. The server hands an
+  open file to anyone, and a closed one only to the keeper's own card.
 */
 
 export interface Article {
@@ -30,7 +30,9 @@ export interface KeptFile {
   name: string;
   bytes: number;
   pieces: number;
-  /** Whether every reader may have it (keeper's list only). */
+  /** When the server kept it: tells a file from the one it replaced. */
+  changed?: number;
+  /** Whether every reader may have it. Given in the keeper's list; what readers are told of is always open. */
   open?: boolean;
 }
 
@@ -49,6 +51,8 @@ export const FILE_KINDS = /\.(epub|pdf|txt|mobi|azw3)$/i;
 const listeners = new Set<() => void>();
 let decided: Record<string, Decided> = {};
 let asked = false;
+/** What the keeper changed on this page before the server's answer arrived. */
+const changed: Record<string, Decided> = {};
 
 /** Each book as the catalogue wrote it, so that a correction can be taken back. */
 const PRINTED = new Map(BOOKS.map((book) => [book.id, { title: book.title, author: book.author, year: book.year, description: { ...book.description } }]));
@@ -72,16 +76,14 @@ const tell = () => {
 function ask() {
   if (asked) return;
   asked = true;
-  fetch(`${API}/books`)
-    .then((response) => (response.ok ? response.json() : Promise.reject()))
-    .then((answer: { books: Record<string, Decided> }) => {
-      decided = answer.books ?? {};
-      for (const [bookId, book] of Object.entries(decided)) correct(bookId, book.edits);
-      tell();
-    })
-    .catch(() => {
-      // No server (or not reachable): the catalogue stands as it is.
-    });
+  // The request is made once for the whole page, by src/lib/added.ts. With no server (or
+  // none reachable) nothing arrives and the catalogue stands as it is.
+  void answer.then((given) => {
+    if (!given) return;
+    decided = { ...((given.books ?? {}) as Record<string, Decided>), ...changed };
+    for (const [bookId, book] of Object.entries(decided)) correct(bookId, book.edits);
+    tell();
+  });
 }
 
 /** The keeper's decisions, by book id. Empty until they arrive. */
@@ -107,6 +109,7 @@ export async function decide(code: string, bookId: string, change: Partial<Pick<
     if (!response.ok) return false;
     const { book } = (await response.json()) as { book: Decided };
     decided = { ...decided, [bookId]: { ...book, file: decided[bookId]?.file } };
+    changed[bookId] = decided[bookId];
     correct(bookId, book.edits);
     tell();
     return true;
@@ -138,41 +141,66 @@ export async function keepFile(code: string, bookId: string, file: File, onProgr
   const send = async (path: string, init: RequestInit) => {
     const response = await fetch(`${API}/files/${bookId}${path}`, { ...init, headers: { ...withCard(code), ...init.headers } });
     if (!response.ok) throw new Error(((await response.json().catch(() => null)) as { error?: string } | null)?.error ?? 'failed');
-    return response.json() as Promise<{ open?: boolean }>;
+    return response.json() as Promise<{ open?: boolean; changed?: number }>;
   };
   await send('', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: file.name, bytes: file.size, pieces }) });
   for (let n = 0; n < pieces; n++) {
     await send(`/${n}`, { method: 'PUT', headers: { 'content-type': 'application/octet-stream' }, body: file.slice(n * PIECE, (n + 1) * PIECE) });
     onProgress((n + 1) / pieces);
   }
-  const { open } = await send('/done', { method: 'POST' });
-  const kept: KeptFile = { name: file.name, bytes: file.size, pieces, open: !!open };
-  if (open) {
-    decided = { ...decided, [bookId]: { ...(decided[bookId] ?? { download: true, articles: [] }), file: kept } };
-    tell();
-  }
+  const { open, changed: at } = await send('/done', { method: 'POST' });
+  const kept: KeptFile = { name: file.name, bytes: file.size, pieces, open: !!open, changed: at };
+  show(bookId, kept);
   return kept;
+}
+
+/** Readers of this page see a file on a book's sheet only while it is open. */
+function show(bookId: string, file: KeptFile) {
+  decided = { ...decided, [bookId]: { ...(decided[bookId] ?? { download: true, articles: [] }), file: file.open ? file : undefined } };
+  changed[bookId] = decided[bookId];
+  tell();
+}
+
+/** Opens a kept file to every reader, or closes it to all but the keeper. */
+export async function openFile(code: string, bookId: string, file: KeptFile, open: boolean): Promise<KeptFile | null> {
+  const response = await fetch(`${API}/files/${bookId}/open`, { method: 'POST', headers: { ...withCard(code), 'content-type': 'application/json' }, body: JSON.stringify({ open }) });
+  if (!response.ok) return null;
+  const next = { ...file, open };
+  show(bookId, next);
+  return next;
 }
 
 export async function dropFile(code: string, bookId: string): Promise<boolean> {
   const response = await fetch(`${API}/files/${bookId}`, { method: 'DELETE', headers: withCard(code) });
   if (response.ok && decided[bookId]?.file) {
     decided = { ...decided, [bookId]: { ...decided[bookId], file: undefined } };
+    changed[bookId] = decided[bookId];
     tell();
   }
   return response.ok;
 }
 
-/** Fetches a kept file whole and hands it to the browser to save. The card is needed only for the keeper's own files. */
-export async function saveFile(bookId: string, file: KeptFile, code?: string | null): Promise<boolean> {
+/** A kept file, whole, as the browser's own File. */
+export async function fetchFile(bookId: string, file: KeptFile, code?: string | null): Promise<File | null> {
   try {
     const parts: ArrayBuffer[] = [];
     for (let n = 0; n < file.pieces; n++) {
       const response = await fetch(`${API}/files/${bookId}/${n}`, { headers: withCard(code) });
-      if (!response.ok) return false;
+      if (!response.ok) return null;
       parts.push(await response.arrayBuffer());
     }
-    const url = URL.createObjectURL(new Blob(parts, { type: 'application/octet-stream' }));
+    return new File(parts, file.name, { type: /\.epub$/i.test(file.name) ? 'application/epub+zip' : /\.txt$/i.test(file.name) ? 'text/plain' : 'application/octet-stream' });
+  } catch {
+    return null;
+  }
+}
+
+/** Fetches a kept file whole and hands it to the browser to save. The card is needed only for the keeper's own files. */
+export async function saveFile(bookId: string, file: KeptFile, code?: string | null): Promise<boolean> {
+  try {
+    const whole = await fetchFile(bookId, file, code);
+    if (!whole) return false;
+    const url = URL.createObjectURL(whole);
     const link = document.createElement('a');
     link.href = url;
     link.download = file.name;

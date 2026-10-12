@@ -119,6 +119,10 @@ export interface Book {
    * the language it was written in.
    */
   original?: { label: L; url: string }[];
+  /** Set on a book the keeper added from the desk (/admin) rather than one of the catalogue's. */
+  added?: true;
+  /** For an added book: when its cover was last kept, to tell one cover's address from the next. */
+  coverAt?: number;
   description: L;
   advice: {
     pace: L;

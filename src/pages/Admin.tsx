@@ -4,9 +4,11 @@ import { BOOKS } from '../data/books';
 import type { Book, L } from '../data/types';
 import { useI18n } from '../i18n';
 import { useCard } from '../lib/card';
-import { decide, dropFile, FILE_KINDS, keepFile, keptFiles, MAX_FILE, megabytes, printed, saveFile, useDecided, type Edits, type KeptFile } from '../lib/keeper';
+import { decide, dropFile, FILE_KINDS, keepFile, keptFiles, MAX_FILE, megabytes, openFile, printed, saveFile, useDecided, type Edits, type KeptFile } from '../lib/keeper';
+import { reads } from '../lib/kepttext';
 import { bookLinks } from '../lib/links';
 import { fold } from '../lib/match';
+import { BookForm } from './BookForm';
 import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
 import './admin.css';
 
@@ -44,17 +46,21 @@ const TEXT = {
   failed: { en: 'Not saved. Check the fields and try again.', fr: 'Non enregistré. Vérifiez les champs et réessayez.' },
   file: { en: 'File', fr: 'Fichier' },
   fileFree: {
-    en: 'This book is out of copyright. A file put here becomes a download button on its sheet, for every reader.',
-    fr: 'Ce livre est libre de droits. Un fichier déposé ici devient un bouton de téléchargement sur sa fiche, pour tous les lecteurs.',
+    en: 'This book is out of copyright, so a file put here starts open: readers get a download button on its sheet, and can read an EPUB or a text file on the site.',
+    fr: 'Ce livre est libre de droits : un fichier déposé ici est d’abord ouvert. Les lecteurs ont un bouton de téléchargement sur sa fiche, et peuvent lire sur le site un EPUB ou un fichier texte.',
   },
   fileHeld: {
-    en: 'This book is in copyright. A file put here stays yours: only this card can download it, and readers are never shown it.',
-    fr: 'Ce livre est sous droits. Un fichier déposé ici reste le vôtre : seule cette carte peut le télécharger, et les lecteurs ne le voient jamais.',
+    en: 'A file put here starts closed: only this card can download it, and readers are not shown it. Opening it to readers is your decision and your responsibility. Do it only if you have the right to share this file where your readers are.',
+    fr: 'Un fichier déposé ici est d’abord fermé : seule cette carte peut le télécharger, et les lecteurs ne le voient pas. L’ouvrir aux lecteurs relève de votre décision et de votre responsabilité. Ne le faites que si vous avez le droit de partager ce fichier là où se trouvent vos lecteurs.',
   },
+  openToAll: { en: 'Readers can download and read this file', fr: 'Les lecteurs peuvent télécharger et lire ce fichier' },
+  addBook: { en: 'Add a book', fr: 'Ajouter un livre' },
+  addedByYou: { en: 'Added by you', fr: 'Ajouté par vous' },
   choose: { en: 'Choose a file', fr: 'Choisir un fichier' },
   replace: { en: 'Replace', fr: 'Remplacer' },
   sending: { en: 'Sending… {n}%', fr: 'Envoi… {n} %' },
   download: { en: 'Download', fr: 'Télécharger' },
+  read: { en: 'Read it on the site', fr: 'Le lire sur le site' },
   remove: { en: 'Remove', fr: 'Retirer' },
   kinds: { en: 'EPUB, PDF, TXT, MOBI or AZW3, up to 60 MB.', fr: 'EPUB, PDF, TXT, MOBI ou AZW3, jusqu’à 60 Mo.' },
   'bad-name': { en: 'Only EPUB, PDF, TXT, MOBI and AZW3 files can be kept.', fr: 'Seuls les fichiers EPUB, PDF, TXT, MOBI et AZW3 peuvent être conservés.' },
@@ -79,6 +85,9 @@ export default function Admin() {
   const [query, setQuery] = useState('');
   const [show, setShow] = useState<Show>('all');
   const [open, setOpen] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+  // Counts the books added, written again or removed here, so that the list is drawn again.
+  const [turn, setTurn] = useState(0);
   const keeper = card?.role === 'admin' ? card.code : null;
 
   useEffect(() => {
@@ -92,7 +101,7 @@ export default function Admin() {
         .sort((a, b) => a.title.localeCompare(b.title))
         .filter((book) => (show === 'free' ? book.free : show === 'held' ? !book.free : show === 'file' ? files[book.id] : true))
         .filter((book) => !wanted || fold(`${book.title} ${book.author}`).includes(wanted)),
-    [wanted, show, files],
+    [wanted, show, files, turn],
   );
 
   if (!keeper) {
@@ -139,8 +148,25 @@ export default function Admin() {
                 {tl(TEXT[id === 'file' ? 'withFile' : id])}
               </button>
             ))}
+            <button type="button" className="button button-quiet admin-add" onClick={() => setAdding(true)} disabled={adding}>
+              + {tl(TEXT.addBook)}
+            </button>
           </div>
         </div>
+
+        {adding && (
+          <div className="admin-desk">
+            <BookForm
+              code={keeper}
+              onCancel={() => setAdding(false)}
+              onDone={(book) => {
+                setAdding(false);
+                setTurn(turn + 1);
+                if (book) setOpen(book.id);
+              }}
+            />
+          </div>
+        )}
 
         <ul className="admin-list">
           {shown.map((book) => {
@@ -152,10 +178,21 @@ export default function Admin() {
                   <span>
                     {book.author} · {book.year}
                   </span>
-                  <small data-free={book.free ? '' : undefined}>{tl(book.free ? TEXT.free : TEXT.held)}</small>
-                  <small>{file ? `${file.name} · ${tl(book.free ? TEXT.everyone : TEXT.yours)}` : ''}</small>
+                  <small data-free={book.free ? '' : undefined}>{tl(book.added ? TEXT.addedByYou : book.free ? TEXT.free : TEXT.held)}</small>
+                  <small>{file ? `${file.name} · ${tl(file.open ? TEXT.everyone : TEXT.yours)}` : ''}</small>
                 </button>
-                {open === book.id && <Desk book={book} code={keeper} file={file} setFile={(next) => setFile(book.id, next)} />}
+                {open === book.id && (
+                  <Desk
+                    book={book}
+                    code={keeper}
+                    file={file}
+                    setFile={(next) => setFile(book.id, next)}
+                    onChanged={(next) => {
+                      setTurn(turn + 1);
+                      if (!next) setOpen(null);
+                    }}
+                  />
+                )}
               </li>
             );
           })}
@@ -165,9 +202,22 @@ export default function Admin() {
   );
 }
 
-function Desk({ book, code, file, setFile }: { book: Book; code: string; file: KeptFile | undefined; setFile: (file: KeptFile | null) => void }) {
+function Desk({
+  book,
+  code,
+  file,
+  setFile,
+  onChanged,
+}: {
+  book: Book;
+  code: string;
+  file: KeptFile | undefined;
+  setFile: (file: KeptFile | null) => void;
+  onChanged: (book: Book | null) => void;
+}) {
   const { tl } = useI18n();
-  const first = printed(book.id)!;
+  // A book the keeper added is not in the catalogue's printed list; it is edited whole, in its own form.
+  const first = printed(book.id) ?? { title: book.title, author: book.author, year: book.year, description: book.description };
   const [title, setTitle] = useState(book.title);
   const [author, setAuthor] = useState(book.author);
   const [year, setYear] = useState(String(book.year));
@@ -218,6 +268,9 @@ function Desk({ book, code, file, setFile }: { book: Book; code: string; file: K
 
   return (
     <div className="admin-desk">
+      {book.added ? (
+        <BookForm key={`${book.id}-${book.coverAt}`} code={code} book={book} onCancel={() => onChanged(book)} onDone={onChanged} />
+      ) : (
       <form
         className="admin-entry"
         onSubmit={(event) => {
@@ -261,6 +314,7 @@ function Desk({ book, code, file, setFile }: { book: Book; code: string; file: K
         </div>
         {state && <p className={state === 'saved' ? 'card-note' : 'card-problem'}>{tl(TEXT[state])}</p>}
       </form>
+      )}
 
       <div className="admin-side">
         <section className="admin-file">
@@ -270,9 +324,15 @@ function Desk({ book, code, file, setFile }: { book: Book; code: string; file: K
             <p className="admin-kept">
               <strong>{file.name}</strong>
               <small>
-                {megabytes(file.bytes)} · {tl(book.free ? TEXT.everyone : TEXT.yours)}
+                {megabytes(file.bytes)} · {tl(file.open ? TEXT.everyone : TEXT.yours)}
               </small>
             </p>
+          )}
+          {file && (
+            <label className="check">
+              <input type="checkbox" checked={!!file.open} onChange={async (event) => setFile((await openFile(code, book.id, file, event.target.checked)) ?? file)} />
+              {tl(TEXT.openToAll)}
+            </label>
           )}
           <div className="admin-actions">
             <button type="button" className="button button-quiet" disabled={sending !== null} onClick={() => fileRef.current?.click()}>
@@ -283,6 +343,11 @@ function Desk({ book, code, file, setFile }: { book: Book; code: string; file: K
                 <button type="button" className="text-button" onClick={() => void saveFile(book.id, file, code)}>
                   {tl(TEXT.download)}
                 </button>
+                {reads(file) && (
+                  <a className="text-link" href={`${pageUrl('')}read/${book.id}`}>
+                    {tl(TEXT.read)}
+                  </a>
+                )}
                 <button type="button" className="text-button" onClick={async () => (await dropFile(code, book.id)) && setFile(null)}>
                   {tl(TEXT.remove)}
                 </button>

@@ -413,8 +413,9 @@ export class Wall {
     // On a phone the covers crowd the text, so they differ less in size.
     const grow = narrow ? 0.5 : 0.8;
     // The size of the name, as the stylesheet sets it (--hero-size in tokens.css).
-    const name = narrow ? this.width * 0.33 : clamp(Math.min(this.width * 0.27, this.height * 0.46), 96, 640);
-    const clearX = (narrow ? this.width * 0.3 : name * 1.2) + this.cellW / 2;
+    const name = narrow ? this.width * 0.25 : clamp(Math.min(this.width * 0.21, this.height * 0.36), 72, 496);
+    // The name is a little over three times as wide as its type is tall; half of that is kept clear.
+    const clearX = (narrow ? this.width * 0.3 : name * 1.6) + this.cellW / 2;
     const clearY = this.height * (narrow ? 0.27 : 0.35) + this.cellH / 2;
     // The two figures reach in from the sides: level with the name on a wide screen, above
     // it on a phone. No cover rests behind them: on each side the covers keep above and

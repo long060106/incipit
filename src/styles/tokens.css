@@ -55,13 +55,16 @@
   --word-hot: #f5dca8;
   --word-far: color-mix(in oklab, var(--text) 58%, var(--bg));
 
-  --font-display: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
+  /* Brygada 1918: a Polish book face cut in 1918 and revived in 2018. It is the one serif of
+     the site, for titles and for reading. Wider than most display serifs, so set a little smaller. */
+  --font-display: 'Brygada 1918', Georgia, 'Times New Roman', serif;
+  --font-read: 'Brygada 1918', Georgia, 'Times New Roman', serif;
   --display-weight: 400;
-  --display-scale: 1;
-  --display-tracking: -0.012em;
+  --display-scale: 0.9;
+  --display-tracking: -0.015em;
   /* The name grows with the page as long as the page is tall enough for it, so that the two
      figures reaching in from the edges keep their size against it. */
-  --hero-size: clamp(6rem, min(27vw, 46vh), 40rem);
+  --hero-size: clamp(4.5rem, min(21vw, 36vh), 31rem);
 }
 
 :root[data-theme='day'] {
@@ -98,10 +101,4 @@
   --word-hot: var(--accent);
   --word-far: color-mix(in oklab, var(--text) 56%, var(--bg));
 
-  --font-display: 'Cormorant Garamond', 'Instrument Serif', Georgia, serif;
-  --display-weight: 500;
-  /* Cormorant has a small x-height; set it larger so both rooms read at the same size. */
-  --display-scale: 1.13;
-  --display-tracking: -0.018em;
-  --hero-size: clamp(5.5rem, min(25vw, 43vh), 37rem);
 }

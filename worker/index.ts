@@ -22,25 +22,37 @@
     POST   /api/claim        turn the card presented into the keeper's, with a one-time code
 
   The keeper can also put one file beside a book (an EPUB, a PDF, a text). It is kept in the
-  database in pieces. Who may fetch it follows the catalogue (src/data/books.ts), not a
-  switch: the file of a book out of copyright is handed to every reader; the file of any
-  other book is given only to the keeper's own card, and no setting changes that.
+  database in pieces. Each file is either open (every reader may fetch it) or closed (only
+  the keeper's card may), and the keeper chooses. A new file starts open beside a book the
+  catalogue marks as out of copyright and closed beside any other. Readers are never told
+  of a closed file.
 
     GET    /api/files                every file kept (keeper only)          -> { files }
     POST   /api/files/<id>           begin a file: { name, bytes, pieces }  (keeper only)
     PUT    /api/files/<id>/<n>       one piece of it, as raw bytes          (keeper only)
     POST   /api/files/<id>/done      all pieces sent                        (keeper only)
+    POST   /api/files/<id>/open      open or close it: { open }             (keeper only)
     DELETE /api/files/<id>           remove it                              (keeper only)
     GET    /api/files/<id>/<n>       one piece, for whoever may have the file
 
-  Requests carry `Authorization: Card <code>`, except making a card, GET /api/books and
-  fetching the file of a book out of copyright.
+  And the keeper can add books of their own beside the catalogue. They reach every reader
+  with GET /api/books, as `added`.
+
+    PUT    /api/added/<id>           add a book, or write it again          (keeper only)
+    DELETE /api/added/<id>           remove it, with its cover and file     (keeper only)
+    PUT    /api/covers/<id>          its cover, as an image                 (keeper only)
+    GET    /api/covers/<id>          the cover, for everyone
+
+  Requests carry `Authorization: Card <code>`, except making a card, GET /api/books, covers
+  and fetching an open file.
 
   Records are the flat rows of src/lib/shelf.ts: a key, a JSON value (absent once deleted)
   and the time the reader last changed it. Between two devices the later change wins.
 */
 
 import { BOOKS } from '../src/data/books';
+import type { Book, L } from '../src/data/types';
+import { GENRES, KEYWORDS, LANGUAGES } from '../src/data/vocab';
 
 export interface Env {
   DB: D1Database;
@@ -71,9 +83,17 @@ const PIECE = 512 * 1024; // bytes in one piece of a file
 const MAX_FILE = 60 * 1024 * 1024;
 const MAX_FILES_TOTAL = 400 * 1024 * 1024; // the free database holds 500 MB in all
 const FILE_NAME = /^[^\\/:*?"<>|\u0000-\u001f]{1,150}\.(epub|pdf|txt|mobi|azw3)$/i;
-/** The books anyone may be handed a copy of: those the catalogue marks as out of copyright. */
+/** The books the catalogue marks as out of copyright: a file put beside one starts open. */
 const FREE = new Set(BOOKS.filter((book) => book.free).map((book) => book.id));
 const KNOWN = new Set(BOOKS.map((book) => book.id));
+const MAX_COVER = 400_000; // bytes
+const MAX_ADDED = 500; // books
+const COVER_TYPES = ['image/webp', 'image/jpeg', 'image/png'];
+
+/** Whether a book is the catalogue's or one the keeper has added. */
+async function known(env: Env, book: string): Promise<boolean> {
+  return KNOWN.has(book) || !!(await env.DB.prepare('SELECT 1 FROM added_books WHERE id = ?1').bind(book).first());
+}
 // Crockford's alphabet: no I, L, O or U, so a code survives being read aloud or copied by hand.
 const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 const CODE = /^[0-9A-HJKMNP-TV-Z]{20}$/;
@@ -213,6 +233,8 @@ interface KeptFile {
   name: string;
   bytes: number;
   pieces: number;
+  /** When it was kept: tells a file from the one it replaced. */
+  changed: number;
 }
 
 /** The corrections as they will be stored, or null if any of them is not what it should be. */
@@ -245,23 +267,131 @@ function editsFrom(value: unknown): Edits | null {
   return edits;
 }
 
+/** A book as the keeper wrote it at the desk, kept only if every part of it is what it should be. */
+function bookFrom(value: unknown, id: string): Book | null {
+  if (!value || typeof value !== 'object') return null;
+  const given = value as Record<string, any>;
+  const line = (text: unknown, most: number, needed = true): string | null => {
+    const clean = typeof text === 'string' ? text.trim() : '';
+    return clean.length <= most && (clean || !needed) ? clean : null;
+  };
+  const both = (text: unknown, most: number, needed = true): L | null => {
+    const en = line((text as L | undefined)?.en, most, needed);
+    const fr = line((text as L | undefined)?.fr, most, false);
+    return en === null || fr === null ? null : { en, fr: fr || en };
+  };
+  const whole = (n: unknown, low: number, high: number) => Number.isInteger(n) && (n as number) >= low && (n as number) <= high;
+  const among = (list: unknown, allowed: object, most: number) =>
+    Array.isArray(list) && list.length <= most && list.every((entry) => typeof entry === 'string' && entry in allowed) ? [...new Set(list as string[])] : null;
+
+  const title = line(given.title, 200);
+  const author = line(given.author, 200);
+  const originalTitle = line(given.originalTitle, 200, false);
+  const description = both(given.description, 1200);
+  const place = both(given.setting?.place, 200, false);
+  const genres = among(given.genres, GENRES, 4);
+  const keywords = among(given.keywords, KEYWORDS, 8);
+  const countries: unknown = given.setting?.countries;
+  const advice = { pace: both(given.advice?.pace, 600, false), headsUp: both(given.advice?.headsUp, 600, false), readIf: both(given.advice?.readIf, 600, false), skipIf: both(given.advice?.skipIf, 600, false) };
+  const mood = given.mood ?? {};
+  if (!title || !author || originalTitle === null || !description || !place || !genres?.length || !keywords) return null;
+  if (!whole(given.year, -3000, 3000) || !whole(given.pages, 1, 20_000) || !whole(given.difficulty, 1, 5)) return null;
+  if (typeof given.language !== 'string' || !(given.language in LANGUAGES)) return null;
+  if (!Array.isArray(countries) || countries.length > 8 || !countries.every((code) => typeof code === 'string' && /^[A-Z]{2}$/.test(code))) return null;
+  if (!advice.pace || !advice.headsUp || !advice.readIf || !advice.skipIf) return null;
+  for (const axis of ['tone', 'voice', 'intensity', 'pace', 'strange']) if (!whole(mood[axis], 0, 100)) return null;
+
+  return {
+    id,
+    title,
+    ...(originalTitle ? { originalTitle } : {}),
+    author,
+    year: given.year,
+    pages: given.pages,
+    language: given.language as Book['language'],
+    genres: genres as Book['genres'],
+    keywords: keywords as Book['keywords'],
+    setting: { place, countries: countries as string[] },
+    mood: { tone: mood.tone, voice: mood.voice, intensity: mood.intensity, pace: mood.pace, strange: mood.strange },
+    difficulty: given.difficulty,
+    rating: { value: 0, count: 0 },
+    cover: 0,
+    olKey: '',
+    description,
+    advice: advice as Book['advice'],
+    added: true,
+  };
+}
+
+async function addBook(request: Request, env: Env, id: string): Promise<Response> {
+  if (KNOWN.has(id)) return refuse(409, 'in-the-catalogue');
+  let book: Book | null = null;
+  try {
+    book = bookFrom(JSON.parse((await request.text()).slice(0, MAX_BODY)), id);
+  } catch {
+    return refuse(400, 'not-json');
+  }
+  if (!book) return refuse(400, 'bad-book');
+  const held = await env.DB.prepare('SELECT COUNT(*) AS n FROM added_books WHERE id != ?1').bind(id).first<{ n: number }>();
+  if ((held?.n ?? 0) >= MAX_ADDED) return refuse(413, 'shelf-full');
+  await env.DB.prepare('INSERT INTO added_books (id, data, changed) VALUES (?1, ?2, ?3) ON CONFLICT (id) DO UPDATE SET data = excluded.data, changed = excluded.changed')
+    .bind(id, JSON.stringify(book), Date.now())
+    .run();
+  return json({ book });
+}
+
+async function removeBook(env: Env, id: string): Promise<Response> {
+  await env.DB.batch(
+    ['DELETE FROM file_pieces WHERE book = ?1', 'DELETE FROM files WHERE book = ?1', 'DELETE FROM covers WHERE book = ?1', 'DELETE FROM book_overrides WHERE book = ?1', 'DELETE FROM added_books WHERE id = ?1'].map(
+      (statement) => env.DB.prepare(statement).bind(id),
+    ),
+  );
+  return json({ ok: true });
+}
+
+async function keepCover(request: Request, env: Env, id: string): Promise<Response> {
+  const type = (request.headers.get('content-type') ?? '').split(';')[0];
+  if (!COVER_TYPES.includes(type)) return refuse(400, 'bad-cover');
+  const data = await request.arrayBuffer();
+  if (!data.byteLength || data.byteLength > MAX_COVER) return refuse(413, 'too-large');
+  if (!(await env.DB.prepare('SELECT 1 FROM added_books WHERE id = ?1').bind(id).first())) return refuse(404, 'no-such-book');
+  const now = Date.now();
+  await env.DB.prepare('INSERT OR REPLACE INTO covers (book, type, data, changed) VALUES (?1, ?2, ?3, ?4)').bind(id, type, data, now).run();
+  return json({ coverAt: now });
+}
+
+async function cover(env: Env, id: string): Promise<Response> {
+  const row = await env.DB.prepare('SELECT type, data FROM covers WHERE book = ?1').bind(id).first<{ type: string; data: ArrayBuffer | number[] }>();
+  if (!row) return refuse(404, 'no-such-cover');
+  // The address carries the time the cover was kept (?v=), so a copy may be held for good.
+  return new Response(row.data instanceof ArrayBuffer ? row.data : new Uint8Array(row.data), {
+    headers: { 'content-type': row.type, 'x-content-type-options': 'nosniff', 'cache-control': 'public, max-age=31536000, immutable' },
+  });
+}
+
 async function overrides(env: Env): Promise<Response> {
-  const [all, kept] = await env.DB.batch<Record<string, unknown>>([
+  const [all, kept, more, covers] = await env.DB.batch<Record<string, unknown>>([
     env.DB.prepare('SELECT book, download, articles, edits FROM book_overrides'),
-    env.DB.prepare('SELECT book, name, bytes, pieces FROM files WHERE ready = 1'),
+    env.DB.prepare('SELECT book, name, bytes, pieces, changed FROM files WHERE ready = 1 AND open = 1'),
+    env.DB.prepare('SELECT data FROM added_books ORDER BY changed'),
+    env.DB.prepare('SELECT book, changed FROM covers'),
   ]);
+  const coverAt = new Map(covers.results.map((row) => [row.book as string, row.changed as number]));
+  const added = more.results.map((row) => {
+    const book = JSON.parse(row.data as string) as Book;
+    return { ...book, coverAt: coverAt.get(book.id) ?? 0 };
+  });
   const books: Record<string, { download: boolean; articles: Article[]; edits: Edits; file?: KeptFile }> = {};
   for (const row of all.results) {
     books[row.book as string] = { download: row.download !== 0, articles: JSON.parse(row.articles as string), edits: JSON.parse(row.edits as string) };
   }
-  // Readers are told only of the files they may have.
+  // Readers are told only of the files that are open to them.
   for (const row of kept.results) {
     const book = row.book as string;
-    if (!FREE.has(book)) continue;
     books[book] ??= { download: true, articles: [], edits: {} };
-    books[book].file = { name: row.name as string, bytes: row.bytes as number, pieces: row.pieces as number };
+    books[book].file = { name: row.name as string, bytes: row.bytes as number, pieces: row.pieces as number, changed: row.changed as number };
   }
-  return json({ books });
+  return json({ books, added });
 }
 
 async function decide(request: Request, env: Env, book: string): Promise<Response> {
@@ -293,12 +423,12 @@ async function decide(request: Request, env: Env, book: string): Promise<Respons
 async function keepFiles(request: Request, env: Env, book: string | undefined, rest: string | undefined): Promise<Response> {
   if (!book) {
     if (request.method !== 'GET') return refuse(404, 'not-found');
-    const all = await env.DB.prepare('SELECT book, name, bytes, pieces FROM files WHERE ready = 1').all<KeptFile & { book: string }>();
+    const all = await env.DB.prepare('SELECT book, name, bytes, pieces, changed, open FROM files WHERE ready = 1').all<KeptFile & { book: string; open: number }>();
     const files: Record<string, KeptFile & { open: boolean }> = {};
-    for (const { book: id, ...file } of all.results) files[id] = { ...file, open: FREE.has(id) };
+    for (const { book: id, open, ...file } of all.results) files[id] = { ...file, open: open === 1 };
     return json({ files });
   }
-  if (!KNOWN.has(book)) return refuse(400, 'bad-book');
+  if (!(await known(env, book))) return refuse(400, 'bad-book');
 
   if (rest === undefined && request.method === 'DELETE') {
     await env.DB.batch([env.DB.prepare('DELETE FROM file_pieces WHERE book = ?1').bind(book), env.DB.prepare('DELETE FROM files WHERE book = ?1').bind(book)]);
@@ -321,22 +451,34 @@ async function keepFiles(request: Request, env: Env, book: string | undefined, r
     await env.DB.batch([
       env.DB.prepare('DELETE FROM file_pieces WHERE book = ?1').bind(book),
       env.DB.prepare(
-        `INSERT INTO files (book, name, bytes, pieces, ready, changed) VALUES (?1, ?2, ?3, ?4, 0, ?5)
+        // A file that replaces another stays as open or as closed as the one before it.
+        `INSERT INTO files (book, name, bytes, pieces, ready, changed, open) VALUES (?1, ?2, ?3, ?4, 0, ?5, ?6)
          ON CONFLICT (book) DO UPDATE SET name = excluded.name, bytes = excluded.bytes, pieces = excluded.pieces, ready = 0, changed = excluded.changed`,
-      ).bind(book, name, bytes, body.pieces, Date.now()),
+      ).bind(book, name, bytes, body.pieces, Date.now(), FREE.has(book) ? 1 : 0),
     ]);
     return json({ piece: PIECE }, 201);
   }
 
-  const file = await env.DB.prepare('SELECT bytes, pieces FROM files WHERE book = ?1').bind(book).first<{ bytes: number; pieces: number }>();
+  const file = await env.DB.prepare('SELECT bytes, pieces, open, changed FROM files WHERE book = ?1').bind(book).first<{ bytes: number; pieces: number; open: number; changed: number }>();
   if (!file) return refuse(404, 'no-such-file');
+  if (rest === 'open' && request.method === 'POST') {
+    let open: unknown;
+    try {
+      open = JSON.parse((await request.text()).slice(0, 200)).open;
+    } catch {
+      return refuse(400, 'not-json');
+    }
+    if (typeof open !== 'boolean') return refuse(400, 'bad-open');
+    await env.DB.prepare('UPDATE files SET open = ?2 WHERE book = ?1').bind(book, open ? 1 : 0).run();
+    return json({ open });
+  }
   if (rest === 'done' && request.method === 'POST') {
     const got = await env.DB.prepare('SELECT COUNT(*) AS pieces, COALESCE(SUM(LENGTH(data)), 0) AS bytes FROM file_pieces WHERE book = ?1')
       .bind(book)
       .first<{ pieces: number; bytes: number }>();
     if (got?.pieces !== file.pieces || got.bytes !== file.bytes) return refuse(409, 'incomplete');
     await env.DB.prepare('UPDATE files SET ready = 1 WHERE book = ?1').bind(book).run();
-    return json({ ok: true, open: FREE.has(book) });
+    return json({ ok: true, open: file.open === 1, changed: file.changed });
   }
   if (rest !== undefined && /^\d{1,4}$/.test(rest) && request.method === 'PUT') {
     const n = Number(rest);
@@ -387,17 +529,26 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
   if (path === '/api/books' && request.method === 'GET') return overrides(env);
 
   const [, , section, book, rest] = path.split('/');
-  const fetching = section === 'files' && request.method === 'GET' && book !== undefined && /^\d{1,4}$/.test(rest ?? '');
-  // The file of a book out of copyright needs no card.
-  if (fetching && FREE.has(book)) return piece(env, book, Number(rest));
+  if (section === 'covers' && request.method === 'GET' && BOOK.test(book ?? '')) return cover(env, book);
+  const fetching = section === 'files' && request.method === 'GET' && BOOK.test(book ?? '') && /^\d{1,4}$/.test(rest ?? '');
+  // An open file needs no card.
+  if (fetching && (await env.DB.prepare('SELECT 1 FROM files WHERE book = ?1 AND ready = 1 AND open = 1').bind(book).first())) return piece(env, book, Number(rest));
 
   const card = await cardOf(request, env);
   if (!card) return refuse(401, 'no-such-card');
 
   if (section === 'files') {
     if (card.role !== 'admin') return refuse(403, 'keeper-only');
-    if (fetching) return KNOWN.has(book) ? piece(env, book, Number(rest)) : refuse(400, 'bad-book');
+    if (fetching) return piece(env, book, Number(rest));
     return keepFiles(request, env, book, rest);
+  }
+  if (section === 'added' || section === 'covers') {
+    if (card.role !== 'admin') return refuse(403, 'keeper-only');
+    if (!BOOK.test(book ?? '') || rest !== undefined) return refuse(400, 'bad-book');
+    if (section === 'covers' && request.method === 'PUT') return keepCover(request, env, book);
+    if (section === 'added' && request.method === 'PUT') return addBook(request, env, book);
+    if (section === 'added' && request.method === 'DELETE') return removeBook(env, book);
+    return refuse(404, 'not-found');
   }
 
   if (path === '/api/claim' && request.method === 'POST') return claim(request, env, card);

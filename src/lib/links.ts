@@ -5,7 +5,9 @@ import type { Book } from '../data/types';
 export const COVER_WIDTHS = { sm: 180, md: 320 } as const;
 export type CoverSize = keyof typeof COVER_WIDTHS;
 
-export const coverUrl = (book: Book, size: CoverSize) => `${import.meta.env.BASE_URL}covers/${book.id}-${size}.webp`;
+/** A catalogue book's cover is a file of the site; an added book's is kept by the server, in one size. */
+export const coverUrl = (book: Book, size: CoverSize) =>
+  book.added ? `${import.meta.env.BASE_URL}api/covers/${book.id}?v=${book.coverAt ?? 0}` : `${import.meta.env.BASE_URL}covers/${book.id}-${size}.webp`;
 
 const search = (book: Book) => encodeURIComponent(`${book.title} ${book.author}`);
 
