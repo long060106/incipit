@@ -40,9 +40,10 @@ const TEXT = {
   },
   yes: { en: 'Yes, erase', fr: 'Oui, effacer' },
   admin: { en: 'Keeper of the library', fr: 'Gardien de la bibliothèque' },
+  desk: { en: 'Open the keeper’s desk', fr: 'Ouvrir le bureau du gardien' },
   claimFirst: { en: 'Take a card (or open yours) to become the keeper of the site.', fr: 'Prenez une carte (ou ouvrez la vôtre) pour devenir le gardien du site.' },
   claimDone: {
-    en: 'This card now keeps the site. Open any book to find the keeper’s corner at the foot of its sheet.',
+    en: 'This card now keeps the site. Open the keeper’s desk below, or any book to find the keeper’s corner at the foot of its sheet.',
     fr: 'Cette carte garde désormais le site. Ouvrez un livre : le coin du gardien se trouve au bas de sa fiche.',
   },
   claimRefused: { en: 'That keeper’s link has already been used, or is not valid.', fr: 'Ce lien de gardien a déjà servi, ou n’est pas valide.' },
@@ -143,6 +144,11 @@ export function CardPanel() {
         {tl(TEXT.title)}
         {mine.role === 'admin' && ` · ${tl(TEXT.admin)}`}
       </p>
+      {mine.role === 'admin' && (
+        <a className="text-link" href={`${import.meta.env.BASE_URL}admin`}>
+          {tl(TEXT.desk)} →
+        </a>
+      )}
       <div className="card-face">
         <code>{printed(mine.code)}</code>
         <button

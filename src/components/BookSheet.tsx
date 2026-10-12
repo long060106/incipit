@@ -4,7 +4,7 @@ import type { Book, KeywordId, Mood } from '../data/types';
 import { AXES, DIFFICULTY, GENRES, KEYWORDS, LANGUAGES } from '../data/vocab';
 import { useI18n } from '../i18n';
 import { READABLE } from '../data/texts';
-import { useDecided } from '../lib/keeper';
+import { saveFile, useDecided } from '../lib/keeper';
 import { bookLinks, coverUrl } from '../lib/links';
 import { useShelf } from '../lib/shelf';
 import { MIN_RATINGS, similarBooks } from '../lib/match';
@@ -46,6 +46,7 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
   const decided = useDecided()[book.id];
   const whole = bookLinks(book);
   const links = decided?.download === false ? { ...whole, pdf: null, pdfBytes: 0 } : whole;
+  const kept = book.free && decided?.download !== false ? decided?.file : undefined;
   const similar = useMemo(() => similarBooks(book, BOOKS), [book]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const coverRef = useRef<HTMLImageElement>(null);
@@ -168,7 +169,7 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
               <DownloadIcon />
               <Roll>{readable ? t('downloadShort') : t('downloadBook')}</Roll>
             </a>
-          ) : readable ? null : links.readOnline ? (
+          ) : readable || kept ? null : links.readOnline ? (
             // Out of copyright, but its PDF has not been made yet.
             <a className="button button-large" href={links.readOnline} target="_blank" rel="noopener noreferrer" data-outbound="read">
               <Roll>{t('readOnline')}</Roll>
@@ -181,6 +182,13 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
             <a className="button button-large" href={links.worldcat} target="_blank" rel="noopener noreferrer" data-outbound="library">
               <Roll>{t('findLibraryShort')}</Roll>
             </a>
+          )}
+          {kept && (
+            // A file the keeper has put beside this book (only ever a book out of copyright).
+            <button type="button" className="button button-large button-quiet" onClick={() => void saveFile(book.id, kept)} data-outbound="file">
+              <DownloadIcon />
+              <Roll>{kept.name.split('.').pop()!.toUpperCase()}</Roll>
+            </button>
           )}
           <p className="actions-note">{note}</p>
         </div>

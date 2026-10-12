@@ -624,5 +624,147 @@ export const OPENINGS: Record<string, { section: number; lines: string[] }> = {
   "lines": [
    "Because of an hereditary recklessness, I have been playing always a losing game since my childhood. During my grammar school days, I was once laid up for about a week by jumping from the second story of the school building. Some may ask why I committed such a rash act. There was no particular reason for doing such a thing except I happened to be looking out into the yard from the second floor of the newly-built school house, when one of my classmates, joking, shouted at me; “Say, you big bluff, I’ll bet you can’t jump down from there! O, you chicken-heart, ha, ha!” So I jumped down. The janitor of the school had to carry me home on his back, and when my father saw me, he yelled derisively, “What a fellow you are to go and get your bones dislocated by jumping only from a second story!”"
   ]
+ },
+ "sense-and-sensibility": {
+  "section": 0,
+  "lines": [
+   "The family of Dashwood had long been settled in Sussex. Their estate was large, and their residence was at Norland Park, in the centre of their property, where, for many generations, they had lived in so respectable a manner as to engage the general good opinion of their surrounding acquaintance. The late owner of this estate was a single man, who lived to a very advanced age, and who for many years of his life, had a constant companion and housekeeper in his sister."
+  ]
+ },
+ "persuasion": {
+  "section": 0,
+  "lines": [
+   "Sir Walter Elliot, of Kellynch Hall, in Somersetshire, was a man who, for his own amusement, never took up any book but the Baronetage; there he found occupation for an idle hour, and consolation in a distressed one; there his faculties were roused into admiration and respect, by contemplating the limited remnant of the earliest patents; there any unwelcome sensations, arising from domestic affairs changed naturally into pity and contempt as he turned over the almost endless creations of the last century; and there, if every other leaf were powerless, he could read his own history with an interest which never failed. This was the page at which the favourite volume always opened:"
+  ]
+ },
+ "northanger-abbey": {
+  "section": 1,
+  "lines": [
+   "No one who had ever seen Catherine Morland in her infancy would have supposed her born to be an heroine. Her situation in life, the character of her father and mother, her own person and disposition, were all equally against her. Her father was a clergyman, without being neglected, or poor, and a very respectable man, though his name was Richard⁠—and he had never been handsome. He had a considerable independence besides two good livings⁠—and he was not in the least addicted to locking up his daughters. Her mother was a woman of useful plain sense, with a good temper, and, what is more remarkable, with a good constitution."
+  ]
+ },
+ "the-adventures-of-tom-sawyer": {
+  "section": 1,
+  "lines": [
+   "“Tom!”",
+   "No answer.",
+   "“Tom!”",
+   "No answer.",
+   "“What’s gone with that boy, I wonder? You Tom!”",
+   "No answer.",
+   "The old lady pulled her spectacles down and looked over them about the room; then she put them up and looked out under them. She seldom or never looked through them for so small a thing as a boy; they were her state pair, the pride of her heart, and were built for “style,” not service⁠—she could have seen through a pair of stove-lids just as well. She looked perplexed for a moment, and then said, not fiercely, but still loud enough for the furniture to hear:"
+  ]
+ },
+ "oliver-twist": {
+  "section": 0,
+  "lines": [
+   "Among other public buildings in a certain town, which for many reasons it will be prudent to refrain from mentioning, and to which I will assign no fictitious name, there is one anciently common to most towns, great or small: to wit, a workhouse; and in this workhouse was born; on a day and date which I need not trouble myself to repeat, inasmuch as it can be of no possible consequence to the reader, in this stage of the business at all events; the item of mortality whose name is prefixed to the head of this chapter."
+  ]
+ },
+ "david-copperfield": {
+  "section": 3,
+  "lines": [
+   "Whether I shall turn out to be the hero of my own life, or whether that station will be held by anybody else, these pages must show. To begin my life with the beginning of my life, I record that I was born (as I have been informed and believe) on a Friday, at twelve o’clock at night. It was remarked that the clock began to strike, and I began to cry, simultaneously."
+  ]
+ },
+ "the-turn-of-the-screw": {
+  "section": 0,
+  "lines": [
+   "The story had held us, round the fire, sufficiently breathless, but except the obvious remark that it was gruesome, as, on Christmas Eve in an old house, a strange tale should essentially be, I remember no comment uttered till somebody happened to say that it was the only case he had met in which such a visitation had fallen on a child."
+  ]
+ },
+ "the-awakening": {
+  "section": 0,
+  "lines": [
+   "A green and yellow parrot, which hung in a cage outside the door, kept repeating over and over:",
+   "“Allez vous-en! Allez vous-en! Sapristi! That’s all right!”",
+   "He could speak a little Spanish, and also a language which nobody understood, unless it was the mockingbird that hung on the other side of the door, whistling his fluty notes out upon the breeze with maddening persistence.",
+   "Mr. Pontellier, unable to read his newspaper with any degree of comfort, arose with an expression and an exclamation of disgust."
+  ]
+ },
+ "the-invisible-man": {
+  "section": 0,
+  "lines": [
+   "The stranger came early in February, one wintry day, through a biting wind and a driving snow, the last snowfall of the year, over the down, walking from Bramblehurst railway station, and carrying a little black portmanteau in his thickly gloved hand. He was wrapped up from head to foot, and the brim of his soft felt hat hid every inch of his face but the shiny tip of his nose; the snow had piled itself against his shoulders and chest, and added a white crest to the burden he carried. He staggered into the Coach and Horses more dead than alive, and flung his portmanteau down."
+  ]
+ },
+ "the-yellow-wallpaper": {
+  "section": 0,
+  "lines": [
+   "It is very seldom that mere ordinary people like John and myself secure ancestral halls for the summer.",
+   "A colonial mansion, a hereditary estate, I would say a haunted house, and reach the height of romantic felicity—but that would be asking too much of fate!",
+   "Still I will proudly declare that there is something queer about it.",
+   "Else, why should it be let so cheaply? And why have stood so long untenanted?"
+  ]
+ },
+ "a-dolls-house": {
+  "section": 1,
+  "lines": [
+   "A room furnished comfortably and tastefully, but not extravagantly. At the back, a door to the right leads to the entrance hall, another to the left leads to Helmer’s study. Between the doors stands a piano. In the middle of the left-hand wall is a door, and beyond it a window. Near the window are a round table, armchairs and a small sofa. In the right-hand wall, at the farther end, another door; and on the same side, nearer the footlights, a stove, two easy chairs and a rocking chair; between the stove and the door, a small table. Engravings on the walls; a cabinet with china and other small objects; a small bookcase with well-bound books. The floors are carpeted, and a fire burns in the stove. It is winter."
+  ]
+ },
+ "twelve-years-a-slave": {
+  "section": 0,
+  "lines": [
+   "NARRATIVE\nOF\nSOLOMON NORTHUP,\nA CITIZEN OF NEW-YORK,\nKIDNAPPED IN WASHINGTON CITY IN 1841,\nAND\nRESCUED IN 1853,",
+   "FROM A COTTON PLANTATION NEAR THE RED RIVER,\nIN LOUISIANA.",
+   "AUBURN:\nDERBY AND MILLER.",
+   "BUFFALO:\nDERBY, ORTON AND MULLIGAN.",
+   "LONDON:\nSAMPSON LOW, SON & COMPANY, 47 LUDGATE HILL.",
+   "1853.",
+   "Entered according to Act of Congress, in the year one thousand eight hundred and\nfifty-three, by\nDerby and Miller,\nIn the Clerk's Office of the District Court of the Northern District of New-York."
+  ]
+ },
+ "white-fang": {
+  "section": 0,
+  "lines": [
+   "Dark spruce forest frowned on either side the frozen waterway. The trees had been stripped by a recent wind of their white covering of frost, and they seemed to lean towards each other, black and ominous, in the fading light. A vast silence reigned over the land. The land itself was a desolation, lifeless, without movement, so lone and cold that the spirit of it was not even that of sadness. There was a hint in it of laughter, but of a laughter more terrible than any sadness⁠—a laughter that was mirthless as the smile of the sphinx, a laughter cold as the frost and partaking of the grimness of infallibility. It was the masterful and incommunicable wisdom of eternity laughing at the futility of life and the effort of life. It was the Wild, the savage, frozen-hearted Northland Wild."
+  ]
+ },
+ "lord-jim": {
+  "section": 1,
+  "lines": [
+   "He was an inch, perhaps two, under six feet, powerfully built, and he advanced straight at you with a slight stoop of the shoulders, head forward, and a fixed from-under stare which made you think of a charging bull. His voice was deep, loud, and his manner displayed a kind of dogged self-assertion which had nothing aggressive in it. It seemed a necessity, and it was directed apparently as much at himself as at anybody else. He was spotlessly neat, apparelled in immaculate white from shoes to hat, and in the various Eastern ports where he got his living as ship-chandler’s water-clerk he was very popular."
+  ]
+ },
+ "far-from-the-madding-crowd": {
+  "section": 1,
+  "lines": [
+   "When Farmer Oak smiled, the corners of his mouth spread till they were within an unimportant distance of his ears, his eyes were reduced to chinks, and diverging wrinkles appeared round them, extending upon his countenance like the rays in a rudimentary sketch of the rising sun.",
+   "His Christian name was Gabriel, and on working days he was a young man of sound judgment, easy motions, proper dress, and general good character."
+  ]
+ },
+ "uncle-toms-cabin": {
+  "section": 0,
+  "lines": [
+   "Late in the afternoon of a chilly day in February, two gentlemen were sitting alone over their wine, in a well-furnished dining parlor, in the town of P⁠⸺, in Kentucky. There were no servants present, and the gentlemen, with chairs closely approaching, seemed to be discussing some subject with great earnestness.",
+   "For convenience sake, we have said, hitherto, two gentlemen. One of the parties, however, when critically examined, did not seem, strictly speaking, to come under the species. He was a short, thickset man, with coarse, commonplace features, and that swaggering air of pretension which marks a low man who is trying to elbow his way upward in the world."
+  ]
+ },
+ "the-lost-world": {
+  "section": 2,
+  "lines": [
+   "Mr. Hungerton, her father, really was the most tactless person upon earth⁠—a fluffy, feathery, untidy cockatoo of a man, perfectly good-natured, but absolutely centered upon his own silly self. If anything could have driven me from Gladys, it would have been the thought of such a father-in-law. I am convinced that he really believed in his heart that I came round to the Chestnuts three days a week for the pleasure of his company, and very especially to hear his views upon bimetallism, a subject upon which he was by way of being an authority."
+  ]
+ },
+ "the-thirty-nine-steps": {
+  "section": 1,
+  "lines": [
+   "I returned from the city about three o’clock on that May afternoon pretty well disgusted with life. I had been three months in the Old Country, and was fed up with it. If anyone had told me a year ago that I would have been feeling like that I should have laughed at him; but there was the fact. The weather made me liverish, the talk of the ordinary Englishman made me sick. I couldn’t get enough exercise, and the amusements of London seemed as flat as soda-water that has been standing in the sun. “Richard Hannay,” I kept telling myself, “you have got into the wrong ditch, my friend, and you had better climb out.”"
+  ]
+ },
+ "the-man-who-was-thursday": {
+  "section": 1,
+  "lines": [
+   "The suburb of Saffron Park lay on the sunset side of London, as red and ragged as a cloud of sunset. It was built of a bright brick throughout; its skyline was fantastic, and even its ground plan was wild. It had been the outburst of a speculative builder, faintly tinged with art, who called its architecture sometimes Elizabethan and sometimes Queen Anne, apparently under the impression that the two sovereigns were identical. It was described with some justice as an artistic colony, though it never in any definable way produced any art."
+  ]
+ },
+ "north-and-south": {
+  "section": 0,
+  "lines": [
+   "BY\n\nMrs. GASKELL\n\n\n\n\n\nLONDON\nWALTER SCOTT, LIMITED\nPATERNOSTER SQUARE",
+   "CHAPTER: I., II., III., IV., V., VI., VII., VIII., IX., X., XI., XII., XIII., XIV., XV, XVI., XVII., XVIII., XIX., XX., XXI., XXII., XXIII., XXIV., XXV., XXVI., XXVII., XXVIII., XXIX., XXX., XXXI., XXXII., XXXIII., XXXIV., XXXV., XXXVI., XXXVII., XXXVIII., XXXIX., XL., XLI., XLII., XLIII., XLIV., XLV., XLVI., XLVII., XLVIII., XLIX., L, LI., LII.",
+   "NORTH AND SOUTH."
+  ]
  }
 };
