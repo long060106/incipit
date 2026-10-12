@@ -74,6 +74,8 @@ const READERS: Record<string, string> = {
 
 /** Below this width the filter panel is a sheet that rises from the bottom edge. */
 const NARROW = window.matchMedia('(max-width: 899px)');
+/** The sizes the covers of the wall can be hung at, from the usual one to the furthest the reader can stand back. */
+const ZOOMS = [1, 0.8, 0.64, 0.5];
 
 function useTheme(): [Theme, (event?: MouseEvent) => void] {
   const [theme, setTheme] = useState<Theme>(() => (document.documentElement.dataset.theme === 'day' ? 'day' : 'night'));
@@ -204,6 +206,8 @@ export default function App() {
   /** False until that window has opened all the way. */
   const [opened, setOpened] = useState(!opening);
   const [inGallery, setInGallery] = useState(false);
+  /** How far the reader stands back from the wall: an index into ZOOMS. */
+  const [zoom, setZoom] = useState(0);
   const [inHero, setInHero] = useState(true);
   /** Where the cover of the book being opened was on screen, for its flight into the sheet. */
   const [flight, setFlight] = useState<{ bookId: string; origin: CoverOrigin } | null>(null);
@@ -213,11 +217,15 @@ export default function App() {
   const wordRef = useRef<HTMLHeadingElement>(null);
   const wallRef = useRef<WallHandle>(null);
   const travel = useRef<Travel | null>(null);
+  /** Wheel travel gathered towards the next step of zoom. */
+  const pinch = useRef(0);
 
   const book = bookId ? BOOKS_BY_ID.get(bookId) ?? null : null;
   const dialogOpen = Boolean(book) || indexOpen;
   const live = useRef({ inGallery, inHero, dialogOpen, opened });
   live.current = { inGallery, inHero, dialogOpen, opened };
+  // The covers are their full size wherever the wall is not hung as a grid.
+  useEffect(() => wallRef.current?.setZoom(inGallery ? ZOOMS[zoom] : 1), [zoom, inGallery]);
 
   const sheet = useLingering(book);
   const index = useLingering(indexOpen ? true : null);
@@ -437,7 +445,20 @@ export default function App() {
     const onWheel = (event: WheelEvent) => {
       stopTravel();
       const { inGallery: gallery, dialogOpen: blocked } = live.current;
-      if (blocked || !gallery || event.ctrlKey) return;
+      if (blocked || !gallery) return;
+      if (event.ctrlKey) {
+        // A pinch on a trackpad, or the wheel with Ctrl held: stand back from the wall or step closer.
+        if (!(event.target as Element).closest('[data-scroll], .panel, .tray')) {
+          event.preventDefault();
+          pinch.current += event.deltaY;
+          if (Math.abs(pinch.current) > 40) {
+            const step = Math.sign(pinch.current);
+            pinch.current = 0;
+            setZoom((level) => Math.min(ZOOMS.length - 1, Math.max(0, level + step)));
+          }
+        }
+        return;
+      }
 
       const scroller = (event.target as Element).closest<HTMLElement>('[data-scroll]');
       if (scroller && scroller.scrollWidth > scroller.clientWidth + 1) {
@@ -575,7 +596,23 @@ export default function App() {
           open={panelOpen}
           onToggle={() => setPanelOpen((value) => !value)}
         />
-        <Tray active={inGallery} result={result} onOpenBook={openBook} onReset={resetFilters} />
+        <Tray
+          active={inGallery}
+          result={result}
+          label={countLabel}
+          order={filters.sort === 'rating' ? t('sortRating') : filters.sort === 'popular' ? t('sortPopular') : null}
+          onOpenBook={openBook}
+          onReset={resetFilters}
+        />
+        {/* Standing back from the wall, as far as there are covers to fill it. */}
+        <div className="zoom" role="group" inert={!inGallery}>
+          <button type="button" onClick={() => setZoom(Math.max(0, zoom - 1))} disabled={zoom === 0} aria-label={t('zoomIn')} title={t('zoomIn')}>
+            +
+          </button>
+          <button type="button" onClick={() => setZoom(Math.min(ZOOMS.length - 1, zoom + 1))} disabled={zoom === ZOOMS.length - 1} aria-label={t('zoomOut')} title={t('zoomOut')}>
+            −
+          </button>
+        </div>
         {!result.active && <p className="hint">{t('dragHint')}</p>}
 
         {sheet.shown && (

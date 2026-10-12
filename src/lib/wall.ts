@@ -115,6 +115,7 @@ export function coverOrigin(container: Element | null): CoverOrigin | null {
  */
 export class Wall {
   private readonly plane = document.createElement('div');
+  private readonly glow = document.createElement('div');
   private readonly label = document.createElement('div');
   private readonly labelTitle = document.createElement('span');
   private readonly labelAuthor = document.createElement('span');
@@ -133,6 +134,8 @@ export class Wall {
   private pitchX = 1;
   private pitchY = 1;
   private coverSize: CoverSize = 'sm';
+  /** 1 at the usual distance; smaller when the reader stands back to see more covers. */
+  private zoom = 1;
 
   /** Camera: the wall coordinate shown at the centre of the viewport. */
   private camX = 0;
@@ -164,6 +167,12 @@ export class Wall {
   private parallaxX = 0;
   private parallaxY = 0;
 
+  /**
+   * The lamp the reader carries along the hung wall: where it is, and how far it is turned
+   * up (0 to 1). It trails the cursor, and the covers within its reach come back into colour.
+   */
+  private lamp = { x: 0, y: 0, lit: 0, shown: false };
+
   private hoverId: string | null = null;
   private labelX = 0;
   private labelY = 0;
@@ -184,6 +193,8 @@ export class Wall {
     this.booksById = new Map(books.map((book) => [book.id, book]));
     this.rowShift = Math.max(1, Math.round(books.length * 0.4));
 
+    this.glow.className = 'wall-lamp';
+    root.append(this.glow);
     this.plane.className = 'wall-plane';
     this.label.className = 'wall-label';
     this.labelTitle.className = 'wall-label-title';
@@ -221,6 +232,7 @@ export class Wall {
     document.documentElement.removeEventListener('pointerleave', this.onWindowPointerLeave);
     root.classList.remove('is-interactive', 'is-dragging');
     this.plane.remove();
+    this.glow.remove();
     this.label.remove();
     this.cells.clear();
   }
@@ -242,6 +254,19 @@ export class Wall {
     this.interactive = value;
     // Mid-drag the class stays as it is, so the gesture in progress is not cut off.
     if (!this.drag) this.root.classList.toggle('is-interactive', value);
+  }
+
+  /**
+   * Stands the reader back from the wall (below 1) or returns them to it (1): the covers are
+   * hung again at that size, around the same spot.
+   */
+  setZoom(value: number) {
+    const next = clamp(value, 0.4, 1);
+    if (next === this.zoom) return;
+    this.root.dataset.zoomed = next < this.zoom ? 'out' : 'in';
+    this.zoom = next;
+    this.measure();
+    window.setTimeout(() => delete this.root.dataset.zoomed, 600);
   }
 
   /** Stops the idle drift and the hover label, e.g. while a dialog covers the wall. */
@@ -283,8 +308,8 @@ export class Wall {
     this.width = rect.width;
     this.height = rect.height;
 
-    const cellW = Math.round(clamp(rect.width * 0.105, 104, 172));
-    const gap = Math.round(clamp(rect.width * 0.022, 16, 34));
+    const cellW = Math.round(clamp(rect.width * 0.105, 104, 172) * this.zoom);
+    const gap = Math.round(clamp(rect.width * 0.022, 16, 34) * this.zoom);
     if (cellW !== this.cellW) {
       const scale = this.pitchX > 1 ? (cellW + gap) / this.pitchX : 1;
       this.cellW = cellW;
@@ -528,7 +553,11 @@ export class Wall {
       this.camY += dy * ease;
     }
 
-    if (!moving && !this.dirty && this.assemble === 1) return;
+    const lamplit = this.stepLamp(now);
+    if (!moving && !this.dirty && this.assemble === 1) {
+      if (lamplit) this.shineLamp();
+      return;
+    }
     this.dirty = false;
 
     this.plane.style.transform =
@@ -541,7 +570,55 @@ export class Wall {
       for (const cell of this.cells.values()) this.placeOnGrid(cell);
       this.scattered = false;
     }
+    if (this.assemble === 1) this.shineLamp();
   };
+
+  /**
+   * Carries the lamp towards the cursor and turns it up or down. It burns only over the hung
+   * wall, with a mouse on the page. Returns true while there is anything for it to light.
+   */
+  private stepLamp(now: number): boolean {
+    const lamp = this.lamp;
+    const wanted = this.interactive && this.assemble === 1 && this.pointer && !this.paused ? 1 : 0;
+    if (this.pointer && wanted) {
+      // It is lit where the cursor is, then follows a little behind it.
+      const follow = lamp.lit < 0.02 || this.reducedMotion ? 1 : 0.1;
+      lamp.x += (this.pointer.x - lamp.x) * follow;
+      lamp.y += (this.pointer.y - lamp.y) * follow;
+    }
+    lamp.lit += (wanted - lamp.lit) * 0.05;
+    if (Math.abs(wanted - lamp.lit) < 0.004) lamp.lit = wanted;
+    if (lamp.lit === 0 && !lamp.shown) return false;
+
+    // A flame is never quite still: it breathes, slowly.
+    const breath = this.reducedMotion ? 1 : 0.93 + 0.05 * Math.sin(now / 1900) + 0.02 * Math.sin(now / 730);
+    const size = this.lampReach() * 3.2;
+    this.glow.style.width = this.glow.style.height = `${size}px`;
+    this.glow.style.transform = `translate3d(${(lamp.x - size / 2).toFixed(1)}px, ${(lamp.y - size / 2).toFixed(1)}px, 0)`;
+    this.glow.style.opacity = (lamp.lit * breath).toFixed(3);
+    return true;
+  }
+
+  /** How far from the lamp a cover still catches its light, in px. */
+  private lampReach() {
+    return clamp(this.width * 0.19, 200, 330);
+  }
+
+  /** Brings the covers near the lamp back into colour, more the nearer they hang. */
+  private shineLamp() {
+    const { x, y, lit, shown } = this.lamp;
+    if (lit === 0 && !shown) return;
+    const reach = this.lampReach();
+    for (const cell of this.cells.values()) {
+      const distance = Math.hypot(cell.cx - this.camX + this.width / 2 - x, cell.cy - this.camY + this.height / 2 - y);
+      const near = Math.round(lit * Math.max(0, 1 - distance / reach) ** 1.3 * 10) / 10;
+      if (near === cell.near) continue;
+      // The light must not wait for the ripple a change of filters left on this cover.
+      cell.el.style.setProperty('--delay', '0ms');
+      this.setNear(cell, near);
+    }
+    this.lamp.shown = lit > 0;
+  }
 
   // ── Pointer ───────────────────────────────────────────────────────────────
 

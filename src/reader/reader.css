@@ -606,3 +606,74 @@
     font-size: 1.125rem;
   }
 }
+
+/* ── The room at night: stars behind the page, a lamp on it (ambience.ts) ──────────────── */
+
+.reader-sky,
+.reader-shade,
+.reader-glow {
+  position: fixed;
+  pointer-events: none;
+}
+
+/* Faint behind the column of text, clearer in the margins on either side of it. */
+.reader-sky {
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  --edge: calc(var(--read-width) / 2 + 1.5rem);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(50% - var(--edge) - 6rem), rgb(0 0 0 / 0.14) calc(50% - var(--edge)), rgb(0 0 0 / 0.14) calc(50% + var(--edge)), #000 calc(50% + var(--edge) + 6rem));
+  mask-image: linear-gradient(to right, #000 calc(50% - var(--edge) - 6rem), rgb(0 0 0 / 0.14) calc(50% - var(--edge)), rgb(0 0 0 / 0.14) calc(50% + var(--edge)), #000 calc(50% + var(--edge) + 6rem));
+  animation: sky-in 3s ease 0.4s backwards;
+}
+
+@keyframes sky-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* The page and everything on it stand in front of the sky. */
+.reader > main,
+.reader > .reader-missing {
+  position: relative;
+  z-index: 1;
+}
+
+/* The lamp: a pool of warm light, wider than it is tall so that it lies along the lines being read. */
+.reader-glow {
+  left: 0;
+  top: 0;
+  z-index: 3;
+  width: 78rem;
+  height: 34rem;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 196 122 / 0.15), rgb(255 170 92 / 0.06) 48%, transparent);
+  mix-blend-mode: screen;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* And the dark it leaves everywhere else, which lifts when the mouse is still. */
+.reader-shade {
+  left: 0;
+  top: 0;
+  z-index: 3;
+  width: 400vmax;
+  height: 400vmax;
+  background: radial-gradient(ellipse 46rem 19rem at center, transparent 55%, rgb(0 0 0 / 0.5) 130%);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* By day there is no sky and no need of a lamp. */
+:root[data-theme='day'] .reader-sky,
+:root[data-theme='day'] .reader-shade,
+:root[data-theme='day'] .reader-glow {
+  display: none;
+}
+
+.reader-bar .reader-lamp[aria-pressed='true'] {
+  color: var(--accent);
+}

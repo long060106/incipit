@@ -6,6 +6,7 @@ export interface WallHandle {
   setAssemble: (value: number) => void;
   wheel: (dx: number, dy: number) => boolean;
   setClearing: (value: number, now?: boolean) => void;
+  setZoom: (value: number) => void;
 }
 
 interface WallStageProps {
@@ -55,6 +56,7 @@ export const WallStage = forwardRef<WallHandle, WallStageProps>(function WallSta
       setAssemble: (value) => wallRef.current?.setAssemble(value),
       wheel: (dx, dy) => wallRef.current?.wheel(dx, dy) ?? false,
       setClearing: (value, now) => wallRef.current?.setClearing(value, now),
+      setZoom: (value) => wallRef.current?.setZoom(value),
     }),
     [],
   );
