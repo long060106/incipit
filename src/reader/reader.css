@@ -649,7 +649,7 @@
   width: 40rem;
   height: 17rem;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgb(255 234 204 / 0.05), rgb(255 226 194 / 0.018) 50%, transparent);
+  background: radial-gradient(closest-side, rgb(255 212 158 / 0.062), rgb(255 198 140 / 0.022) 50%, transparent);
   mix-blend-mode: screen;
   opacity: 0;
   will-change: transform, opacity;
@@ -665,6 +665,12 @@
   background: radial-gradient(ellipse 30rem 12rem at center, transparent 50%, rgb(0 0 0 / 0.26) 140%);
   opacity: 0;
   will-change: transform, opacity;
+}
+
+/* The lamp put out: the stars stay. */
+.reader[data-lamp='out'] .reader-shade,
+.reader[data-lamp='out'] .reader-glow {
+  display: none;
 }
 
 /* By day there is no sky and no need of a lamp. */
