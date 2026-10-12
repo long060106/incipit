@@ -216,7 +216,8 @@
   top: 0;
   z-index: 5;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgb(255 198 124 / 0.2), rgb(255 168 88 / 0.07) 46%, transparent);
+  /* Pale and faint: it is felt more than seen. The colour coming back into the covers is the lamp. */
+  background: radial-gradient(closest-side, rgb(255 232 200 / 0.055), rgb(255 222 188 / 0.02) 50%, transparent);
   mix-blend-mode: screen;
   opacity: 0;
   pointer-events: none;
@@ -434,11 +435,12 @@
 .hero-word {
   /* Positioned so each letter can be measured against it (lib/light.ts). */
   position: relative;
-  font-family: var(--font-display);
-  font-weight: var(--display-weight);
+  font-family: var(--font-hero);
+  font-style: var(--hero-style);
+  font-weight: 400;
   font-size: var(--hero-size);
   line-height: 0.84;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.01em;
   white-space: nowrap;
   /* Leans a few pixels against the light, in front of the covers that lean further. */
   transform: translate3d(calc(var(--lean-x, 0) * -12px), calc(var(--lean-y, 0) * -8px), 0);
@@ -550,8 +552,8 @@
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .hero-glyph {
     /* The box is padded out past the glyph, or its overhangs and descender would be cut. */
-    margin: -0.16em -0.09em -0.3em;
-    padding: 0.16em 0.09em 0.3em;
+    margin: -0.16em -0.22em -0.34em;
+    padding: 0.16em 0.22em 0.34em;
     background-image: radial-gradient(
       circle at calc(var(--lx, 50%) - var(--ox, 0px)) calc(var(--ly, 50%) - var(--oy, 0px)),
       var(--word-hot),
@@ -788,11 +790,12 @@
 }
 
 .wordmark {
-  font-family: var(--font-display);
-  font-weight: var(--display-weight);
-  font-size: calc(1.875rem * var(--display-scale));
+  font-family: var(--font-hero);
+  font-style: var(--hero-style);
+  font-weight: 400;
+  font-size: 2.125rem;
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   /* Takes over from the large hero word as that one fades. */
   opacity: calc(1 - var(--hero));
 }
@@ -1228,11 +1231,11 @@ a.header-link {
 
   /* Matches the theme selectors' specificity so it wins over both. */
   :root[data-theme] {
-    --hero-size: 25vw;
+    --hero-size: 32vw;
   }
 
   .wordmark {
-    font-size: calc(1.625rem * var(--display-scale));
+    font-size: 1.875rem;
   }
 
   /* No room beside the word here: the two figures meet above it, smaller, and the edges of
@@ -1247,7 +1250,7 @@ a.header-link {
   }
 
   .hand {
-    top: -82%;
+    top: -62%;
   }
 
   .hand-rail-left .hand {
@@ -1343,3 +1346,68 @@ a.header-link {
     animation: none;
   }
 }
+
+/* ── The word under the opening window ────────────────────────────────────── */
+
+/*
+  The page arrives as a small window and opens as it is scrolled. It plays that by itself,
+  but a reader who has stopped it, or who waits, is told what to do: a word at the foot of
+  the screen, over a hairline down which a bead of light slides, slowly.
+*/
+.scroll-cue {
+  position: fixed;
+  left: 50%;
+  bottom: 1.75rem;
+  z-index: 7;
+  display: grid;
+  justify-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  translate: -50% 0;
+  transition: opacity 0.9s ease, color 0.3s ease, visibility 0s;
+  animation: fade-in 1.2s ease 1.4s backwards;
+}
+
+.scroll-cue:hover {
+  color: var(--text);
+}
+
+.scroll-cue[data-gone] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.9s ease, visibility 0s 0.9s;
+}
+
+.scroll-cue i {
+  position: relative;
+  width: 1px;
+  height: 2.75rem;
+  overflow: hidden;
+  background: var(--line-strong);
+}
+
+.scroll-cue i::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 40%;
+  background: var(--accent);
+  animation: cue-fall 2.6s ease-in-out infinite;
+}
+
+@keyframes cue-fall {
+  from {
+    transform: translateY(-110%);
+  }
+  to {
+    transform: translateY(260%);
+  }
+}
+

@@ -71,6 +71,13 @@ const WAKE_RADIUS = 280;
 const PARALLAX_FAR = 10;
 const PARALLAX_NEAR = 96;
 
+/**
+ * The name on the opening page as the stylesheets set it (--hero-size and --font-hero in
+ * tokens.css, and the narrow-screen rule in stage.css): its type size as a share of the
+ * page's width and height, its least and most in px, and how wide the word is in type sizes.
+ */
+const NAME = { wide: [0.27, 0.46], narrow: 0.32, least: 96, most: 640, width: 2.42 } as const;
+
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
@@ -438,9 +445,10 @@ export class Wall {
     // On a phone the covers crowd the text, so they differ less in size.
     const grow = narrow ? 0.5 : 0.8;
     // The size of the name, as the stylesheet sets it (--hero-size in tokens.css).
-    const name = narrow ? this.width * 0.25 : clamp(Math.min(this.width * 0.21, this.height * 0.36), 72, 496);
-    // The name is a little over three times as wide as its type is tall; half of that is kept clear.
-    const clearX = (narrow ? this.width * 0.3 : name * 1.6) + this.cellW / 2;
+    const name = narrow ? this.width * NAME.narrow : clamp(Math.min(this.width * NAME.wide[0], this.height * NAME.wide[1]), NAME.least, NAME.most);
+    // Half the width of the name is kept clear on either side of the middle.
+    const half = (name * NAME.width) / 2;
+    const clearX = (narrow ? this.width * 0.3 : half * 1.03) + this.cellW / 2;
     const clearY = this.height * (narrow ? 0.27 : 0.35) + this.cellH / 2;
     // The two figures reach in from the sides: level with the name on a wide screen, above
     // it on a phone. No cover rests behind them: on each side the covers keep above and
@@ -448,7 +456,7 @@ export class Wall {
     // measured from the page; how tall a figure stands follows from the hand rules in
     // stage.css.
     const tipY = narrow ? name * -1.57 : name * 0.06 - 66;
-    const figure = (narrow ? this.width * 0.5 : this.width * 0.53 - name * 0.963) * 0.974;
+    const figure = (narrow ? this.width * 0.5 : this.width * 0.53 - half * 0.871) * 0.974;
     const band = (above: number, below: number) => {
       const top = tipY - (figure * above + this.cellH * 0.6) * this.clearing;
       const bottom = tipY + (figure * below + this.cellH * 0.6) * this.clearing;
@@ -592,7 +600,7 @@ export class Wall {
 
     // A flame is never quite still: it breathes, slowly.
     const breath = this.reducedMotion ? 1 : 0.93 + 0.05 * Math.sin(now / 1900) + 0.02 * Math.sin(now / 730);
-    const size = this.lampReach() * 3.2;
+    const size = this.lampReach() * 2.5;
     this.glow.style.width = this.glow.style.height = `${size}px`;
     this.glow.style.transform = `translate3d(${(lamp.x - size / 2).toFixed(1)}px, ${(lamp.y - size / 2).toFixed(1)}px, 0)`;
     this.glow.style.opacity = (lamp.lit * breath).toFixed(3);
@@ -601,7 +609,7 @@ export class Wall {
 
   /** How far from the lamp a cover still catches its light, in px. */
   private lampReach() {
-    return clamp(this.width * 0.19, 200, 330);
+    return clamp(this.width * 0.125, 150, 210);
   }
 
   /** Brings the covers near the lamp back into colour, more the nearer they hang. */
@@ -611,7 +619,8 @@ export class Wall {
     const reach = this.lampReach();
     for (const cell of this.cells.values()) {
       const distance = Math.hypot(cell.cx - this.camX + this.width / 2 - x, cell.cy - this.camY + this.height / 2 - y);
-      const near = Math.round(lit * Math.max(0, 1 - distance / reach) ** 1.3 * 10) / 10;
+      // Gently: the cover under the cursor is woken by the cursor itself, its neighbours only part of the way.
+      const near = Math.round(lit * 0.8 * Math.max(0, 1 - distance / reach) ** 1.5 * 10) / 10;
       if (near === cell.near) continue;
       // The light must not wait for the ripple a change of filters left on this cover.
       cell.el.style.setProperty('--delay', '0ms');

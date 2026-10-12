@@ -30,6 +30,7 @@ const STRINGS = {
   defMeaning: { en: 'The first words of a book.', fr: "Les premiers mots d'un livre." },
   browse: { en: 'Browse the books', fr: 'Voir les livres' },
   scrollHint: { en: 'or scroll', fr: 'ou faites défiler' },
+  scrollCue: { en: 'Scroll down', fr: 'Faites défiler' },
   line1: { en: 'Most book sites ask what you want to read.', fr: 'La plupart des sites vous demandent ce que vous voulez lire.' },
   line2: { en: 'This one asks how you want to feel.', fr: 'Celui-ci vous demande ce que vous voulez ressentir.' },
   line3: {

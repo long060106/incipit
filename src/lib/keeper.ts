@@ -103,7 +103,7 @@ export async function decide(code: string, bookId: string, change: Partial<Pick<
   try {
     const response = await fetch(`${API}/books/${bookId}`, {
       method: 'PUT',
-      headers: { authorization: `Card ${code}`, 'content-type': 'application/json' },
+      headers: { ...withCard(code), 'content-type': 'application/json' },
       body: JSON.stringify(change),
     });
     if (!response.ok) return false;
@@ -121,7 +121,75 @@ export async function decide(code: string, bookId: string, change: Partial<Pick<
 // ---------------------------------------------------------------------------------------
 // Files
 
-const withCard = (code: string | null | undefined): HeadersInit => (code ? { authorization: `Card ${code}` } : {});
+// ---------------------------------------------------------------------------------------
+// The password on the desk
+//
+// The keeper's card alone changes nothing: the desk has a password as well (worker/index.ts).
+// Entering it gives this tab a key, which goes with every request the keeper makes. The key
+// is kept for the tab only, so the password is asked for again in a new tab or window.
+
+const DESK_KEY = 'incipit:desk-key';
+
+/** The key of the open desk, if this tab holds one. */
+export function deskKey(): string | null {
+  try {
+    return sessionStorage.getItem(DESK_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function keepDeskKey(key: string | null) {
+  try {
+    if (key) sessionStorage.setItem(DESK_KEY, key);
+    else sessionStorage.removeItem(DESK_KEY);
+  } catch {
+    // Without it the desk asks for the password each time.
+  }
+}
+
+/** What a request of the keeper's carries: the card, and the key of the open desk. */
+export const withCard = (code: string | null | undefined): Record<string, string> => {
+  const key = code ? deskKey() : null;
+  return code ? { authorization: `Card ${code}`, ...(key ? { 'x-keeper': key } : {}) } : {};
+};
+
+export type Desk = 'unset' | 'locked' | 'open';
+
+/** Whether a password has been chosen, and whether the desk is open in this tab. Null if the server cannot say. */
+export async function deskState(code: string): Promise<Desk | null> {
+  try {
+    const response = await fetch(`${API}/lock`, { headers: withCard(code) });
+    if (!response.ok) return null;
+    const { set, open } = (await response.json()) as { set: boolean; open: boolean };
+    if (!open) keepDeskKey(null);
+    return !set ? 'unset' : open ? 'open' : 'locked';
+  } catch {
+    return null;
+  }
+}
+
+/** Sends a password to one of the two doors and keeps the key that comes back. Resolves to 'open', or to the server's reason. */
+async function knock(code: string, path: 'lock' | 'unlock', body: { password: string; current?: string }): Promise<string> {
+  try {
+    const response = await fetch(`${API}/${path}`, { method: 'POST', headers: { ...withCard(code), 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    const answer = (await response.json().catch(() => null)) as { key?: string; error?: string } | null;
+    if (!response.ok || !answer?.key) return answer?.error ?? 'failed';
+    keepDeskKey(answer.key);
+    return 'open';
+  } catch {
+    return 'failed';
+  }
+}
+
+/** Chooses the desk's password, or changes it (from an open desk, or by giving the current one). */
+export const choosePassword = (code: string, password: string, current?: string) => knock(code, 'lock', { password, current });
+export const unlockDesk = (code: string, password: string) => knock(code, 'unlock', { password });
+
+export async function lockDesk(code: string) {
+  await fetch(`${API}/unlock`, { method: 'DELETE', headers: withCard(code) }).catch(() => undefined);
+  keepDeskKey(null);
+}
 
 /** Every file the server keeps, by book id: the keeper's own view. */
 export async function keptFiles(code: string): Promise<Record<string, KeptFile>> {

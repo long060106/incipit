@@ -4,6 +4,7 @@ import type { AxisId, Book, GenreId, KeywordId, L, LanguageId, Mood } from '../d
 import { AXES, GENRES, KEYWORDS, LANGUAGES } from '../data/vocab';
 import { useI18n } from '../i18n';
 import { shelve, unshelve } from '../lib/added';
+import { withCard } from '../lib/keeper';
 
 /*
   The form the keeper fills to add a book of their own to the site, or to write one of
@@ -118,7 +119,7 @@ export function BookForm({ code, book, onDone, onCancel }: { code: string; book?
   const [state, setState] = useState<'saving' | 'failed' | null>(null);
 
   const flip = <T,>(list: T[], item: T, most: number) => (list.includes(item) ? list.filter((entry) => entry !== item) : list.length < most ? [...list, item] : list);
-  const send = (path: string, init: RequestInit) => fetch(`${API}${path}`, { ...init, headers: { authorization: `Card ${code}`, ...init.headers } });
+  const send = (path: string, init: RequestInit) => fetch(`${API}${path}`, { ...init, headers: { ...withCard(code), ...init.headers } });
 
   const save = async () => {
     setState('saving');

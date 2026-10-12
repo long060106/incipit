@@ -1,20 +1,31 @@
 /*
-  The reading room at night (src/reader/ReaderPage.tsx): behind the page a sky of faint stars
-  turns slowly, and a lamp follows the cursor down the text.
+  The reading room at night (src/reader/ReaderPage.tsx): behind the page a few stars turn
+  slowly, and a small lamp follows the cursor down the text.
 
-  The stars are drawn on one canvas, a few times a second; they are faint behind the column
-  of text (reader.css masks them there) and clearer in the margins. The lamp is two layers
-  that are only ever moved, never repainted: a warm pool of light, and a shade that dims the
-  page away from it. The shade is there only while the mouse is in use. When the mouse has
-  been still for a few seconds the reader is reading, and the whole page is lit evenly again.
+  The stars answer the mouse, in the way of a graph of notes but quieter. The ones near the
+  cursor brighten, lean a little towards it and are joined to one another by thin lines. A
+  star in the margin can be taken hold of and drawn aside; its neighbours follow part of the
+  way, and when it is let go they all drift back to their places. The stars are drawn on one
+  canvas, which reader.css makes faint behind the column of text.
+
+  The lamp is two layers that are only ever moved, never repainted: a pool of warm light,
+  and a shade that dims the page a little away from it. The shade is there only while the
+  mouse is in use. When the mouse has been still for a few seconds the reader is reading,
+  and the whole page is lit evenly again.
 */
 
 const STILL_AFTER = 3500; // milliseconds without the mouse moving before the shade lifts
-const TURN = (Math.PI * 2) / (50 * 60 * 1000); // the sky turns once in fifty minutes
-const FRAME = 1000 / 24;
+const TURN = (Math.PI * 2) / (120 * 60 * 1000); // the sky turns once in two hours: a star crosses a pixel or two in a second
+const AT_REST = 1000 / 24; // milliseconds between drawings while nothing answers the mouse
+const SKY_TO_A_STAR = 15_000; // px² of sky for each star
+const REACH = 170; // px from the cursor within which the stars answer it
+const LINK = 150; // px: the longest line drawn between two stars
+const HOLD = 18; // px: how near a press must be to a star to take hold of it
+const HOME = 0.02; // how firmly a star is drawn back to its place
+const EASE = 0.8; // how much of its speed a star keeps from one frame to the next
 
 interface Star {
-  /** Where it is, from the point the sky turns about: a distance and an angle. */
+  /** Its place in the sky, from the point the sky turns about: a distance and an angle. */
   far: number;
   at: number;
   size: number;
@@ -23,6 +34,24 @@ interface Star {
   pace: number;
   phase: number;
   warm: boolean;
+  /** Where it is on the screen now, and how far that is from its place. */
+  x: number;
+  y: number;
+  dx: number;
+  dy: number;
+  vx: number;
+  vy: number;
+  /** How near the cursor it is, 0 to 1, eased. */
+  near: number;
+}
+
+/** A star held by the mouse, the point of it the mouse has hold of, and the neighbours that follow it. */
+interface Held {
+  star: Star;
+  gripX: number;
+  gripY: number;
+  moved: boolean;
+  friends: { star: Star; x: number; y: number }[];
 }
 
 export function installAmbience(host: HTMLElement): () => void {
@@ -43,6 +72,8 @@ export function installAmbience(host: HTMLElement): () => void {
   let height = 0;
   /** The point the sky turns about: below the foot of the page, so the stars cross it in shallow arcs. */
   let pole = { x: 0, y: 0 };
+  const mouse = { x: 0, y: 0, moved: -Infinity, here: false };
+  let held: Held | null = null;
 
   const measure = () => {
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -52,48 +83,146 @@ export function installAmbience(host: HTMLElement): () => void {
     sky.height = Math.round(height * ratio);
     pen?.setTransform(ratio, 0, 0, ratio, 0, 0);
     pole = { x: width * 0.5, y: height * 1.9 };
-    // Enough stars for the whole ring the screen is a window onto, at one for about every 5000 px² in view.
+    // The screen is a window onto a ring of sky about that point; the whole ring is sown.
     const reach = Math.hypot(Math.max(pole.x, width - pole.x), pole.y);
-    const near = pole.y - height;
-    const wanted = Math.round((Math.PI * (reach * reach - near * near)) / 5200);
-    stars = Array.from({ length: Math.min(wanted, 4500) }, () => ({
-      far: Math.sqrt(near * near + Math.random() * (reach * reach - near * near)),
+    const inner = pole.y - height;
+    const wanted = Math.round((Math.PI * (reach * reach - inner * inner)) / SKY_TO_A_STAR);
+    stars = Array.from({ length: Math.min(wanted, 1600) }, () => ({
+      far: Math.sqrt(inner * inner + Math.random() * (reach * reach - inner * inner)),
       at: Math.random() * Math.PI * 2,
-      size: 0.35 + Math.random() ** 3 * 1.15,
-      light: 0.26 + Math.random() ** 2 * 0.7,
+      size: 0.6 + Math.random() ** 2.5 * 1.1,
+      light: 0.3 + Math.random() ** 2 * 0.55,
       pace: 0.0006 + Math.random() * 0.0012,
       phase: Math.random() * Math.PI * 2,
-      warm: Math.random() < 0.22,
+      warm: Math.random() < 0.25,
+      x: 0,
+      y: 0,
+      dx: 0,
+      dy: 0,
+      vx: 0,
+      vy: 0,
+      near: 0,
     }));
+    held = null;
     drawn = 0;
   };
 
   let drawn = 0;
+  /** Stars on the screen at the last drawing, for the mouse to find one among. */
+  let shown: Star[] = [];
   const draw = (now: number) => {
-    if (!pen || now - drawn < FRAME) return;
+    if (!pen) return;
+    const awake = held !== null || now - mouse.moved < 2500 || shown.some((star) => star.near > 0.01 || Math.abs(star.dx) + Math.abs(star.dy) > 0.2);
+    if (!awake && now - drawn < AT_REST) return;
     drawn = now;
     pen.clearRect(0, 0, width, height);
     const turned = still ? 0 : now * TURN;
+    const answering = mouse.here && !still;
+    shown = [];
+
     for (const star of stars) {
       const angle = star.at + turned;
-      const x = pole.x + Math.cos(angle) * star.far;
-      const y = pole.y + Math.sin(angle) * star.far;
-      if (x < -2 || x > width + 2 || y < -2 || y > height + 2) continue;
+      const homeX = pole.x + Math.cos(angle) * star.far;
+      const homeY = pole.y + Math.sin(angle) * star.far;
+      const away = homeX < -40 || homeX > width + 40 || homeY < -40 || homeY > height + 40;
+      if (away && star !== held?.star) {
+        star.dx = star.dy = star.vx = star.vy = star.near = 0;
+        continue;
+      }
+      let near = 0;
+      if (star === held?.star) {
+        // In the hand: it goes where the mouse goes.
+        star.dx = mouse.x - held.gripX - homeX;
+        star.dy = mouse.y - held.gripY - homeY;
+        star.vx = star.vy = 0;
+        near = 1;
+      } else {
+        let pullX = -star.dx * HOME;
+        let pullY = -star.dy * HOME;
+        if (answering) {
+          const toX = mouse.x - (homeX + star.dx);
+          const toY = mouse.y - (homeY + star.dy);
+          const distance = Math.hypot(toX, toY);
+          if (distance < REACH) {
+            near = 1 - distance / REACH;
+            // It leans towards the cursor: a few pixels, never onto it.
+            if (distance > 1) {
+              pullX += (toX / distance) * near * 0.1;
+              pullY += (toY / distance) * near * 0.1;
+            }
+          }
+        }
+        star.vx = (star.vx + pullX) * EASE;
+        star.vy = (star.vy + pullY) * EASE;
+        star.dx += star.vx;
+        star.dy += star.vy;
+      }
+      star.near += (near - star.near) * 0.08;
+      star.x = homeX + star.dx;
+      star.y = homeY + star.dy;
+      shown.push(star);
+    }
+
+    // The neighbours of a held star keep something of the distance they stood at from it.
+    if (held) {
+      for (const friend of held.friends) {
+        friend.star.vx += (held.star.x + friend.x - friend.star.x) * 0.012;
+        friend.star.vy += (held.star.y + friend.y - friend.star.y) * 0.012;
+      }
+    }
+
+    // Lines between the stars the cursor has woken, fainter the further apart and the further from it.
+    const woken = shown.filter((star) => star.near > 0.03);
+    pen.lineWidth = 0.7;
+    pen.strokeStyle = '#ead9b0';
+    for (let a = 0; a < woken.length; a++) {
+      for (let b = a + 1; b < woken.length; b++) {
+        const distance = Math.hypot(woken[a].x - woken[b].x, woken[a].y - woken[b].y);
+        if (distance > LINK) continue;
+        pen.globalAlpha = 0.34 * Math.sqrt(woken[a].near * woken[b].near) * (1 - distance / LINK);
+        pen.beginPath();
+        pen.moveTo(woken[a].x, woken[a].y);
+        pen.lineTo(woken[b].x, woken[b].y);
+        pen.stroke();
+      }
+    }
+
+    for (const star of shown) {
       const twinkle = still ? 1 : 0.72 + 0.28 * Math.sin(now * star.pace + star.phase);
-      pen.globalAlpha = star.light * twinkle;
+      pen.globalAlpha = Math.min(1, star.light * twinkle + star.near * 0.5);
       pen.fillStyle = star.warm ? '#ffe2b0' : '#e9eefc';
       pen.beginPath();
-      pen.arc(x, y, star.size, 0, Math.PI * 2);
+      pen.arc(star.x, star.y, star.size * (1 + star.near * 0.45), 0, Math.PI * 2);
       pen.fill();
     }
+
+    // The star under the cursor, or in the hand, wears a thin ring: it can be taken hold of.
+    const under = held?.star ?? (answering ? within(mouse.x, mouse.y) : null);
+    if (under) {
+      pen.globalAlpha = 0.4;
+      pen.lineWidth = 0.8;
+      pen.beginPath();
+      pen.arc(under.x, under.y, under.size + 5, 0, Math.PI * 2);
+      pen.stroke();
+    }
+    pen.globalAlpha = 1;
   };
 
-  // The lamp.
-  const mouse = { x: 0, y: 0, moved: -Infinity, here: false };
-  const lamp = { x: 0, y: 0, lit: 0, shaded: 0 };
+  /** The star nearest a point, if one is near enough to be taken hold of. */
+  const within = (x: number, y: number): Star | null => {
+    let best: Star | null = null;
+    let least = HOLD;
+    for (const star of shown) {
+      const distance = Math.hypot(star.x - x, star.y - y);
+      if (distance < least) [best, least] = [star, distance];
+    }
+    return best;
+  };
+
   const onMove = (event: PointerEvent) => {
     if (event.pointerType !== 'mouse') return;
     if (!mouse.here) [lamp.x, lamp.y] = [event.clientX, event.clientY];
+    if (held && Math.hypot(event.clientX - mouse.x, event.clientY - mouse.y) > 0) held.moved = true;
     mouse.x = event.clientX;
     mouse.y = event.clientY;
     mouse.moved = performance.now();
@@ -101,8 +230,36 @@ export function installAmbience(host: HTMLElement): () => void {
   };
   const onLeave = () => {
     mouse.here = false;
+    held = null;
   };
 
+  // Taking hold of a star. Only where a press does nothing else: not on the text (where it
+  // begins a selection), not on anything that can be pressed.
+  const onDown = (event: PointerEvent) => {
+    if (still || event.pointerType !== 'mouse' || event.button !== 0) return;
+    if ((event.target as Element).closest?.('a, button, input, textarea, select, .reader-text, .reader-toc, .reader-note, .reader-pick, .reader-bar')) return;
+    const star = within(event.clientX, event.clientY);
+    if (!star) return;
+    const friends = shown
+      .filter((other) => other !== star && Math.hypot(other.x - star.x, other.y - star.y) < LINK * 1.3)
+      .sort((a, b) => Math.hypot(a.x - star.x, a.y - star.y) - Math.hypot(b.x - star.x, b.y - star.y))
+      .slice(0, 3)
+      .map((other) => ({ star: other, x: other.x - star.x, y: other.y - star.y }));
+    held = { star, gripX: event.clientX - star.x, gripY: event.clientY - star.y, moved: false, friends };
+  };
+  // While a star is in the hand, the press must not also begin to select the page.
+  const onMouseDown = (event: MouseEvent) => {
+    if (held) event.preventDefault();
+  };
+  const onUp = () => {
+    if (!held) return;
+    // Drawing a star aside is not a click on what lies under it.
+    if (held.moved) window.addEventListener('click', (event) => event.stopPropagation(), { capture: true, once: true });
+    held = null;
+  };
+
+  // The lamp.
+  const lamp = { x: 0, y: 0, lit: 0, shaded: 0 };
   let frame = 0;
   const tick = (now: number) => {
     frame = requestAnimationFrame(tick);
@@ -125,6 +282,10 @@ export function installAmbience(host: HTMLElement): () => void {
   measure();
   window.addEventListener('resize', measure);
   window.addEventListener('pointermove', onMove, { passive: true });
+  window.addEventListener('pointerdown', onDown);
+  window.addEventListener('mousedown', onMouseDown);
+  window.addEventListener('pointerup', onUp);
+  window.addEventListener('pointercancel', onUp);
   document.documentElement.addEventListener('pointerleave', onLeave);
   frame = requestAnimationFrame(tick);
 
@@ -132,6 +293,10 @@ export function installAmbience(host: HTMLElement): () => void {
     cancelAnimationFrame(frame);
     window.removeEventListener('resize', measure);
     window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerdown', onDown);
+    window.removeEventListener('mousedown', onMouseDown);
+    window.removeEventListener('pointerup', onUp);
+    window.removeEventListener('pointercancel', onUp);
     document.documentElement.removeEventListener('pointerleave', onLeave);
     sky.remove();
     shade.remove();

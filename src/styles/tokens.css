@@ -64,7 +64,13 @@
   --display-tracking: -0.015em;
   /* The name grows with the page as long as the page is tall enough for it, so that the two
      figures reaching in from the edges keep their size against it. */
-  --hero-size: clamp(4.5rem, min(21vw, 36vh), 31rem);
+  /* The site's name is set apart from everything else, in the italic of the Fell types: cut in the 1670s
+     for the press at Oxford, uneven as old printing is. Kept in step with it: NAME in lib/wall.ts. */
+  --font-hero: 'IM Fell Double Pica', 'Brygada 1918', Georgia, serif;
+  --hero-style: italic;
+  /* The large first letter of an opening: a flourished capital. */
+  --font-initial: 'Ballet', 'Brygada 1918', Georgia, serif;
+  --hero-size: clamp(6rem, min(27vw, 46vh), 40rem);
 }
 
 :root[data-theme='day'] {
