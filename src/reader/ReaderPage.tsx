@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BOOKS } from '../data/books';
 import type { L } from '../data/types';
 import { useI18n } from '../i18n';
+import { READABLE } from '../data/texts';
+import { keptText } from '../lib/kepttext';
 import { isOwn, ownBook, ownText, type OwnText } from '../lib/mybooks';
 import { useShelf } from '../lib/shelf';
 import { bookOf, markLine, markUrl, NOTE_TEXT, TiePicker } from '../notes/notes';
@@ -17,7 +19,7 @@ import './reader.css';
 */
 
 interface TextIndex {
-  from: 'standardebooks' | 'gutenberg' | 'own';
+  from: 'standardebooks' | 'gutenberg' | 'own' | 'kept';
   source: string;
   start: number;
   sections: { title: string; part?: string; words: number }[];
@@ -51,7 +53,7 @@ const TEXT = {
   select: { en: 'Select any words to mark them.', fr: 'Sélectionnez des mots pour les marquer.' },
 } satisfies Record<string, L>;
 
-const SOURCE = { standardebooks: 'Standard Ebooks', gutenberg: 'Project Gutenberg' };
+const SOURCE: Record<string, string> = { standardebooks: 'Standard Ebooks', gutenberg: 'Project Gutenberg' };
 const SIZES = [1.125, 1.25, 1.375, 1.5, 1.6875, 1.875];
 const SIZE_KEY = 'incipit:read-size';
 /** How wide the column of text may be, in rem; the reader steps between these. */
@@ -59,6 +61,15 @@ const WIDTHS = [32, 42, 54, 68, 86];
 const WIDTH_KEY = 'incipit:read-width';
 
 const bookId = () => decodeURIComponent(location.pathname.split('/')[2] ?? '');
+/** The keeper's code, if this browser holds the keeper's card: a file closed to readers is read with it. */
+const keeperCode = (): string | null => {
+  try {
+    const kept = JSON.parse(localStorage.getItem('incipit:card') ?? 'null');
+    return kept?.role === 'admin' && typeof kept.code === 'string' ? kept.code : null;
+  } catch {
+    return null;
+  }
+};
 /** "#12:3400" asks for section 12 at character 3400. */
 const hashPlace = () => {
   const [, section, offset] = /^#(\d+)(?::(\d+))?$/.exec(location.hash) ?? [];
@@ -91,7 +102,9 @@ export default function ReaderPage() {
   const book = useMemo(() => {
     const id = bookId();
     const found = isOwn(id) ? ownBook(id) : BOOKS.find((entry) => entry.id === id);
-    return found ? { id: found.id, title: found.title, author: found.author, own: isOwn(id) } : undefined;
+    // `local`: the text is not among the site's files but read in this browser, from the reader's own
+    // file or from the one the keeper keeps beside the book.
+    return found ? { id: found.id, title: found.title, author: found.author, own: isOwn(id), local: isOwn(id) || !READABLE.has(id) } : undefined;
   }, []);
   const ownSections = useRef<OwnText['sections']>([]);
   const [index, setIndex] = useState<TextIndex | null>(null);
@@ -123,11 +136,11 @@ export default function ReaderPage() {
   // The list of sections, then the place to start: the address, the kept place, or the story's start.
   useEffect(() => {
     if (!book) return;
-    const loading: Promise<TextIndex> = book.own
-      ? ownText(book.id).then((text) => {
+    const loading: Promise<TextIndex> = book.local
+      ? (book.own ? ownText(book.id) : keptText(book.id, keeperCode())).then((text) => {
           if (!text) throw new Error('gone');
           ownSections.current = text.sections;
-          return { from: 'own', source: '', start: 0, sections: text.sections.map(({ title, words }) => ({ title, words })) };
+          return { from: book.own ? 'own' : 'kept', source: '', start: 0, sections: text.sections.map(({ title, words }) => ({ title, words })) };
         })
       : fetch(`${base}/index.json`).then((response) => (response.ok ? response.json() : Promise.reject()));
     loading
@@ -147,7 +160,7 @@ export default function ReaderPage() {
     setHtml(null);
     setPicked(null);
     setOpen(null);
-    (book?.own
+    (book?.local
       ? Promise.resolve(ownSections.current[section]?.html ?? '')
       : fetch(`${base}/${section}.txt`).then((response) => (response.ok ? response.text() : Promise.reject()))
     )
@@ -459,7 +472,7 @@ export default function ReaderPage() {
             <p className="reader-credit">
               {index.from === 'own' ? (
                 tl(TEXT.ownCopy)
-              ) : (
+              ) : index.from === 'kept' ? null : (
                 <>
                   {tl(TEXT.credit)}{' '}
                   <a href={index.source} target="_blank" rel="noopener noreferrer">

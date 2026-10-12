@@ -1012,7 +1012,7 @@ a.header-link {
 
   /* Matches the theme selectors' specificity so it wins over both. */
   :root[data-theme] {
-    --hero-size: 33vw;
+    --hero-size: 25vw;
   }
 
   .wordmark {
@@ -1031,7 +1031,7 @@ a.header-link {
   }
 
   .hand {
-    top: -62%;
+    top: -82%;
   }
 
   .hand-rail-left .hand {

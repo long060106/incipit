@@ -22,10 +22,10 @@
 }
 
 .first-lines {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 500;
-  font-size: clamp(1.4375rem, 2.3vw, 1.9375rem);
-  line-height: 1.42;
+  font-family: var(--font-read);
+  font-weight: 400;
+  font-size: clamp(1.25rem, 2vw, 1.6875rem);
+  line-height: 1.5;
   text-wrap: pretty;
   animation: first-in 1.4s var(--ease-out) both;
 }

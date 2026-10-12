@@ -249,3 +249,108 @@
 .admin .card-problem {
   color: var(--accent);
 }
+
+/* The form for a book the keeper adds. */
+.admin-new {
+  max-width: 56rem;
+}
+
+.admin-desk > .admin-new:only-child {
+  grid-column: 1 / -1;
+}
+
+.admin-add {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.8125rem;
+}
+
+.admin-three {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.admin-even {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-entry select {
+  padding: 0.5rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9375rem;
+}
+
+.admin-entry fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.admin-entry legend {
+  margin-bottom: 0.5rem;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.admin-chip {
+  padding: 0.3125rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+.admin-chip[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.admin-entry fieldset.admin-mood {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.admin-mood label {
+  grid-template-columns: 6rem minmax(0, 1fr) 6rem;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-mood label span:last-child {
+  text-align: right;
+}
+
+.admin-mood input[type='range'] {
+  padding: 0;
+  border: 0;
+  accent-color: var(--accent);
+}
+
+.admin-entry input[type='file'] {
+  border: 0;
+  font-size: 0.8125rem;
+}
+
+.admin .check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 640px) {
+  .admin-three,
+  .admin-even {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

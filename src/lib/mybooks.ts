@@ -130,15 +130,21 @@ const paragraph = (content: string) => {
   return text ? `<p${text.includes('<br>') ? ' class="verse"' : ''}>${text}</p>` : '';
 };
 
-/** A document's body as cleaned blocks, and the first heading found in it. */
-function blocksOf(root: Element): { html: string; heading: string } {
-  const parts: string[] = [];
-  let heading = '';
+/** One cleaned block of a document; a heading keeps its words and its rank (1 for h1) instead. */
+interface Block {
+  html: string;
+  heading?: string;
+  level?: number;
+}
+
+/** A document's body as cleaned blocks, headings among them. */
+function blocksOf(root: Element): Block[] {
+  const parts: Block[] = [];
   const walk = (node: Element) => {
     let loose = '';
     const flush = () => {
       const html = paragraph(loose);
-      if (html) parts.push(html);
+      if (html) parts.push({ html });
       loose = '';
     };
     for (const child of node.childNodes) {
@@ -152,22 +158,21 @@ function blocksOf(root: Element): { html: string; heading: string } {
       if (HEADING.test(tag)) {
         flush();
         const text = squeeze(child.textContent ?? '').trim();
-        if (!heading && text) heading = text;
-        else if (text) parts.push(`<h3>${escape(text)}</h3>`);
+        if (text) parts.push({ html: `<h3>${escape(text)}</h3>`, heading: text, level: Number(tag[1]) });
       } else if (tag === 'hr') {
         flush();
-        parts.push('<hr>');
+        parts.push({ html: '<hr>' });
       } else if (KEPT.has(tag)) {
         flush();
         const html = outer(child);
-        if (html) parts.push(html);
+        if (html) parts.push({ html });
       } else if (BLOCKISH.has(tag) && [...child.children].some((inside) => BLOCKISH.has(name(inside)))) {
         flush();
         walk(child);
       } else if (BLOCKISH.has(tag)) {
         flush();
         const html = paragraph(inner(child));
-        if (html) parts.push(html);
+        if (html) parts.push({ html });
       } else {
         loose += outer(child);
       }
@@ -175,10 +180,50 @@ function blocksOf(root: Element): { html: string; heading: string } {
     flush();
   };
   walk(root);
-  return { html: parts.join('\n'), heading };
+  return parts;
 }
 
 const plain = (html: string) => new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '';
+const SPLIT_OVER = 4000; // words in one file of a book before its own headings are taken for chapters
+
+/**
+ * One file of a book as the reader's sections. Most books keep a chapter to a file, and the
+ * file is then one section named by its first heading (or by `named`, from the book's table
+ * of contents). A long file holding several headings of its highest rank is a whole book,
+ * or a whole part, in one piece: it is cut at those headings, one section for each.
+ */
+function sectionsOf(blocks: Block[], named: string): OwnText['sections'] {
+  const section = (title: string, inside: Block[]) => {
+    const html = inside.map((block) => block.html).join('\n');
+    return { title, html, words: count(plain(html)) };
+  };
+  const whole = section('', blocks);
+  const top = Math.min(...blocks.map((block) => block.level ?? 9));
+  const chapters = blocks.filter((block) => block.level === top).length;
+  if (whole.words <= SPLIT_OVER || chapters < 2) {
+    const first = blocks.findIndex((block) => block.heading);
+    if (first < 0) return [{ ...whole, title: named }];
+    return [section(blocks[first].heading!, blocks.filter((_, at) => at !== first))];
+  }
+  const cut: OwnText['sections'] = [];
+  let title = named;
+  let inside: Block[] = [];
+  // A heading with nothing under it (a number above a name) is joined to the heading that follows.
+  const close = (next: string) => {
+    const made = section(title, inside);
+    if (made.words >= 12) {
+      cut.push(made);
+      title = next;
+    } else title = title && inside.length === 0 && cut.length > 0 ? `${title}: ${next}` : next;
+    inside = [];
+  };
+  for (const block of blocks) {
+    if (block.level === top) close(block.heading!);
+    else inside.push(block);
+  }
+  close('');
+  return cut;
+}
 const folder = (path: string) => path.slice(0, path.lastIndexOf('/') + 1);
 /** "a/b/../c.xhtml" as "a/c.xhtml", without its #fragment. */
 function resolve(base: string, href: string): string {
@@ -202,20 +247,47 @@ async function fromEpub(file: File): Promise<{ title: string; author: string; te
   if (!opfPath || !opf) throw new Error('not-an-epub');
   const pack = xml(opf);
   const first = (tag: string) => [...pack.getElementsByTagName('*')].find((el) => el.localName === tag)?.textContent?.trim() ?? '';
-  const items = new Map([...pack.getElementsByTagName('*')].filter((el) => el.localName === 'item').map((el) => [el.getAttribute('id'), el.getAttribute('href')]));
+  const entries = [...pack.getElementsByTagName('*')].filter((el) => el.localName === 'item');
+  const items = new Map(entries.map((el) => [el.getAttribute('id'), el.getAttribute('href')]));
   const spine = [...pack.getElementsByTagName('*')].filter((el) => el.localName === 'itemref').map((el) => items.get(el.getAttribute('idref')));
+  // XHTML that is not well formed still opens as ordinary HTML.
+  const page = (source: string) => {
+    const strict = new DOMParser().parseFromString(source, 'application/xhtml+xml');
+    return strict.querySelector('parsererror') || !strict.body ? new DOMParser().parseFromString(source, 'text/html') : strict;
+  };
+
+  // The names the book's own table of contents gives its files, for the chapters that carry no heading.
+  const named = new Map<string, string>();
+  const nameFile = (from: string, href: string | null, label: string | null | undefined) => {
+    const text = squeeze(label ?? '').trim();
+    const path = href ? resolve(folder(from), href) : '';
+    if (text && path && !named.has(path)) named.set(path, text.slice(0, 160));
+  };
+  const nav = entries.find((el) => (el.getAttribute('properties') ?? '').split(/\s+/).includes('nav'))?.getAttribute('href');
+  const ncx = entries.find((el) => el.getAttribute('media-type') === 'application/x-dtbncx+xml')?.getAttribute('href');
+  const navPath = nav ? resolve(folder(opfPath), nav) : '';
+  const navSource = navPath ? read(navPath) : null;
+  if (navSource) {
+    const lists = [...page(navSource).getElementsByTagName('*')].filter((el) => el.localName === 'nav');
+    const contents = lists.find((el) => [...el.attributes].some((attribute) => attribute.localName === 'type' && attribute.value.split(/\s+/).includes('toc'))) ?? lists[0];
+    for (const link of contents ? [...contents.getElementsByTagName('*')].filter((el) => el.localName === 'a') : []) nameFile(navPath, link.getAttribute('href'), link.textContent);
+  }
+  const ncxPath = ncx ? resolve(folder(opfPath), ncx) : '';
+  const ncxSource = named.size === 0 && ncxPath ? read(ncxPath) : null;
+  if (ncxSource) {
+    for (const point of [...xml(ncxSource).getElementsByTagName('*')].filter((el) => el.localName === 'navPoint')) {
+      const inside = [...point.children];
+      nameFile(ncxPath, inside.find((el) => el.localName === 'content')?.getAttribute('src') ?? null, inside.find((el) => el.localName === 'navLabel')?.textContent);
+    }
+  }
 
   const sections: OwnText['sections'] = [];
   for (const href of spine) {
-    const source = href ? read(resolve(folder(opfPath), href)) : null;
+    const path = href ? resolve(folder(opfPath), href) : '';
+    const source = path && path !== navPath ? read(path) : null;
     if (!source) continue;
-    // XHTML that is not well formed still opens as ordinary HTML.
-    let page = new DOMParser().parseFromString(source, 'application/xhtml+xml');
-    if (page.querySelector('parsererror') || !page.body) page = new DOMParser().parseFromString(source, 'text/html');
-    const { html, heading } = blocksOf(page.body);
-    const words = count(plain(html));
-    if (words < 12) continue; // a cover, a blank page, a half-title
-    sections.push({ title: heading, html, words });
+    // A cover, a blank page or a half-title makes no section.
+    for (const section of sectionsOf(blocksOf(page(source).body), named.get(path) ?? '')) if (section.words >= 12) sections.push(section);
   }
   if (sections.length === 0) throw new Error('empty');
   return { title: first('title') || file.name.replace(/\.epub$/i, ''), author: first('creator'), text: { sections } };
@@ -244,12 +316,26 @@ async function fromText(file: File): Promise<{ title: string; author: string; te
   return { title: file.name.replace(/\.[a-z]+$/i, ''), author: '', text: { sections } };
 }
 
-/** Opens a file from the reader's device and keeps it as one of their own books. */
-export async function addOwnBook(file: File): Promise<OwnBook> {
+/** An EPUB or a text file as a title, an author and the sections the reader shows. */
+export function readBookFile(file: File): Promise<{ title: string; author: string; text: OwnText }> {
   const epub = /\.epub$/i.test(file.name) || file.type === 'application/epub+zip';
   const text = /\.txt$/i.test(file.name) || file.type === 'text/plain';
   if (!epub && !text) throw new Error('unsupported');
-  const read = await (epub ? fromEpub(file) : fromText(file));
+  return epub ? fromEpub(file) : fromText(file);
+}
+
+/** A text kept in this browser under a name of the caller's, with a stamp saying which file it was read from. */
+export interface StoredText {
+  stamp: string;
+  text: OwnText;
+}
+export const storedText = (key: string) => withStore<StoredText | undefined>('readonly', (store) => store.get(key)).catch(() => undefined);
+export const storeText = (key: string, value: StoredText) => withStore('readwrite', (store) => store.put(value, key)).then(() => undefined, () => undefined);
+export const dropText = (key: string) => withStore('readwrite', (store) => store.delete(key)).then(() => undefined, () => undefined);
+
+/** Opens a file from the reader's device and keeps it as one of their own books. */
+export async function addOwnBook(file: File): Promise<OwnBook> {
+  const read = await readBookFile(file);
   const book: OwnBook = { id: `my-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, title: read.title, author: read.author, added: Date.now() };
   await withStore('readwrite', (store) => store.put(read.text, book.id));
   setList([book, ...list]);
