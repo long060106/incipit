@@ -793,9 +793,9 @@
   font-family: var(--font-hero);
   font-style: var(--hero-style);
   font-weight: 400;
-  font-size: 2.125rem;
+  font-size: 1.5rem;
   line-height: 1;
-  letter-spacing: 0;
+  letter-spacing: 0.02em;
   /* Takes over from the large hero word as that one fades. */
   opacity: calc(1 - var(--hero));
 }
@@ -1231,11 +1231,11 @@ a.header-link {
 
   /* Matches the theme selectors' specificity so it wins over both. */
   :root[data-theme] {
-    --hero-size: 32vw;
+    --hero-size: 20vw;
   }
 
   .wordmark {
-    font-size: 1.875rem;
+    font-size: 1.3125rem;
   }
 
   /* No room beside the word here: the two figures meet above it, smaller, and the edges of
@@ -1250,7 +1250,7 @@ a.header-link {
   }
 
   .hand {
-    top: -62%;
+    top: -102%;
   }
 
   .hand-rail-left .hand {
