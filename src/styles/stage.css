@@ -217,7 +217,7 @@
   z-index: 5;
   border-radius: 50%;
   /* Pale and faint: it is felt more than seen. The colour coming back into the covers is the lamp. */
-  background: radial-gradient(closest-side, rgb(255 232 200 / 0.055), rgb(255 222 188 / 0.02) 50%, transparent);
+  background: radial-gradient(closest-side, rgb(255 210 154 / 0.068), rgb(255 196 136 / 0.024) 50%, transparent);
   mix-blend-mode: screen;
   opacity: 0;
   pointer-events: none;

@@ -35,7 +35,7 @@ const TEXT = {
   toRibbon: { en: 'Go to your bookmark', fr: 'Aller à votre signet' },
   narrower: { en: 'Narrower page', fr: 'Page plus étroite' },
   lamp: { en: 'Lamp', fr: 'Lampe' },
-  lampHint: { en: 'Stars behind the page and a lamp that follows the mouse. On or off.', fr: 'Des étoiles derrière la page et une lampe qui suit la souris. Allumer ou éteindre.' },
+  lampHint: { en: 'A lamp that follows the mouse. On or off.', fr: 'Une lampe qui suit la souris. Allumer ou éteindre.' },
   wider: { en: 'Wider page', fr: 'Page plus large' },
   mark: { en: 'Mark', fr: 'Marquer' },
   note: { en: 'Mark and note', fr: 'Marquer et noter' },
@@ -119,8 +119,10 @@ export default function ReaderPage() {
     } catch {
       // The choice then lasts for this visit only.
     }
-    if (lamp && readerRef.current) return installAmbience(readerRef.current);
   }, [lamp]);
+  useEffect(() => {
+    if (readerRef.current) return installAmbience(readerRef.current);
+  }, []);
   const ownSections = useRef<OwnText['sections']>([]);
   const [index, setIndex] = useState<TextIndex | null>(null);
   const [failed, setFailed] = useState(false);
@@ -385,7 +387,7 @@ export default function ReaderPage() {
   const bookMarks = shelf.marks().filter((mark) => mark.bookId === book.id);
 
   return (
-    <div className="reader" ref={readerRef} style={{ '--read-size': `${size}rem`, '--read-width': `${width}rem` } as React.CSSProperties}>
+    <div className="reader" ref={readerRef} data-lamp={lamp ? 'lit' : 'out'} style={{ '--read-size': `${size}rem`, '--read-width': `${width}rem` } as React.CSSProperties}>
       <div className="reader-progress" style={{ transform: `scaleX(${through})` }} />
 
       <header className="reader-bar" data-hidden={barHidden && !tocOpen}>

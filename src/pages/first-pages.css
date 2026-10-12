@@ -45,9 +45,9 @@
 /* The first letter stands large, as on the first page of a chapter: a flourished capital, drawn fine. */
 .first-lines p:first-child::first-letter {
   float: left;
-  margin: 0.12em 0.14em 0 0.04em;
+  margin: 0.1em 0.1em 0 0.04em;
   font-family: var(--font-initial);
-  font-size: 3.6em;
+  font-size: 4.4em;
   font-weight: 400;
   line-height: 0.78;
   color: var(--accent);

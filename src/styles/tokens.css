@@ -69,7 +69,7 @@
   --font-hero: 'Cinzel Decorative', 'Brygada 1918', Georgia, serif;
   --hero-style: normal;
   /* The large first letter of an opening: a flourished capital. */
-  --font-initial: 'Ballet', 'Brygada 1918', Georgia, serif;
+  --font-initial: 'Monsieur La Doulaise', 'Brygada 1918', Georgia, serif;
   --hero-size: clamp(3.75rem, min(17vw, 29vh), 25rem);
 }
 
