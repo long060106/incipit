@@ -12,6 +12,7 @@ const STRINGS = {
   navNotebook: { en: 'Notebook', fr: 'Carnet' },
   navAbout: { en: 'About', fr: 'À propos' },
   developedBy: { en: 'Developed by {name}', fr: 'Développé par {name}' },
+  signInAdmin: { en: 'Sign in as admin', fr: 'Connexion administrateur' },
   readHere: { en: 'Read it here', fr: 'Lire ici' },
   readOn: { en: 'Continue reading', fr: 'Reprendre la lecture' },
   downloadShort: { en: 'Download', fr: 'Télécharger' },

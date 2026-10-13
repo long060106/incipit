@@ -77,10 +77,11 @@ export function Intro({ active, onBrowse, wordRef }: IntroProps) {
         </div>
       </section>
 
-      {/* Who made the site, in one small line at the foot of the first page; the page about it says more. */}
-      <a className="hero-credit" href={pageUrl('about')} inert={!active}>
-        {t('developedBy', { name: profile.name })}
-      </a>
+      {/* Who made the site, in one small line at the foot of the first page; the page about it says more. Beside it, the keeper's way in. */}
+      <p className="hero-credit" inert={!active}>
+        <a href={pageUrl('about')}>{t('developedBy', { name: profile.name })}</a>
+        <a href={`${import.meta.env.BASE_URL}admin`}>{t('signInAdmin')}</a>
+      </p>
 
       <p className="line line-1">{t('line1')}</p>
       <p className="line line-2">{t('line2')}</p>

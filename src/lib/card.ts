@@ -97,6 +97,10 @@ function sync(keepalive = false): Promise<boolean> {
 export const card = {
   sync,
 
+  /** The code of the card on this device, and what it may do, as they are at this moment. */
+  code: () => kept?.code ?? null,
+  role: () => kept?.role ?? null,
+
   /** Asks the server for a new card and puts this browser's notebook on it. */
   async take(): Promise<boolean> {
     try {
