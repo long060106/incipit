@@ -33,7 +33,12 @@ export const FIRST_WORDS: Profile = {
     'It is also where I learned to build a whole website by myself, from the first page to the server behind it.',
   ].join('\n\n'),
   about: '',
-  links: [],
+  links: [
+    { label: 'GitHub', url: 'https://github.com/long060106' },
+    { label: 'Facebook', url: 'https://www.facebook.com/nguyenlong0601/' },
+    { label: 'Instagram', url: 'https://www.instagram.com/lo.ng_0601/' },
+    { label: 'CSES', url: 'https://cses.fi/user/115745' },
+  ],
 };
 
 const API = `${import.meta.env.BASE_URL}api`;
