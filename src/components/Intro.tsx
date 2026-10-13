@@ -79,7 +79,9 @@ export function Intro({ active, onBrowse, wordRef }: IntroProps) {
 
       {/* Who made the site, in one small line at the foot of the first page; the page about it says more. Beside it, the keeper's way in. */}
       <p className="hero-credit" inert={!active}>
-        <a href={pageUrl('about')}>{t('developedBy', { name: profile.name })}</a>
+        <span>
+          {t('developedByLabel')} <a href={pageUrl('about')}>{profile.name}</a>
+        </span>
         <a href={`${import.meta.env.BASE_URL}admin`}>{t('signInAdmin')}</a>
       </p>
 

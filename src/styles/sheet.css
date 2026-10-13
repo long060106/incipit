@@ -697,21 +697,24 @@
   }
 }
 
-/* The line of credit at the foot of a book's page. */
+/* The line of credit, small under the cover of a book's page. */
 .sheet-credit {
-  margin-top: 2.5rem;
-  font-size: 0.8125rem;
-  letter-spacing: 0.1em;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--pad) / 2 - 0.75em);
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
   text-align: center;
-  text-transform: uppercase;
 }
 
 .sheet-credit a {
-  color: var(--muted);
+  color: color-mix(in srgb, var(--text) 62%, var(--muted));
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .sheet-credit a:hover {
-  color: var(--text);
+  color: var(--accent);
 }
