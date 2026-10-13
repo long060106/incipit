@@ -98,6 +98,13 @@ const inBounds = ([[west, south], [east, north]]: Country['bounds'], [lon, lat]:
 
 export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): GlobeHandle {
   const context = canvas.getContext('2d')!;
+  // The layer the pins are lit on: the same size as the globe's, over it, and deaf to the mouse.
+  const over = document.createElement('canvas');
+  over.className = 'globe-canvas globe-pins';
+  over.setAttribute('aria-hidden', 'true');
+  canvas.after(over);
+  const lights = over.getContext('2d')!;
+  const pins: { x: number; y: number; chosen: boolean; over: boolean; beat: number }[] = [];
   const projection = geoOrthographic().clipAngle(90).precision(0.4);
   const path = geoPath(projection, context);
   const graticule = geoGraticule10();
@@ -136,6 +143,8 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
     height = box.height;
     canvas.width = Math.round(width * ratio);
     canvas.height = Math.round(height * ratio);
+    over.width = canvas.width;
+    over.height = canvas.height;
     const style = getComputedStyle(canvas);
     colours = {
       text: style.getPropertyValue('--text').trim() || colours.text,
@@ -259,15 +268,13 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
         context.stroke();
       }
 
-      // A pin for every country with books, so that the small ones can be found too.
-      context.fillStyle = colours.accent;
+      // A pin for every country with books, so that the small ones can be found too. Where
+      // they are is noted here; they are lit on a layer of their own (glow, below).
+      pins.length = 0;
       for (const country of world.countries) {
         if (!counts.has(country.code)) continue;
         const point = visible(country.centre);
-        if (!point) continue;
-        context.beginPath();
-        context.arc(point[0], point[1], country.code === selected ? 3.2 : 1.9, 0, Math.PI * 2);
-        context.fill();
+        if (point) pins.push({ x: point[0], y: point[1], chosen: country.code === selected, over: country.code === hovered, beat: country.centre[0] * 0.21 + country.centre[1] * 0.13 });
       }
     }
 
@@ -280,6 +287,49 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
     context.lineWidth = 1;
     context.strokeStyle = rim;
     context.stroke();
+  };
+
+  /**
+   * The pins, each a point of light with a glow about it that rises and falls slowly, no two
+   * together. They are drawn every frame on a small layer over the globe, which is itself
+   * drawn only when it moves.
+   */
+  const glow = () => {
+    lights.setTransform(ratio, 0, 0, ratio, 0, 0);
+    lights.clearRect(0, 0, width, height);
+    const now = performance.now();
+    lights.fillStyle = colours.accent;
+    for (const pin of pins) {
+      const breath = reduced ? 0.8 : 0.72 + 0.28 * Math.sin(now / 1500 + pin.beat);
+      const lit = pin.chosen || pin.over ? 1.5 : 1;
+      const size = pin.chosen ? 3.2 : 2;
+      lights.globalAlpha = 0.07 * breath * lit;
+      lights.beginPath();
+      lights.arc(pin.x, pin.y, size * (4.6 + breath), 0, Math.PI * 2);
+      lights.fill();
+      lights.globalAlpha = 0.16 * breath * lit;
+      lights.beginPath();
+      lights.arc(pin.x, pin.y, size * 2.6, 0, Math.PI * 2);
+      lights.fill();
+      lights.globalAlpha = 0.34 * breath * lit;
+      lights.beginPath();
+      lights.arc(pin.x, pin.y, size * 1.6, 0, Math.PI * 2);
+      lights.fill();
+      lights.globalAlpha = 1;
+      lights.beginPath();
+      lights.arc(pin.x, pin.y, size, 0, Math.PI * 2);
+      lights.fill();
+      // By night the heart of the light is nearly white.
+      if (earth === EARTH.dark) {
+        lights.fillStyle = '#fff6dc';
+        lights.globalAlpha = 0.85;
+        lights.beginPath();
+        lights.arc(pin.x, pin.y, size * 0.45, 0, Math.PI * 2);
+        lights.fill();
+        lights.fillStyle = colours.accent;
+      }
+    }
+    lights.globalAlpha = 1;
   };
 
   /** Where a place is on screen, or null when it is on the far side. */
@@ -347,6 +397,7 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
       dirty = false;
       draw();
     }
+    glow();
   };
 
   // Dragging turns the globe; two fingers or the wheel zoom it.
@@ -498,6 +549,7 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
       canvas.removeEventListener('pointercancel', onUp);
       canvas.removeEventListener('pointerleave', onLeave);
       canvas.removeEventListener('wheel', onWheel);
+      over.remove();
     },
   };
 }
