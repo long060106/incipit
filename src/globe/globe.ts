@@ -1,12 +1,13 @@
 import { geoArea, geoBounds, geoCentroid, geoContains, geoDistance, geoGraticule10, geoInterpolate, geoOrthographic, geoPath } from 'd3-geo';
-import { feature, mesh } from 'topojson-client';
+import { feature, merge, mesh } from 'topojson-client';
 import type { Feature, MultiLineString, MultiPolygon, Polygon } from 'geojson';
 import type { GeometryCollection, Topology } from 'topojson-specification';
 
 /*
-  The globe: a wireframe Earth drawn on a canvas, one country outline at a time. It turns
-  slowly by itself until the reader takes hold of it. Countries where a book is set carry a
-  wash of the accent colour, deeper the more books there are, and a pin.
+  The globe: an Earth drawn on a canvas, with sea and land of its own colours, lit from the
+  upper left and dark on the far side, inside a thin halo of air. It turns slowly by itself
+  until the reader takes hold of it. Countries where a book is set carry a wash of the accent
+  colour, deeper the more books there are, and a pin.
 
   Two sets of outlines are loaded. The coarse one is drawn while the globe moves, the fine
   one once it rests, so that turning stays smooth.
@@ -26,8 +27,18 @@ interface Country {
 
 interface World {
   countries: Country[];
+  /** Every country as one piece of land, to colour in a single stroke. */
+  land: MultiPolygon;
+  /** The lines between countries, without the coasts. */
   borders: MultiLineString;
+  coasts: MultiLineString;
 }
+
+/* The Earth's own colours, for a dark room and for a light one. */
+const EARTH = {
+  dark: { seaLit: '#1d3a57', sea: '#0f2238', seaFar: '#060d17', land: '#3b392e', air: '128, 170, 226', night: 0.62, glint: 0.1 },
+  light: { seaLit: '#c3d8e8', sea: '#93b3cb', seaFar: '#5f819b', land: '#e6dfcb', air: '96, 142, 200', night: 0.4, glint: 0.3 },
+};
 
 export interface GlobeOptions {
   /** Books set in each country, by two-letter code. */
@@ -74,7 +85,12 @@ function readWorld(topology: Topology): World {
       bounds: geoBounds(shape),
     });
   }
-  return { countries, borders: mesh(topology, object) };
+  return {
+    countries,
+    land: merge(topology, object.geometries as Parameters<typeof merge>[1]),
+    borders: mesh(topology, object, (a, b) => a !== b),
+    coasts: mesh(topology, object, (a, b) => a === b),
+  };
 }
 
 const inBounds = ([[west, south], [east, north]]: Country['bounds'], [lon, lat]: [number, number]) =>
@@ -95,6 +111,7 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
   let height = 0;
   let ratio = 1;
   let colours = { text: '#ece8df', accent: '#c9a45c', bg: '#0c0c0d' };
+  let earth = EARTH.dark;
 
   let rotation: [number, number] = [-12, -18];
   let zoom = 1;
@@ -109,7 +126,8 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
   let frame = 0;
   let stopped = false;
 
-  const radius = () => (Math.min(width, height) / 2 - 18) * zoom;
+  // The halo of air reaches a tenth of the radius past the edge, and is given room for it.
+  const radius = () => (Math.min(width, height) / 2 / 1.1) * zoom;
 
   const resize = () => {
     const box = canvas.getBoundingClientRect();
@@ -124,6 +142,11 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
       accent: style.getPropertyValue('--accent').trim() || colours.accent,
       bg: style.getPropertyValue('--bg').trim() || colours.bg,
     };
+    // Which room the globe stands in: the canvas turns any colour into #rrggbb to be read.
+    context.fillStyle = colours.bg;
+    const hex = String(context.fillStyle);
+    const light = hex.startsWith('#') && parseInt(hex.slice(1, 3), 16) + parseInt(hex.slice(3, 5), 16) + parseInt(hex.slice(5, 7), 16) > 384;
+    earth = light ? EARTH.light : EARTH.dark;
     dirty = true;
   };
 
@@ -144,24 +167,51 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
     const cx = width / 2;
     const cy = height / 2;
 
-    // The sphere: barely lighter than the room, lit from the upper left.
-    const shade = context.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.1, cx, cy, r);
-    shade.addColorStop(0, `color-mix(in srgb, ${colours.text} 7%, ${colours.bg})`);
-    shade.addColorStop(1, colours.bg);
+    // Where the light falls, on the upper left of the sphere.
+    const lx = cx - r * 0.38;
+    const ly = cy - r * 0.42;
+
+    // The air: a thin glow that reaches a little past the edge and fades into the room.
+    const air = context.createRadialGradient(cx, cy, r * 0.96, cx, cy, r * 1.1);
+    air.addColorStop(0, `rgba(${earth.air}, 0.34)`);
+    air.addColorStop(0.35, `rgba(${earth.air}, 0.12)`);
+    air.addColorStop(1, `rgba(${earth.air}, 0)`);
+    context.beginPath();
+    context.arc(cx, cy, r * 1.1, 0, Math.PI * 2);
+    context.fillStyle = air;
+    context.fill();
+
+    // The sea: lighter where the light falls, deep toward the far edge.
+    const sea = context.createRadialGradient(lx, ly, r * 0.05, cx, cy, r);
+    sea.addColorStop(0, earth.seaLit);
+    sea.addColorStop(0.55, earth.sea);
+    sea.addColorStop(1, earth.seaFar);
     context.beginPath();
     path({ type: 'Sphere' });
-    context.fillStyle = shade;
+    context.fillStyle = sea;
+    context.fill();
+
+    // The light's glint on the water.
+    const glint = context.createRadialGradient(lx, ly, 0, lx, ly, r * 0.55);
+    glint.addColorStop(0, `rgba(255, 255, 255, ${earth.glint})`);
+    glint.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    context.fillStyle = glint;
     context.fill();
 
     context.beginPath();
     path(graticule);
     context.lineWidth = 0.5;
-    context.globalAlpha = 0.09;
+    context.globalAlpha = 0.06;
     context.strokeStyle = colours.text;
     context.stroke();
     context.globalAlpha = 1;
 
     if (world) {
+      context.beginPath();
+      path(world.land);
+      context.fillStyle = earth.land;
+      context.fill();
+
       for (const country of world.countries) {
         const count = counts.get(country.code) ?? 0;
         const lit = country.code === selected;
@@ -177,12 +227,29 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
 
       context.beginPath();
       path(world.borders);
-      context.lineWidth = 0.6;
-      context.globalAlpha = 0.42;
+      context.lineWidth = 0.5;
+      context.globalAlpha = 0.2;
       context.strokeStyle = colours.text;
       context.stroke();
+      context.beginPath();
+      path(world.coasts);
+      context.lineWidth = 0.7;
+      context.globalAlpha = 0.4;
+      context.stroke();
       context.globalAlpha = 1;
+    }
 
+    // Night: the side turned from the light falls into shadow, sea and land alike.
+    const night = context.createRadialGradient(lx, ly, r * 0.5, cx - r * 0.08, cy - r * 0.08, r * 1.02);
+    night.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    night.addColorStop(0.6, `rgba(0, 0, 0, ${earth.night * 0.35})`);
+    night.addColorStop(1, `rgba(0, 0, 0, ${earth.night})`);
+    context.beginPath();
+    path({ type: 'Sphere' });
+    context.fillStyle = night;
+    context.fill();
+
+    if (world) {
       const marked = world.countries.find((country) => country.code === (selected ?? hovered));
       if (marked) {
         context.beginPath();
@@ -204,13 +271,15 @@ export function createGlobe(canvas: HTMLCanvasElement, options: GlobeOptions): G
       }
     }
 
+    // The edge of the air, brightest on the lit side.
+    const rim = context.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
+    rim.addColorStop(0, `rgba(${earth.air}, 0.85)`);
+    rim.addColorStop(1, `rgba(${earth.air}, 0.18)`);
     context.beginPath();
     path({ type: 'Sphere' });
-    context.lineWidth = 0.8;
-    context.globalAlpha = 0.5;
-    context.strokeStyle = colours.text;
+    context.lineWidth = 1;
+    context.strokeStyle = rim;
     context.stroke();
-    context.globalAlpha = 1;
   };
 
   /** Where a place is on screen, or null when it is on the far side. */
