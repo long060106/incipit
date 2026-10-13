@@ -627,13 +627,13 @@
   width: fit-content;
   max-width: calc(100% - 2 * var(--gutter));
   margin: 0 auto;
-  font-size: 0.8125rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
   opacity: var(--hero);
 }
 
-/* Small, but meant to be read: lighter than the muted text around it. */
+/* The words are plain text; the name and the way in are links, a little lighter, gold under the pointer. */
 .hero-credit a {
   color: color-mix(in srgb, var(--text) 62%, var(--muted));
   text-decoration: none;
@@ -641,13 +641,7 @@
 }
 
 .hero-credit a:hover {
-  color: var(--text);
-}
-
-@media (max-width: 480px) {
-  .hero-credit {
-    font-size: 0.75rem;
-  }
+  color: var(--accent);
 }
 
 .stage[data-scene='hero'] .hero-credit {

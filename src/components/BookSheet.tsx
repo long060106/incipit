@@ -159,6 +159,10 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
 
       <div className="sheet-cover">
         <img ref={coverRef} key={book.id} className={origin ? 'is-landing' : ''} src={coverUrl(book, 'md')} alt="" />
+        {/* Who made the site, small under the cover; the name leads to the page about it. */}
+        <p className="sheet-credit">
+          {t('developedByLabel')} <a href={pageUrl('about')}>{profile.name}</a>
+        </p>
       </div>
 
       <div className="sheet-body" ref={scrollRef} data-scroll>
@@ -390,11 +394,6 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
               </ul>
             </div>
           </section>
-
-          {/* Who made the site, at the foot of every book's page. */}
-          <p className="sheet-credit">
-            <a href={pageUrl('about')}>{t('developedBy', { name: profile.name })}</a>
-          </p>
         </div>
       </div>
     </Dialog>
