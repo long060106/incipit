@@ -3,7 +3,7 @@ import { Keeper } from '../components/Keeper';
 import { BOOKS } from '../data/books';
 import type { Book, L } from '../data/types';
 import { useI18n } from '../i18n';
-import { useCard } from '../lib/card';
+import { card as cards, useCard } from '../lib/card';
 import {
   choosePassword,
   decide,
@@ -43,11 +43,15 @@ import './admin.css';
 const TEXT = {
   title: { en: 'Keeper’s desk', fr: 'Bureau du gardien' },
   profile: { en: 'Your profile and the About page', fr: 'Votre profil et la page À propos' },
+  signIn: { en: 'Sign in as admin', fr: 'Connexion administrateur' },
   closed: {
-    en: 'This page is for the keeper of the site. Open the notebook with the keeper’s card on this device, then come back.',
-    fr: 'Cette page est réservée au gardien du site. Ouvrez le carnet avec la carte du gardien sur cet appareil, puis revenez.',
+    en: 'This page is for the keeper of the site. Enter the keeper’s card; its password is asked for next.',
+    fr: 'Cette page est réservée au gardien du site. Saisissez la carte du gardien ; son mot de passe est demandé ensuite.',
   },
-  toNotebook: { en: 'Go to the notebook', fr: 'Aller au carnet' },
+  cardCode: { en: 'Card code', fr: 'Code de la carte' },
+  enter: { en: 'Continue', fr: 'Continuer' },
+  notKeeper: { en: 'This card is not the keeper’s.', fr: 'Cette carte n’est pas celle du gardien.' },
+  unknownCard: { en: 'No such card.', fr: 'Aucune carte de ce nom.' },
   chooseTitle: { en: 'Choose a password for the desk', fr: 'Choisissez un mot de passe pour le bureau' },
   chooseNote: {
     en: 'From now on the desk opens only with your card and this password. It is asked for again in each new tab, and after twelve hours. At least 8 characters. Keep it somewhere safe: it cannot be shown to you again.',
@@ -117,6 +121,57 @@ const TEXT = {
 } satisfies Record<string, L>;
 
 type Show = 'all' | 'free' | 'held' | 'file';
+
+/**
+ * The way in for someone who does not hold the keeper's card on this device: the card's code
+ * first. The server says whose card it is; only the keeper's goes on to the password.
+ */
+function SignIn({ held }: { held: boolean }) {
+  const { tl } = useI18n();
+  const [typed, setTyped] = useState('');
+  const [busy, setBusy] = useState(false);
+  // A reader's card already on this device is not the keeper's: say so from the start.
+  const [problem, setProblem] = useState<L | null>(held ? TEXT.notKeeper : null);
+
+  const submit = async () => {
+    setBusy(true);
+    setProblem(null);
+    const before = cards.code();
+    const answer = await cards.enter(typed);
+    setBusy(false);
+    if (answer === 'unknown') return setProblem(TEXT.unknownCard);
+    if (answer === 'offline') return setProblem(TEXT.noAnswer);
+    // A reader's card opens nothing here, and is not left on the device in place of the one that was there.
+    if (cards.role() !== 'admin') {
+      if (before) await cards.enter(before);
+      else cards.leave();
+      setProblem(TEXT.notKeeper);
+    }
+  };
+
+  return (
+    <form
+      className="admin-door"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void submit();
+      }}
+    >
+      <h1>{tl(TEXT.signIn)}</h1>
+      <p>{tl(TEXT.closed)}</p>
+      <label>
+        {tl(TEXT.cardCode)}
+        <input value={typed} onChange={(event) => setTyped(event.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck={false} maxLength={60} required autoFocus />
+      </label>
+      <div className="admin-actions">
+        <button type="submit" className="button" disabled={busy || !typed.trim()}>
+          {tl(TEXT.enter)}
+        </button>
+      </div>
+      {problem && <p className="card-problem">{tl(problem)}</p>}
+    </form>
+  );
+}
 
 /** The door of the desk: choosing its password the first time (or a new one), or giving it to come in. */
 function Door({ code, choosing, changingFrom, onOpen, onCancel }: { code: string; choosing: boolean; changingFrom?: boolean; onOpen: () => void; onCancel?: () => void }) {
@@ -213,11 +268,7 @@ export default function Admin() {
       <div className="admin">
         <PageHeader />
         <main className="admin-closed">
-          <h1>{tl(TEXT.title)}</h1>
-          <p>{tl(TEXT.closed)}</p>
-          <a className="button" href={pageUrl('notebook')}>
-            {tl(TEXT.toNotebook)}
-          </a>
+          <SignIn held={!!card} />
         </main>
       </div>
     );

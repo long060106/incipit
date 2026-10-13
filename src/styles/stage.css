@@ -620,18 +620,23 @@
   left: 0;
   right: 0;
   bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  display: flex;
+  gap: 1.75em;
   width: fit-content;
-  margin-inline: auto;
-  color: var(--muted);
+  margin: 0 auto;
   font-size: 0.6875rem;
   letter-spacing: 0.1em;
-  text-decoration: none;
   text-transform: uppercase;
   opacity: var(--hero);
+}
+
+.hero-credit a {
+  color: var(--muted);
+  text-decoration: none;
   transition: color 0.3s ease;
 }
 
-.hero-credit:hover {
+.hero-credit a:hover {
   color: var(--text);
 }
 
