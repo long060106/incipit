@@ -9,6 +9,14 @@ site or downloaded, free and legally; for the rest, the site points to a library
 
 Designed and developed by **Long Nguyen**.
 
+<!-- Add screenshots here once taken, e.g.:
+![The wall of covers](docs/wall.png)
+![The reader at night](docs/reader.png)
+-->
+
+**179 books** from 53 countries in 21 languages: 109 out of copyright (readable on the site and
+downloadable as PDF) and 70 still in copyright (described, with links to libraries and bookshops only).
+
 ## What is in it
 
 - **The wall.** Every book as a cover on one wall you can drag, zoom out of, and filter by
@@ -41,6 +49,13 @@ worker/         the server and its database migrations
 public/         covers, texts of books out of copyright, icons, the service worker
 scripts/        the scripts that fetched the catalogue, covers and texts
 ```
+
+## About the book data
+
+The mood scores, themes, descriptions and "read it if / skip it if" advice were written with the
+help of AI, not taken from a published source. The ratings come from Open Library. A batch of
+104 books added on 2026-10-10 has not yet been reviewed by hand, so treat the mood scores of those
+books as a first draft.
 
 ## Running it
 
