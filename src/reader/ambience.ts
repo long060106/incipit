@@ -12,6 +12,11 @@
   follow part of the way. Let go, it stays where it was put, and they drift back. The
   stars are drawn on one canvas, which reader.css makes faint behind the column of text.
 
+  Movement is measured in time, not in frames, so that it is as even on a fast screen as on
+  a slow one, and the sky is drawn at every frame: nothing starts or stops with the mouse.
+  The stars are fainter behind the column of text; that is done as they are drawn, not by a
+  mask over the canvas, which would have to be made again at every frame.
+
   The lamp is two layers that are only ever moved, never repainted: a pool of warm light,
   and a shade that dims the page a little away from it. The shade is there only while the
   mouse is in use. When the mouse has been still for a few seconds the reader is reading,
@@ -20,7 +25,7 @@
 
 const STILL_AFTER = 3500; // milliseconds without the mouse moving before the shade lifts
 const TURN = (Math.PI * 2) / (120 * 60 * 1000); // the sky turns once in two hours: a star crosses a pixel or two in a second
-const AT_REST = 1000 / 24; // milliseconds between drawings while nothing answers the mouse
+const FRAME = 1000 / 60;
 const SKY_TO_A_STAR = 3_600; // px² of sky for each star, faint ones and all
 const BRIGHT = 0.9; // px across the middle: from this size up a star has a glow, and answers the mouse
 /** The colours of stars, most of them near white: blue-white, white, cream, amber. */
@@ -124,19 +129,38 @@ export function installAmbience(host: HTMLElement): () => void {
       };
     });
     held = null;
-    drawn = 0;
   };
 
-  let drawn = 0;
+  /** Where the column of text stands, and how wide the margin is over which the sky comes back. */
+  let column: { left: number; right: number } | null = null;
+  const EDGE = 96;
+  const DIM = 0.14;
+  const findColumn = () => {
+    const box = host.querySelector('.reader-text')?.getBoundingClientRect();
+    column = box && box.width > 0 ? { left: box.left - 24, right: box.right + 24 } : null;
+  };
+  /** How much of a star's light is left at this place across the page. */
+  const clear = (x: number) => {
+    if (!column) return 1;
+    const out = x < column.left ? column.left - x : x > column.right ? x - column.right : 0;
+    return out >= EDGE ? 1 : DIM + (1 - DIM) * (out / EDGE);
+  };
+
+  let before = performance.now();
+  let frames = 0;
   /** How far the sky had turned at the last drawing. */
   let turnedBy = 0;
   /** Stars on the screen at the last drawing, for the mouse to find one among. */
   let shown: Star[] = [];
   const draw = (now: number) => {
     if (!pen) return;
-    const awake = held !== null || now - mouse.moved < 2500 || shown.some((star) => star.near > 0.01 || Math.abs(star.dx) + Math.abs(star.dy) > 0.2);
-    if (!awake && now - drawn < AT_REST) return;
-    drawn = now;
+    // How many sixtieths of a second have gone by: the same movement on any screen.
+    const k = Math.min((now - before) / FRAME, 4);
+    before = now;
+    const ease = 1 - Math.pow(0.92, k);
+    const keep = Math.pow(EASE, k);
+    // The column moves when the reader changes the page's width or the window's.
+    if (frames++ % 30 === 0) findColumn();
     pen.clearRect(0, 0, width, height);
     const turned = still ? 0 : now * TURN;
     turnedBy = turned;
@@ -158,7 +182,7 @@ export function installAmbience(host: HTMLElement): () => void {
       if (!star.bright) {
         // A faint star keeps its place; the cursor only lifts its light a little as it passes.
         const distance = answering ? Math.hypot(mouse.x - homeX, mouse.y - homeY) : REACH;
-        star.near += ((distance < REACH ? 1 - distance / REACH : 0) - star.near) * 0.08;
+        star.near += ((distance < REACH ? 1 - distance / REACH : 0) - star.near) * ease;
         star.x = homeX;
         star.y = homeY;
         shown.push(star);
@@ -171,8 +195,8 @@ export function installAmbience(host: HTMLElement): () => void {
         star.vx = star.vy = 0;
         near = 1;
       } else {
-        let pullX = -star.dx * HOME;
-        let pullY = -star.dy * HOME;
+        let pullX = -star.dx * HOME * k;
+        let pullY = -star.dy * HOME * k;
         if (answering) {
           const toX = mouse.x - (homeX + star.dx);
           const toY = mouse.y - (homeY + star.dy);
@@ -181,17 +205,17 @@ export function installAmbience(host: HTMLElement): () => void {
             near = 1 - distance / REACH;
             // It leans towards the cursor: a few pixels, never onto it.
             if (distance > 1) {
-              pullX += (toX / distance) * near * 0.1;
-              pullY += (toY / distance) * near * 0.1;
+              pullX += (toX / distance) * near * 0.1 * k;
+              pullY += (toY / distance) * near * 0.1 * k;
             }
           }
         }
-        star.vx = (star.vx + pullX) * EASE;
-        star.vy = (star.vy + pullY) * EASE;
-        star.dx += star.vx;
-        star.dy += star.vy;
+        star.vx = (star.vx + pullX) * keep;
+        star.vy = (star.vy + pullY) * keep;
+        star.dx += star.vx * k;
+        star.dy += star.vy * k;
       }
-      star.near += (near - star.near) * 0.08;
+      star.near += (near - star.near) * ease;
       star.x = homeX + star.dx;
       star.y = homeY + star.dy;
       shown.push(star);
@@ -200,8 +224,8 @@ export function installAmbience(host: HTMLElement): () => void {
     // The neighbours of a held star keep something of the distance they stood at from it.
     if (held) {
       for (const friend of held.friends) {
-        friend.star.vx += (held.star.x + friend.x - friend.star.x) * 0.012;
-        friend.star.vy += (held.star.y + friend.y - friend.star.y) * 0.012;
+        friend.star.vx += (held.star.x + friend.x - friend.star.x) * 0.012 * k;
+        friend.star.vy += (held.star.y + friend.y - friend.star.y) * 0.012 * k;
       }
     }
 
@@ -213,7 +237,7 @@ export function installAmbience(host: HTMLElement): () => void {
       for (let b = a + 1; b < woken.length; b++) {
         const distance = Math.hypot(woken[a].x - woken[b].x, woken[a].y - woken[b].y);
         if (distance > LINK) continue;
-        pen.globalAlpha = 0.34 * Math.sqrt(woken[a].near * woken[b].near) * (1 - distance / LINK);
+        pen.globalAlpha = 0.34 * Math.sqrt(woken[a].near * woken[b].near) * (1 - distance / LINK) * Math.min(clear(woken[a].x), clear(woken[b].x));
         pen.beginPath();
         pen.moveTo(woken[a].x, woken[a].y);
         pen.lineTo(woken[b].x, woken[b].y);
@@ -225,7 +249,7 @@ export function installAmbience(host: HTMLElement): () => void {
       // The air makes the bright ones scintillate; the faint ones hardly change.
       const depth = star.bright ? 0.3 : 0.1;
       const twinkle = still ? 1 : 1 - depth * (0.5 - 0.5 * Math.sin(now * star.pace + star.phase));
-      const light = Math.min(1, star.light * twinkle + star.near * (star.bright ? 0.4 : 0.22));
+      const light = Math.min(1, star.light * twinkle + star.near * (star.bright ? 0.4 : 0.22)) * clear(star.x);
       const size = star.size * (1 + (star.bright ? star.near * 0.3 : 0));
       pen.fillStyle = star.tint;
       if (star.bright) {
@@ -309,16 +333,23 @@ export function installAmbience(host: HTMLElement): () => void {
   // The lamp.
   const lamp = { x: 0, y: 0, lit: 0, shaded: 0 };
   let frame = 0;
+  let lampBefore = performance.now();
   const tick = (now: number) => {
     frame = requestAnimationFrame(tick);
-    if (document.hidden) return;
+    if (document.hidden) {
+      before = lampBefore = now;
+      return;
+    }
     draw(now);
 
     const reading = now - mouse.moved > STILL_AFTER;
-    lamp.x += (mouse.x - lamp.x) * (still ? 1 : 0.09);
-    lamp.y += (mouse.y - lamp.y) * (still ? 1 : 0.09);
-    lamp.lit += ((mouse.here ? 1 : 0) - lamp.lit) * 0.04;
-    lamp.shaded += ((mouse.here && !reading ? 1 : 0) - lamp.shaded) * (reading ? 0.018 : 0.05);
+    const k = Math.min((now - lampBefore) / FRAME, 4);
+    lampBefore = now;
+    const toward = (rate: number) => 1 - Math.pow(1 - rate, k);
+    lamp.x += (mouse.x - lamp.x) * (still ? 1 : toward(0.09));
+    lamp.y += (mouse.y - lamp.y) * (still ? 1 : toward(0.09));
+    lamp.lit += ((mouse.here ? 1 : 0) - lamp.lit) * toward(0.04);
+    lamp.shaded += ((mouse.here && !reading ? 1 : 0) - lamp.shaded) * toward(reading ? 0.018 : 0.05);
     const breath = still ? 1 : 0.94 + 0.045 * Math.sin(now / 1900) + 0.015 * Math.sin(now / 730);
     const place = `translate3d(${lamp.x.toFixed(1)}px, ${lamp.y.toFixed(1)}px, 0) translate(-50%, -50%)`;
     glow.style.transform = place;

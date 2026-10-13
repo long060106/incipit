@@ -352,3 +352,30 @@
     font-size: 1.5rem;
   }
 }
+
+/* The sky behind the globe (sky.ts): one canvas under everything on the page. */
+.globe-sky {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  animation: globe-sky-in 2.4s ease 0.3s backwards;
+}
+
+@keyframes globe-sky-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* By day there is no sky. */
+:root[data-theme='day'] .globe-sky {
+  display: none;
+}
+
+/* The pins' own layer lets the mouse through to the globe. */
+.globe-pins {
+  pointer-events: none;
+}

@@ -7,6 +7,7 @@ import { useI18n } from '../i18n';
 import { coverUrl } from '../lib/links';
 import { PageHeader, pageUrl, useQuickLoader } from '../pages/PageHeader';
 import { createGlobe, type GlobeHandle } from './globe';
+import { installSky } from './sky';
 import './globe.css';
 
 /*
@@ -43,6 +44,7 @@ export default function GlobePage() {
   const { lang, tl } = useI18n();
   useQuickLoader();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<GlobeHandle | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [hover, setHover] = useState<{ code: string; x: number; y: number } | null>(null);
@@ -71,6 +73,9 @@ export default function GlobePage() {
     globeRef.current = globe;
     return () => globe.destroy();
   }, []);
+
+  // The stars behind it all (./sky.ts).
+  useEffect(() => installSky(pageRef.current!), []);
 
   useEffect(() => {
     globeRef.current?.setCounts(new Map([...byCountry].map(([code, list]) => [code, list.length])));
@@ -115,7 +120,7 @@ export default function GlobePage() {
   );
 
   return (
-    <div className="globe-page">
+    <div className="globe-page" ref={pageRef}>
       <PageHeader here="globe" />
 
       <div className="globe-stage">
