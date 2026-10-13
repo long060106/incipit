@@ -34,6 +34,7 @@ export const FIRST_WORDS: Profile = {
   ].join('\n\n'),
   about: '',
   links: [
+    { label: 'incipit.library.co@gmail.com', url: 'mailto:incipit.library.co@gmail.com' },
     { label: 'GitHub', url: 'https://github.com/long060106' },
     { label: 'Facebook', url: 'https://www.facebook.com/nguyenlong0601/' },
     { label: 'Instagram', url: 'https://www.instagram.com/lo.ng_0601/' },
