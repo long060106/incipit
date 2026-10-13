@@ -95,6 +95,8 @@ const STRINGS = {
   closest: { en: 'Nothing matches exactly. Closest {n}:', fr: 'Aucun ne correspond exactement. Les {n} plus proches :' },
   noneTitle: { en: 'No book fits all of that.', fr: 'Aucun livre ne réunit tout cela.' },
   noneBody: { en: 'Loosen a filter, or clear them and start again.', fr: 'Relâchez un filtre, ou effacez tout et recommencez.' },
+  wallGuide: { en: 'Drag or scroll in any direction', fr: 'Faites glisser ou défiler dans tous les sens' },
+  wallGuideNote: { en: 'Up, down, left, right: the wall has no edge.', fr: 'Haut, bas, gauche, droite : le mur n’a pas de bord.' },
   dragHint: { en: 'Drag or scroll to wander', fr: 'Faites glisser ou défiler pour flâner' },
   trayMove: { en: 'Drag to move. Double-click to put it back.', fr: 'Glissez pour déplacer. Double-cliquez pour le remettre en place.' },
   trayGrow: { en: 'Larger, with titles', fr: 'Plus grand, avec les titres' },

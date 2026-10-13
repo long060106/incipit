@@ -7,7 +7,9 @@ import { READABLE } from '../data/texts';
 import { saveFile, useDecided } from '../lib/keeper';
 import { reads } from '../lib/kepttext';
 import { bookLinks, coverUrl } from '../lib/links';
+import { useProfile } from '../lib/profile';
 import { useShelf } from '../lib/shelf';
+import { pageUrl } from '../pages/PageHeader';
 import { MIN_RATINGS, similarBooks } from '../lib/match';
 import { coverOrigin, type CoverOrigin } from '../lib/wall';
 import { Around } from './Around';
@@ -42,6 +44,7 @@ interface BookSheetProps {
  */
 export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMood, onPickTheme }: BookSheetProps) {
   const { t, tl, lang } = useI18n();
+  const [{ profile }] = useProfile();
   const shelf = useShelf();
   // The keeper of the site can switch a book's download off (src/lib/keeper.ts).
   const decided = useDecided()[book.id];
@@ -387,6 +390,11 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
               </ul>
             </div>
           </section>
+
+          {/* Who made the site, at the foot of every book's page. */}
+          <p className="sheet-credit">
+            <a href={pageUrl('about')}>{t('developedBy', { name: profile.name })}</a>
+          </p>
         </div>
       </div>
     </Dialog>

@@ -696,3 +696,22 @@
     animation: none;
   }
 }
+
+/* The line of credit at the foot of a book's page. */
+.sheet-credit {
+  margin-top: 2.5rem;
+  font-size: 0.8125rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.sheet-credit a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.sheet-credit a:hover {
+  color: var(--text);
+}
