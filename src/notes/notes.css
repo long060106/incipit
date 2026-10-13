@@ -184,3 +184,60 @@
 .card-status[data-status='unknown']::before {
   background: var(--muted);
 }
+
+/* The account, above the card (AccountPanel.tsx). */
+.account-panel {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--faint);
+  scroll-margin: 2rem;
+}
+
+.account-name {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.account-name span {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.account-form {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.account-form label {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.account-form small {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.account-form input {
+  min-width: 0;
+  padding: 0.5rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9375rem;
+  outline: none;
+  cursor: text;
+}
+
+.account-form input:focus {
+  border-color: var(--accent);
+}
+
+.account-form .text-button {
+  font-size: 0.8125rem;
+}

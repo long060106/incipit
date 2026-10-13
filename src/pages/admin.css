@@ -430,3 +430,53 @@
   border: 1px solid var(--line-strong);
   object-fit: cover;
 }
+
+/* Readers' accounts (AccountsDesk.tsx). */
+.admin-accounts {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-accounts h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.5rem;
+}
+
+.admin-accounts ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-accounts li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1.25rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-accounts li span {
+  flex: 1 1 10rem;
+}
+
+.admin-accounts li small {
+  color: var(--muted);
+}
+
+.admin-made {
+  margin: 0;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--accent);
+}
+
+.admin-made code {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  user-select: all;
+}

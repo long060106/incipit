@@ -4,7 +4,8 @@ import { shelf, watchShelf } from './shelf';
 /*
   The library card: what carries a reader's notebook (src/lib/shelf.ts) to the server and to
   their other devices. A card is a twenty-character code the server makes (worker/index.ts).
-  It is the whole key: there is no name, email or password. This browser remembers it, and
+  It is the whole key. A reader may put a name and a password in front of it (an account), to
+  open it from any device without the code. This browser remembers the card, and
   with it sends each change of the notebook up and takes down what other devices changed.
 
   Without a card nothing here does anything, and the notebook stays in this browser.
@@ -17,6 +18,8 @@ interface Kept {
   /** Every record changed up to this time (by this device's clock) has been sent. */
   pushed: number;
   role?: string;
+  /** The name of the account in front of this card, if it has one. */
+  name?: string | null;
   /** When the notebook was last exchanged with the server. */
   syncedAt?: number;
 }
@@ -121,8 +124,8 @@ export const card = {
       const response = await call('/me', code);
       if (response.status === 401) return 'unknown';
       if (!response.ok) return 'offline';
-      const { role } = (await response.json()) as { role: string };
-      set({ code, cursor: 0, pushed: 0, role }, 'idle');
+      const { role, name } = (await response.json()) as { role: string; name?: string | null };
+      set({ code, cursor: 0, pushed: 0, role, name }, 'idle');
       await sync();
       return 'ok';
     } catch {
@@ -136,10 +139,60 @@ export const card = {
     try {
       const response = await call('/me', kept.code);
       if (!response.ok) return;
-      const { role } = (await response.json()) as { role: string };
-      if (kept && kept.role !== role) set({ ...kept, role });
+      const { role, name = null } = (await response.json()) as { role: string; name?: string | null };
+      if (kept && (kept.role !== role || (kept.name ?? null) !== name)) set({ ...kept, role, name });
     } catch {
       // Stays as it was.
+    }
+  },
+
+  /**
+   * Puts a name and a password in front of the card on this device, taking a card first if
+   * there is none. From then on the name and password open it anywhere.
+   */
+  async register(name: string, password: string): Promise<'ok' | 'taken' | 'bad-name' | 'bad-password' | 'too-many' | 'offline'> {
+    try {
+      if (!kept && !(await card.take())) return 'offline';
+      const response = await call('/account', kept!.code, { method: 'POST', body: JSON.stringify({ name, password }) });
+      if (response.ok) {
+        const answer = (await response.json()) as { name: string };
+        if (kept) set({ ...kept, name: answer.name });
+        return 'ok';
+      }
+      const { error } = (await response.json().catch(() => ({}))) as { error?: string };
+      return error === 'taken' || error === 'bad-name' || error === 'bad-password' || error === 'too-many' ? error : 'offline';
+    } catch {
+      return 'offline';
+    }
+  },
+
+  /** Opens the card behind a name and its password. What is in this browser is added to it. */
+  async signIn(name: string, password: string): Promise<'ok' | 'wrong' | 'too-many' | 'offline'> {
+    try {
+      const response = await call('/account/enter', null, { method: 'POST', body: JSON.stringify({ name, password }) });
+      if (response.status === 401) return 'wrong';
+      if (response.status === 429) return 'too-many';
+      if (!response.ok) return 'offline';
+      const answer = (await response.json()) as { code: string; role: string; name: string };
+      set({ code: answer.code, cursor: 0, pushed: 0, role: answer.role, name: answer.name }, 'idle');
+      await sync();
+      return 'ok';
+    } catch {
+      return 'offline';
+    }
+  },
+
+  /** A new password for the account on this device, given the one it has. */
+  async changePassword(current: string, password: string): Promise<'ok' | 'wrong' | 'bad-password' | 'too-many' | 'offline'> {
+    if (!kept) return 'offline';
+    try {
+      const response = await call('/account', kept.code, { method: 'PUT', body: JSON.stringify({ current, password }) });
+      if (response.ok) return 'ok';
+      if (response.status === 401) return 'wrong';
+      if (response.status === 429) return 'too-many';
+      return response.status === 400 ? 'bad-password' : 'offline';
+    } catch {
+      return 'offline';
     }
   },
 

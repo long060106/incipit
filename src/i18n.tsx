@@ -11,6 +11,7 @@ const STRINGS = {
   navGlobe: { en: 'Globe', fr: 'Globe' },
   navNotebook: { en: 'Notebook', fr: 'Carnet' },
   navAbout: { en: 'About', fr: 'À propos' },
+  navSignIn: { en: 'Sign in', fr: 'Connexion' },
   developedByLabel: { en: 'Developed by', fr: 'Développé par' },
   developedBy: { en: 'Developed by {name}', fr: 'Développé par {name}' },
   signInAdmin: { en: 'Sign in as admin', fr: 'Connexion administrateur' },

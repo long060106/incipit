@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import { SITE_NAME, useI18n } from '../i18n';
+import { useCard } from '../lib/card';
 import { runLoader } from '../lib/loader';
 import './pages.css';
 
@@ -22,6 +23,7 @@ export function useQuickLoader() {
 /** The bar across the top of the inner pages: the name leads home, then the other pages. */
 export function PageHeader({ here, children }: { here?: PageId; children?: ReactNode }) {
   const { t, lang, setLang } = useI18n();
+  const { card: mine } = useCard();
   return (
     <header className="page-head">
       <a className="page-wordmark" href={pageUrl('')}>
@@ -33,6 +35,9 @@ export function PageHeader({ here, children }: { here?: PageId; children?: React
             {t(link.label)}
           </a>
         ))}
+        <a className="page-account" href={`${pageUrl('notebook')}#account`}>
+          {mine?.name ?? t('navSignIn')}
+        </a>
         {children}
         <div className="lang" role="group" aria-label={t('language')} data-lang={lang}>
           <button type="button" lang="en" aria-pressed={lang === 'en'} onClick={() => setLang('en')}>
