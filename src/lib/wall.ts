@@ -291,17 +291,13 @@ export class Wall {
   }
 
   /**
-   * Feeds a wheel or trackpad scroll to the wall. Returns false when the wall is at its top
-   * edge and the scroll points up, so the caller can let the page scroll back to the intro.
+   * Feeds a wheel or trackpad scroll to the wall, which has no edge in any direction. It
+   * always takes the scroll: the way back to the first page is the button for it.
    */
   wheel(dx: number, dy: number): boolean {
     this.hideLabel();
-    if (dy < 0 && this.targetY <= 0) {
-      this.targetX += dx;
-      return dx !== 0;
-    }
     this.targetX += dx;
-    this.targetY = Math.max(0, this.targetY + dy);
+    this.targetY += dy;
     return true;
   }
 
@@ -711,7 +707,7 @@ export class Wall {
     // Carry the wall on a little after a quick release.
     if (!drag.tapOnly && event.timeStamp - drag.time < 80 && this.assemble === 1) {
       this.targetX -= drag.vx * 260;
-      this.targetY = Math.max(0, this.targetY - drag.vy * 260);
+      this.targetY -= drag.vy * 260;
     }
   };
 
@@ -731,8 +727,8 @@ export class Wall {
       return;
     }
     this.targetX += dx;
-    // At its top edge the wall stops. The way back to the first page is the button for it.
-    this.targetY = Math.max(0, this.targetY + dy);
+    // The wall has no edge. The way back to the first page is the button for it.
+    this.targetY += dy;
   }
 
   // ── Hover label ───────────────────────────────────────────────────────────

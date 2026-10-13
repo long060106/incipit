@@ -15,6 +15,8 @@ import { runLoader } from './lib/loader';
 import { EMPTY_FILTERS, matchBooks, type Filters } from './lib/match';
 import type { CellState, CoverOrigin } from './lib/wall';
 
+const GUIDE_KEY = 'incipit:wall-guide';
+
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 /** Progress of `p` through the window [from, to], clamped to 0–1. */
 const span = (p: number, from: number, to: number) => clamp01((p - from) / (to - from));
@@ -261,6 +263,18 @@ export default function App() {
   }, [dialogOpen, inGallery]);
   useEffect(() => {
     if (inGallery && !travel.current) window.scrollTo(0, maxScroll());
+  }, [inGallery]);
+  // The guide to the wall, shown once to each reader, the first time they reach it.
+  const [guide, setGuide] = useState(false);
+  useEffect(() => {
+    if (!inGallery) return;
+    try {
+      if (localStorage.getItem(GUIDE_KEY)) return;
+      localStorage.setItem(GUIDE_KEY, '1');
+    } catch {
+      // Nowhere to remember it: it is shown on each visit.
+    }
+    setGuide(true);
   }, [inGallery]);
 
   // Crossing between the two layouts puts the panel back in that layout's resting state.
@@ -630,6 +644,16 @@ export default function App() {
           </button>
         </div>
         {!result.active && <p className="hint">{t('dragHint')}</p>}
+        {/* A reader's first time at the wall: one card says it moves every way, then goes. */}
+        {guide && (
+          <div className="wall-guide" role="status" onAnimationEnd={() => setGuide(false)}>
+            <svg viewBox="0 0 48 48" aria-hidden="true">
+              <path d="M24 5v38M5 24h38M24 5l-6 6M24 5l6 6M24 43l-6-6M24 43l6-6M5 24l6-6M5 24l6 6M43 24l-6-6M43 24l-6 6" />
+            </svg>
+            <p>{t('wallGuide')}</p>
+            <span>{t('wallGuideNote')}</span>
+          </div>
+        )}
 
         {sheet.shown && (
           <BookSheet
