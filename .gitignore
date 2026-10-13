@@ -12,3 +12,7 @@ dist
 
 # Pages fetched by scripts/fetch-texts.mjs
 .cache
+
+# Working notes, kept on this machine only
+PLAN.md
+SACH-CON-BAN-QUYEN.md
