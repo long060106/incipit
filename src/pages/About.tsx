@@ -6,13 +6,26 @@ import { PageHeader, useQuickLoader } from './PageHeader';
 import './about.css';
 
 /*
-  About the site and who made it (/about): the maker's portrait, name and own words on why
-  the site exists, then what it is built from. The maker's part is written at the keeper's
+  About the site and who made it (/about): first what the site is, then the maker's portrait,
+  name and own words on why it exists, then what it is built from. The maker's part is written at the keeper's
   desk (/admin) and is shown as written, in the language it was written in.
 */
 
 const TEXT = {
   eyebrow: { en: 'About', fr: 'À propos' },
+  what: {
+    en: '{site} is a place to find your next book by how you want to feel. Most book sites ask what you want to read. This one asks for a mood, and the books that fit it step into the light.',
+    fr: '{site} est un lieu où trouver son prochain livre d’après ce que l’on veut ressentir. La plupart des sites demandent ce que vous voulez lire. Celui-ci demande une humeur, et les livres qui lui répondent s’avancent dans la lumière.',
+  },
+  how: {
+    en: 'There are {n} books on its wall, to filter by mood, theme, era and language, to find on a globe by where they are set, or to meet by their first page alone. {free} of them are out of copyright and can be read here or downloaded, free and legally. For the others, the site says what the book is like and points to a library or a bookshop.',
+    fr: 'Son mur porte {n} livres, à filtrer par humeur, thème, époque et langue, à retrouver sur un globe d’après leur décor, ou à rencontrer par leur seule première page. {free} d’entre eux sont dans le domaine public et se lisent ici ou se téléchargent, gratuitement et légalement. Pour les autres, le site dit à quoi ressemble le livre et indique une bibliothèque ou une librairie.',
+  },
+  name: {
+    en: 'An incipit is the first words of a book.',
+    fr: 'Un incipit, ce sont les premiers mots d’un livre.',
+  },
+  developed: { en: 'Developed by', fr: 'Développé par' },
   why: { en: 'Why I made {site}', fr: 'Pourquoi j’ai fait {site}' },
   about: { en: 'About me', fr: 'À propos de moi' },
   find: { en: 'Find me', fr: 'Me trouver' },
@@ -35,7 +48,6 @@ const TEXT = {
     en: 'Cinzel Decorative, Brygada 1918, Monsieur La Doulaise and Hanken Grotesk, all under open licences.',
     fr: 'Cinzel Decorative, Brygada 1918, Monsieur La Doulaise et Hanken Grotesk, tous sous licence libre.',
   },
-  count: { en: '{n} books on the wall, {free} of them free to read here.', fr: '{n} livres au mur, dont {free} en lecture libre ici.' },
 } satisfies Record<string, L>;
 
 const paragraphs = (text: string) =>
@@ -50,6 +62,11 @@ export default function About() {
   const [{ profile, portraitAt }] = useProfile();
   const why = paragraphs(profile.why);
   const about = paragraphs(profile.about);
+  const fill = (text: string) =>
+    text
+      .replace('{site}', SITE_NAME)
+      .replace('{n}', String(BOOKS.length))
+      .replace('{free}', String(BOOKS.filter((book) => book.free).length));
   const credits: [L, string][] = [
     [TEXT.made, profile.name],
     [TEXT.texts, tl(TEXT.textsBy)],
@@ -62,14 +79,22 @@ export default function About() {
     <div className="about">
       <PageHeader here="about" />
       <main className="about-body">
-        <header className="about-head">
+        <header className="about-site">
+          <p className="page-eyebrow">{tl(TEXT.eyebrow)}</p>
+          <h1>{SITE_NAME}</h1>
+          <p>{fill(tl(TEXT.what))}</p>
+          <p>{fill(tl(TEXT.how))}</p>
+          <p>{tl(TEXT.name)}</p>
+        </header>
+
+        <section className="about-head">
           {portraitAt > 0 && <img className="about-portrait" src={portraitUrl(portraitAt)} alt={profile.name} width={640} height={640} />}
           <div>
-            <p className="page-eyebrow">{tl(TEXT.eyebrow)}</p>
-            <h1>{profile.name}</h1>
+            <p className="page-eyebrow">{tl(TEXT.developed)}</p>
+            <p className="about-name">{profile.name}</p>
             {profile.line && <p className="about-line">{profile.line}</p>}
           </div>
-        </header>
+        </section>
 
         {why.length > 0 && (
           <section className="about-words">
@@ -114,11 +139,6 @@ export default function About() {
               </div>
             ))}
           </dl>
-          <p className="about-count">
-            {tl(TEXT.count)
-              .replace('{n}', String(BOOKS.length))
-              .replace('{free}', String(BOOKS.filter((book) => book.free).length))}
-          </p>
         </section>
 
         <p className="about-foot">{t('developedBy', { name: profile.name })}</p>
