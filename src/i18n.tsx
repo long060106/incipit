@@ -26,7 +26,7 @@ const STRINGS = {
   switchToNight: { en: 'Switch to night mode', fr: 'Passer en mode nuit' },
   language: { en: 'Language', fr: 'Langue' },
   backToIntro: { en: 'Back to the introduction', fr: "Retour à l'introduction" },
-  firstPage: { en: 'First page', fr: 'Première page' },
+  firstPage: { en: 'Home', fr: 'Accueil' },
 
   // Intro
   defWord: { en: 'incipit', fr: 'incipit' },
