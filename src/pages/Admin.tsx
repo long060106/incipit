@@ -29,6 +29,7 @@ import { bookLinks } from '../lib/links';
 import { fold } from '../lib/match';
 import { BookForm } from './BookForm';
 import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { AccountsDesk } from './AccountsDesk';
 import { ProfileForm } from './ProfileForm';
 import './admin.css';
 
@@ -43,6 +44,7 @@ import './admin.css';
 const TEXT = {
   title: { en: 'Keeper’s desk', fr: 'Bureau du gardien' },
   profile: { en: 'Your profile and the About page', fr: 'Votre profil et la page À propos' },
+  accounts: { en: 'Readers’ accounts', fr: 'Comptes des lecteurs' },
   signIn: { en: 'Sign in as admin', fr: 'Connexion administrateur' },
   closed: {
     en: 'This page is for the keeper of the site. Enter the keeper’s card; its password is asked for next.',
@@ -245,6 +247,7 @@ export default function Admin() {
   const [desk, setDesk] = useState<Desk | 'asking' | 'unreachable'>('asking');
   const [changing, setChanging] = useState(false);
   const [profiling, setProfiling] = useState(false);
+  const [accounting, setAccounting] = useState(false);
   useEffect(() => {
     if (keeper) void deskState(keeper).then((state) => setDesk(state ?? 'unreachable'));
   }, [keeper]);
@@ -326,7 +329,15 @@ export default function Admin() {
           <button type="button" className="text-button" onClick={() => setProfiling(!profiling)} aria-expanded={profiling}>
             {tl(TEXT.profile)}
           </button>
+          <button type="button" className="text-button" onClick={() => setAccounting(!accounting)} aria-expanded={accounting}>
+            {tl(TEXT.accounts)}
+          </button>
         </div>
+        {accounting && (
+          <div className="admin-desk">
+            <AccountsDesk code={keeper} onClose={() => setAccounting(false)} />
+          </div>
+        )}
         {profiling && (
           <div className="admin-desk">
             <ProfileForm code={keeper} onClose={() => setProfiling(false)} />

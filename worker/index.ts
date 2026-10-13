@@ -107,6 +107,9 @@ const KNOWN = new Set(BOOKS.map((book) => book.id));
 const OPEN_FOR = 12 * 60 * 60 * 1000; // milliseconds the desk stays open after the password
 const MIN_PASSWORD = 8;
 const MAX_UNLOCKS_PER_DAY = 30; // tries from one address
+const MAX_ENTERS_PER_DAY = 40; // tries at a name and password, from one address
+const MAX_ACCOUNTS_PER_DAY = 10; // from one address
+const NAME = /^[a-z0-9][a-z0-9._-]{2,23}$/;
 const STRETCH = 100_000; // rounds of PBKDF2
 const MAX_COVER = 400_000; // bytes
 const MAX_ADDED = 500; // books
@@ -294,6 +297,129 @@ async function keeperGate(request: Request, env: Env, card: Card): Promise<Respo
   if (card.role !== 'admin') return refuse(403, 'keeper-only');
   if (!(await lockRow(env))) return refuse(423, 'no-password');
   return (await deskOpen(request, env, card)) ? null : refuse(423, 'locked');
+}
+
+// ── Accounts ────────────────────────────────────────────────────────────────
+
+interface Account {
+  name: string;
+  card: string;
+  salt: string;
+  hash: string;
+  iv: string;
+  sealed: string;
+}
+
+/** One stretching of a password gives both what proves it and the key that seals a card's code. */
+async function keysOf(password: string, salt: Uint8Array): Promise<{ proof: string; seal: CryptoKey }> {
+  const master = await stretched(password, salt);
+  const raw = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`seal:${master}`));
+  return { proof: await sha256(`proof:${master}`), seal: await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt', 'decrypt']) };
+}
+
+/** What is kept of a password and the code it opens. */
+async function sealUnder(password: string, code: string): Promise<{ salt: string; hash: string; iv: string; sealed: string }> {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const { proof, seal } = await keysOf(password, salt);
+  const sealed = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, seal, new TextEncoder().encode(code)));
+  return { salt: hex(salt), hash: proof, iv: hex(iv), sealed: hex(sealed) };
+}
+
+const goodPassword = (password: unknown): password is string => typeof password === 'string' && password.length >= MIN_PASSWORD && password.length <= 200;
+
+async function bodyOf(request: Request): Promise<Record<string, unknown> | null> {
+  try {
+    const text = await request.text();
+    if (text.length > 2000) return null;
+    const body: unknown = JSON.parse(text);
+    return body && typeof body === 'object' ? (body as Record<string, unknown>) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The card's code as this request carries it: a card has just been found by it. */
+const codeIn = (request: Request) => tidy((request.headers.get('authorization') ?? '').split(' ')[1] ?? '')!;
+
+/** Puts a name and a password in front of the card that asks. */
+async function makeAccount(request: Request, env: Env, card: Card): Promise<Response> {
+  const body = await bodyOf(request);
+  const name = typeof body?.name === 'string' ? body.name.trim().toLowerCase() : '';
+  const password = body?.password;
+  if (!NAME.test(name)) return refuse(400, 'bad-name');
+  if (!goodPassword(password)) return refuse(400, 'bad-password');
+  if (await env.DB.prepare('SELECT 1 FROM accounts WHERE card = ?1').bind(card.id).first()) return refuse(409, 'has-account');
+  if (await env.DB.prepare('SELECT 1 FROM accounts WHERE name = ?1').bind(name).first()) return refuse(409, 'taken');
+  if (!(await within(env, request, 'account', MAX_ACCOUNTS_PER_DAY))) return refuse(429, 'too-many');
+  const kept = await sealUnder(password, codeIn(request));
+  try {
+    await env.DB.prepare('INSERT INTO accounts (name, card, salt, hash, iv, sealed, created) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)')
+      .bind(name, card.id, kept.salt, kept.hash, kept.iv, kept.sealed, Date.now())
+      .run();
+  } catch {
+    // Someone took the name in the same moment.
+    return refuse(409, 'taken');
+  }
+  return json({ name }, 201);
+}
+
+/** A name and its password, for the code of the card behind them. */
+async function enterAccount(request: Request, env: Env): Promise<Response> {
+  if (!(await within(env, request, 'enter', MAX_ENTERS_PER_DAY))) return refuse(429, 'too-many');
+  const body = await bodyOf(request);
+  const name = typeof body?.name === 'string' ? body.name.trim().toLowerCase() : '';
+  const password = typeof body?.password === 'string' && body.password.length <= 200 ? body.password : '';
+  const row = NAME.test(name) ? await env.DB.prepare('SELECT name, card, salt, hash, iv, sealed FROM accounts WHERE name = ?1').bind(name).first<Account>() : null;
+  // The same work whether or not there is such a name, so that the wait tells nothing.
+  const { proof, seal } = await keysOf(password, row ? unhex(row.salt) : new Uint8Array(16));
+  if (!row || !same(proof, row.hash)) return refuse(401, 'wrong');
+  const code = new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unhex(row.iv) }, seal, unhex(row.sealed)));
+  const card = await env.DB.prepare('SELECT role FROM cards WHERE id = ?1').bind(row.card).first<{ role: string }>();
+  if (!card) return refuse(401, 'wrong');
+  return json({ code, role: card.role, name: row.name });
+}
+
+/** A new password for the account of the card that asks, given the one it has. */
+async function changeAccount(request: Request, env: Env, card: Card): Promise<Response> {
+  if (!(await within(env, request, 'enter', MAX_ENTERS_PER_DAY))) return refuse(429, 'too-many');
+  const body = await bodyOf(request);
+  const password = body?.password;
+  const row = await env.DB.prepare('SELECT name, card, salt, hash, iv, sealed FROM accounts WHERE card = ?1').bind(card.id).first<Account>();
+  if (!row) return refuse(404, 'no-account');
+  const current = typeof body?.current === 'string' && body.current.length <= 200 ? body.current : '';
+  if (!same((await keysOf(current, unhex(row.salt))).proof, row.hash)) return refuse(401, 'wrong');
+  if (!goodPassword(password)) return refuse(400, 'bad-password');
+  const kept = await sealUnder(password, codeIn(request));
+  await env.DB.prepare('UPDATE accounts SET salt = ?1, hash = ?2, iv = ?3, sealed = ?4 WHERE name = ?5').bind(kept.salt, kept.hash, kept.iv, kept.sealed, row.name).run();
+  return json({ ok: true });
+}
+
+/**
+ * For a reader who has forgotten their password: the keeper gives the account a new one, made
+ * here and shown once. The code of the card cannot be read back, so the card is given a new
+ * code too; devices still holding the old one must sign in again.
+ */
+async function resetAccount(env: Env, name: string): Promise<Response> {
+  const row = await env.DB.prepare('SELECT card FROM accounts WHERE name = ?1').bind(name).first<{ card: string }>();
+  if (!row) return refuse(404, 'no-account');
+  const code = newCode();
+  const id = await sha256(code);
+  const password = [...crypto.getRandomValues(new Uint8Array(12))].map((byte) => ALPHABET[byte & 31]).join('').toLowerCase();
+  const kept = await sealUnder(password, code);
+  await env.DB.batch([
+    env.DB.prepare('INSERT INTO cards (id, created, seen, role) SELECT ?1, created, seen, role FROM cards WHERE id = ?2').bind(id, row.card),
+    env.DB.prepare('UPDATE rows SET card = ?1 WHERE card = ?2').bind(id, row.card),
+    env.DB.prepare('UPDATE accounts SET card = ?1, salt = ?2, hash = ?3, iv = ?4, sealed = ?5 WHERE name = ?6').bind(id, kept.salt, kept.hash, kept.iv, kept.sealed, name),
+    env.DB.prepare('DELETE FROM keeper_sessions WHERE card = ?1').bind(row.card),
+    env.DB.prepare('DELETE FROM cards WHERE id = ?1').bind(row.card),
+  ]);
+  return json({ name, password });
+}
+
+async function accounts(env: Env): Promise<Response> {
+  const { results } = await env.DB.prepare('SELECT name, created FROM accounts ORDER BY created DESC LIMIT 500').all<{ name: string; created: number }>();
+  return json({ accounts: results });
 }
 
 async function passwordIn(request: Request): Promise<{ password?: unknown; current?: unknown } | null> {
@@ -708,6 +834,7 @@ async function claim(request: Request, env: Env, card: Card): Promise<Response> 
 
 async function api(request: Request, env: Env, path: string): Promise<Response> {
   if (path === '/api/card' && request.method === 'POST') return makeCard(request, env);
+  if (path === '/api/account/enter' && request.method === 'POST') return enterAccount(request, env);
   if (path === '/api/books' && request.method === 'GET') return overrides(env);
   if (path === '/api/profile' && request.method === 'GET') return profile(env);
   if (path === '/api/portrait' && request.method === 'GET') return portrait(env);
@@ -756,6 +883,16 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
     return refuse(404, 'not-found');
   }
 
+  if (section === 'accounts') {
+    const shut = await keeperGate(request, env, card);
+    if (shut) return shut;
+    if (book === undefined && request.method === 'GET') return accounts(env);
+    if (NAME.test(book ?? '') && rest === 'reset' && request.method === 'POST') return resetAccount(env, book);
+    return refuse(404, 'not-found');
+  }
+  if (path === '/api/account' && request.method === 'POST') return makeAccount(request, env, card);
+  if (path === '/api/account' && request.method === 'PUT') return changeAccount(request, env, card);
+
   if (path === '/api/claim' && request.method === 'POST') return claim(request, env, card);
   if (path.startsWith('/api/books/') && request.method === 'PUT') {
     const book = path.slice('/api/books/'.length);
@@ -767,12 +904,14 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
 
   if (path === '/api/me' && request.method === 'GET') {
     const held = await env.DB.prepare('SELECT COUNT(*) AS n FROM rows WHERE card = ?1 AND value IS NOT NULL').bind(card.id).first<{ n: number }>();
-    return json({ role: card.role, rows: held?.n ?? 0, created: card.created });
+    const account = await env.DB.prepare('SELECT name FROM accounts WHERE card = ?1').bind(card.id).first<{ name: string }>();
+    return json({ role: card.role, rows: held?.n ?? 0, created: card.created, name: account?.name ?? null });
   }
   if (path === '/api/sync' && request.method === 'POST') return sync(request, env, card);
   if (path === '/api/card' && request.method === 'DELETE') {
     await env.DB.batch([
       env.DB.prepare('DELETE FROM rows WHERE card = ?1').bind(card.id),
+      env.DB.prepare('DELETE FROM accounts WHERE card = ?1').bind(card.id),
       env.DB.prepare('DELETE FROM cards WHERE id = ?1').bind(card.id),
     ]);
     return json({ ok: true });

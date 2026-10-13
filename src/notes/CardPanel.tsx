@@ -11,8 +11,8 @@ import { card, printed, useCard } from '../lib/card';
 const TEXT = {
   title: { en: 'Library card', fr: 'Carte de lecteur' },
   none: {
-    en: 'Your notebook is kept in this browser only. A library card keeps a copy safe and opens it on your other devices. No name, no email: the card’s number is the key.',
-    fr: 'Votre carnet n’est conservé que dans ce navigateur. Une carte de lecteur en garde une copie et l’ouvre sur vos autres appareils. Ni nom, ni e-mail : le numéro de la carte est la clé.',
+    en: 'Or keep it with no name at all: a library card keeps a copy safe and opens it on your other devices. The card’s number is the key.',
+    fr: 'Ou gardez-le sans aucun nom : une carte de lecteur en garde une copie et l’ouvre sur vos autres appareils. Le numéro de la carte est la clé.',
   },
   take: { en: 'Take a card', fr: 'Prendre une carte' },
   have: { en: 'I have a card', fr: 'J’ai déjà une carte' },
@@ -22,8 +22,8 @@ const TEXT = {
   unknown: { en: 'No card has that number.', fr: 'Aucune carte ne porte ce numéro.' },
   offline: { en: 'The server could not be reached. Try again in a moment.', fr: 'Le serveur est injoignable. Réessayez dans un instant.' },
   keep: {
-    en: 'Write this number down. It is the only way to open your notebook on another device, and it cannot be recovered if lost.',
-    fr: 'Notez ce numéro. C’est le seul moyen d’ouvrir votre carnet sur un autre appareil, et il ne peut pas être retrouvé s’il est perdu.',
+    en: 'Write this number down. Without an account it is the only way to open your notebook on another device, and it cannot be recovered if lost.',
+    fr: 'Notez ce numéro. Sans compte, c’est le seul moyen d’ouvrir votre carnet sur un autre appareil, et il ne peut pas être retrouvé s’il est perdu.',
   },
   copy: { en: 'Copy', fr: 'Copier' },
   copied: { en: 'Copied', fr: 'Copié' },

@@ -6,6 +6,7 @@ import { coverUrl } from '../lib/links';
 import { fold } from '../lib/match';
 import { addOwnBook, removeOwnBook, useOwnBooks } from '../lib/mybooks';
 import { useShelf, type Mark } from '../lib/shelf';
+import { AccountPanel } from '../notes/AccountPanel';
 import { CardPanel } from '../notes/CardPanel';
 import { bookOf, markLine, markUrl, NOTE_TEXT, TiePicker } from '../notes/notes';
 import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
@@ -185,6 +186,7 @@ export default function Notebook() {
               ))}
             </ul>
           </section>
+          <AccountPanel />
           <CardPanel />
         </aside>
 

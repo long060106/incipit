@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { SITE_NAME, useI18n } from '../i18n';
+import { useCard } from '../lib/card';
 import { PAGE_LINKS, pageUrl } from '../pages/PageHeader';
 import { MoonIcon, SunIcon } from './Icons';
 
@@ -16,6 +17,7 @@ interface HeaderProps {
 
 export function Header({ theme, showHome, onToggleTheme, onOpenIndex, onHome }: HeaderProps) {
   const { t, lang, setLang } = useI18n();
+  const { card: mine } = useCard();
   // On a narrow screen the links to the other pages fold into one menu.
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -40,6 +42,9 @@ export function Header({ theme, showHome, onToggleTheme, onOpenIndex, onHome }: 
           {t(link.label)}
         </a>
       ))}
+      <a className="header-link" href={`${pageUrl('notebook')}#account`}>
+        {mine?.name ?? t('navSignIn')}
+      </a>
       <button
         type="button"
         className="header-link"
