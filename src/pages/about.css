@@ -31,7 +31,7 @@
 
 .about-portrait {
   flex: none;
-  width: clamp(6rem, 16vw, 9rem);
+  width: clamp(9rem, 24vw, 14rem);
   height: auto;
   aspect-ratio: 1;
   border-radius: 50%;
