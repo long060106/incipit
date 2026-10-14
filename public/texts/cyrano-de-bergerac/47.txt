@@ -1,0 +1,47 @@
+<p>Roxane; the Duke de Grammont, formerly Count de Guiche. Then Le Bret and Ragueneau.</p>
+<p class="verse">THE DUKE:<br> And you stay here still—ever vainly fair,<br> Ever in weeds?</p>
+<p class="verse">ROXANE:<br> Ever.</p>
+<p class="verse">THE DUKE:<br> Still faithful?</p>
+<p class="verse">ROXANE:<br> Still.</p>
+<p class="verse">THE DUKE (after a pause):<br> Am I forgiven?</p>
+<p class="verse">ROXANE:<br> Ay, since I am here.</p>
+<p>(Another pause.)</p>
+<p class="verse">THE DUKE:<br> His was a soul, you say?. . .</p>
+<p class="verse">ROXANE:<br> Ah!—when you knew him!</p>
+<p class="verse">THE DUKE:<br> Ah, may be!. . .I, perchance, too little knew him!<br> . . .And his last letter, ever next your heart?</p>
+<p class="verse">ROXANE:<br> Hung from this chain, a gentle scapulary.</p>
+<p class="verse">THE DUKE:<br> And, dead, you love him still?</p>
+<p class="verse">ROXANE:<br> At times,—meseems<br> He is but partly dead—our hearts still speak,<br> As if his love, still living, wrapped me round!</p>
+<p class="verse">THE DUKE (after another pause):<br> Cyrano comes to see you?</p>
+<p class="verse">ROXANE:<br> Often, ay.<br> Dear, kind old friend! We call him my ‘Gazette.’<br> He never fails to come: beneath this tree<br> They place his chair, if it be fine:—I wait,<br> I broider;—the clock strikes;—at the last stroke<br> I hear,—for now I never turn to look—<br> Too sure to hear his cane tap down the steps;<br> He seats himself:—with gentle raillery<br> He mocks my tapestry that’s never done;<br> He tells me all the gossip of the week. . .<br> (Le Bret appears on the steps):<br> Why, here’s Le Bret!<br> (Le Bret descends):<br> How goes it with our friend?</p>
+<p class="verse">LE BRET:<br> Ill!—very ill.</p>
+<p class="verse">THE DUKE:<br> How?</p>
+<p class="verse">ROXANE (to the Duke):<br> He exaggerates!</p>
+<p class="verse">LE BRET:<br> All that I prophesied: desertion, want!. . .<br> His letters now make him fresh enemies!—<br> Attacking the sham nobles, sham devout,<br> Sham brave,—the thieving authors,—all the world!</p>
+<p class="verse">ROXANE:<br> Ah! but his sword still holds them all in check;<br> None get the better of him.</p>
+<p class="verse">THE DUKE (shaking his head):<br> Time will show!</p>
+<p class="verse">LE BRET:<br> Ah, but I fear for him—not man’s attack,—<br> Solitude—hunger—cold December days,<br> That wolf-like steal into his chamber drear:—<br> Lo! the assassins that I fear for him!<br> Each day he tightens by one hole his belt:<br> That poor nose—tinted like old ivory:<br> He has retained one shabby suit of serge.</p>
+<p class="verse">THE DUKE:<br> Ay, there is one who has no prize of Fortune!—<br> Yet is not to be pitied!</p>
+<p class="verse">LE BRET (with a bitter smile):<br> My Lord Marshal!. . .</p>
+<p class="verse">THE DUKE:<br> Pity him not! He has lived out his vows,<br> Free in his thoughts, as in his actions free!</p>
+<p class="verse">LE BRET (in the same tone):<br> My Lord!. . .</p>
+<p class="verse">THE DUKE (haughtily):<br> True! I have all, and he has naught;. . .<br> Yet I were proud to take his hand!<br> (Bowing to Roxane):<br> Adieu!</p>
+<p class="verse">ROXANE:<br> I go with you.</p>
+<p>(The Duke bows to Le Bret, and goes with Roxane toward the steps.)</p>
+<p class="verse">THE DUKE (pausing, while she goes up):<br> Ay, true,—I envy him.<br> Look you, when life is brimful of success<br> —Though the past hold no action foul—one feels<br> A thousand self-disgusts, of which the sum<br> Is not remorse, but a dim, vague unrest;<br> And, as one mounts the steps of worldly fame,<br> The Duke’s furred mantles trail within their folds<br> A sound of dead illusions, vain regrets,<br> A rustle—scarce a whisper—like as when,<br> Mounting the terrace steps, by your mourning robe<br> Sweeps in its train the dying autumn leaves.</p>
+<p class="verse">ROXANE (ironically):<br> You are pensive?</p>
+<p class="verse">THE DUKE:<br> True! I am!<br> (As he is going out, suddenly):<br> Monsieur Le Bret!<br> (To Roxane):<br> A word, with your permission?<br> (He goes to Le Bret, and in a low voice):<br> True, that none<br> Dare to attack your friend;—but many hate him;<br> Yesterday, at the Queen’s card-play, ’twas said<br> ‘That Cyrano may die—by accident!’<br> Let him stay in—be prudent!</p>
+<p class="verse">LE BRET (raising his arms to heaven):<br> Prudent! He!. . .<br> He’s coming here. I’ll warn him—but!. . .</p>
+<p class="verse">ROXANE (who has stayed on the steps, to a sister who comes toward her):<br> What is it?</p>
+<p class="verse">THE SISTER:<br> Ragueneau would see you, Madame.</p>
+<p class="verse">ROXANE:<br> Let him come.<br> (To the Duke and Le Bret):<br> He comes to tell his troubles. Having been<br> An author (save the mark!)—poor fellow—now<br> By turns he’s singer. . .</p>
+<p class="verse">LE BRET:<br> Bathing-man. . .</p>
+<p class="verse">ROXANE:<br> Then actor. . .</p>
+<p class="verse">LE BRET:<br> Beadle. . .</p>
+<p class="verse">ROXANE:<br> Wig-maker. . .</p>
+<p class="verse">LE BRET:<br> Teacher of the lute. . .</p>
+<p class="verse">ROXANE:<br> What will he be to-day, by chance?</p>
+<p class="verse">RAGUENEAU (entering hurriedly):<br> Ah! Madame!<br> (He sees Le Bret):<br> Ah! you here, Sir!</p>
+<p class="verse">ROXANE (smiling):<br> Tell all your miseries<br> To him; I will return anon.</p>
+<p class="verse">RAGUENEAU:<br> But, Madame. . .</p>
+<p>(Roxane goes out with the Duke. Ragueneau goes toward Le Bret.)</p>

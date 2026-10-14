@@ -69,7 +69,8 @@ export type LanguageId =
   | 'tr'
   | 'ar'
   | 'bn'
-  | 'id';
+  | 'id'
+  | 'ang';
 
 export interface Book {
   /** URL slug. */

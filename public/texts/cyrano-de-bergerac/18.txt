@@ -1,0 +1,61 @@
+<p>Cyrano, Le Bret, the cadets, Christian de Neuvillette.</p>
+<p class="verse">A CADET (seated at a table, glass in hand):<br> Cyrano!<br> (Cyrano turns round):<br> The story!</p>
+<p class="verse">CYRANO:<br> In its time!</p>
+<p>(He goes up on Le Bret’s arm. They talk in low voices.)</p>
+<p class="verse">THE CADET (rising and coming down):<br> The story of the fray! ’Twill lesson well<br> (He stops before the table where Christian is seated):<br> This timid young apprentice!</p>
+<p class="verse">CHRISTIAN (raising his head):<br> ’Prentice! Who?</p>
+<p class="verse">ANOTHER CADET:<br> This sickly Northern greenhorn!</p>
+<p class="verse">CHRISTIAN:<br> Sickly!</p>
+<p class="verse">FIRST CADET (mockingly):<br> Hark!<br> Monsieur de Neuvillette, this in your ear:<br> There’s somewhat here, one no more dares to name,<br> Than to say ‘rope’ to one whose sire was hanged!</p>
+<p class="verse">CHRISTIAN:<br> What may that be?</p>
+<p class="verse">ANOTHER CADET (in a terrible voice):<br> See here!<br> (He puts his finger three times, mysteriously, on his nose):<br> Do you understand?</p>
+<p class="verse">CHRISTIAN:<br> Oh! ’tis the. . .</p>
+<p class="verse">ANOTHER:<br> Hush! oh, never breathe that word,<br> Unless you’d reckon with him yonder!</p>
+<p>(He points to Cyrano, who is talking with Le Bret.)</p>
+<p class="verse">ANOTHER (who has meanwhile come up noiselessly to sit on the table—whispering behind him):<br> Hark!<br> He put two snuffling men to death, in rage,<br> For the sole reason they spoke through their nose!</p>
+<p class="verse">ANOTHER (in a hollow voice, darting on all-fours from under the table, where he had crept):<br> And if you would not perish in flower o’ youth,<br> —Oh, mention not the fatal cartilage!</p>
+<p class="verse">ANOTHER (clapping him on the shoulder):<br> A word? A gesture! For the indiscreet<br> His handkerchief may prove his winding-sheet!</p>
+<p>(Silence. All, with crossed arms, look at Christian. He rises and goes over to Carbon de Castel-Jaloux, who is talking to an officer, and feigns to see nothing.)</p>
+<p class="verse">CHRISTIAN:<br> Captain!</p>
+<p class="verse">CARBON (turning and looking at him from head to foot):<br> Sir!</p>
+<p class="verse">CHRISTIAN:<br> Pray, what skills it best to do<br> To Southerners who swagger?. . .</p>
+<p class="verse">CARBON:<br> Give them proof<br> That one may be a Northerner, yet brave!</p>
+<p>(He turns his back on him.)</p>
+<p class="verse">CHRISTIAN:<br> I thank you.</p>
+<p class="verse">FIRST CADET (to Cyrano):<br> Now the tale!</p>
+<p class="verse">ALL:<br> The tale!</p>
+<p class="verse">CYRANO (coming toward them):<br> The tale?. . .<br> (All bring their stools up, and group round him, listening eagerly. Christian is astride a chair):<br> Well! I went all alone to meet the band.<br> The moon was shining, clock-like, full i’ th’ sky,<br> When, suddenly, some careful clockwright passed<br> A cloud of cotton-wool across the case<br> That held this silver watch. And, presto! heigh!<br> The night was inky black, and all the quays<br> Were hidden in the murky dark. Gadsooks!<br> One could see nothing further. . .</p>
+<p class="verse">CHRISTIAN:<br> Than one’s nose!</p>
+<p>(Silence. All slowly rise, looking in terror at Cyrano, who has stopped— dumbfounded. Pause.)</p>
+<p class="verse">CYRANO:<br> Who on God’s earth is that?</p>
+<p class="verse">A CADET (whispering):<br> It is a man<br> Who joined to-day.</p>
+<p class="verse">CYRANO (making a step toward Christian):<br> To-day?</p>
+<p class="verse">CARBON (in a low voice):<br> Yes. . .his name is<br> The Baron de Neuvil. . .</p>
+<p class="verse">CYRANO (checking himself):<br> Good! It is well. . .<br> (He turns pale, flushes, makes as if to fall on Christian):<br> I. . .<br> (He controls himself):<br> What said I?. . .<br> (With a burst of rage):<br> MORDIOUS!. . .<br> (Then continues calmly):<br> That it was dark.<br> (Astonishment. The cadets reseat themselves, staring at him):<br> On I went, thinking, ‘For a knavish cause<br> I may provoke some great man, some great prince,<br> Who certainly could break’. . .</p>
+<p class="verse">CHRISTIAN:<br> My nose!. . .</p>
+<p>(Every one starts up. Christian balances on his chair.)</p>
+<p class="verse">CYRANO (in a choked voice):<br> . . .’My teeth!<br> Who would break my teeth, and I, imprudent-like,<br> Was poking. . .’</p>
+<p class="verse">CHRISTIAN:<br> My nose!. . .</p>
+<p class="verse">CYRANO:<br> ‘My finger,. . .in the crack<br> Between the tree and bark! He may prove strong<br> And rap me. . .’</p>
+<p class="verse">CHRISTIAN:<br> Over the nose. . .</p>
+<p class="verse">CYRANO (wiping his forehead):<br> . . .’O’ th’ knuckles! Ay,’<br> But I cried, ‘Forward, Gascon! Duty calls!<br> On, Cyrano!’ And thus I ventured on. . .<br> When, from the shadow, came. . .</p>
+<p class="verse">CHRISTIAN:<br> A crack o’ th’ nose.</p>
+<p class="verse">CYRANO:<br> I parry it—find myself. . .</p>
+<p class="verse">CHRISTIAN:<br> Nose to nose. . .</p>
+<p class="verse">CYRANO (bounding on to him):<br> Heaven and earth!<br> (All the Gascons leap up to see, but when he is close to Christian he controls himself and continues):<br> . . .With a hundred brawling sots,<br> Who stank. . .</p>
+<p class="verse">CHRISTIAN:<br> A noseful. . .</p>
+<p class="verse">CYRANO (white, but smiling):<br> Onions, brandy-cups!<br> I leapt out, head well down. . .</p>
+<p class="verse">CHRISTIAN:<br> Nosing the wind!</p>
+<p class="verse">CYRANO:<br> I charge!—gore two, impale one—run him through,<br> One aims at me—Paf! and I parry. . .</p>
+<p class="verse">CHRISTIAN:<br> Pif!</p>
+<p class="verse">CYRANO (bursting out):<br> Great God! Out! all of you!</p>
+<p>(The cadets rush to the doors.)</p>
+<p class="verse">FIRST CADET:<br> The tiger wakes!</p>
+<p class="verse">CYRANO:<br> Every man, out! Leave me alone with him!</p>
+<p class="verse">SECOND CADET:<br> We shall find him minced fine, minced into hash<br> In a big pasty!</p>
+<p class="verse">RAGUENEAU:<br> I am turning pale,<br> And curl up, like a napkin, limp and white!</p>
+<p class="verse">CARBON:<br> Let us be gone.</p>
+<p class="verse">ANOTHER:<br> He will not leave a crumb!</p>
+<p class="verse">ANOTHER:<br> I die of fright to think what will pass here!</p>
+<p class="verse">ANOTHER (shutting door right):<br> Something too horrible!</p>
+<p>(All have gone out by different doors, some by the staircase. Cyrano and Christian are face to face, looking at each other for a moment.)</p>

@@ -1,0 +1,37 @@
+<p>Christian, Roxane, the duenna.</p>
+<p class="verse">ROXANE (coming out of Clomire’s house, with a company of friends, whom she leaves. Bows and good-byes):<br> Barthenoide!—Alcandre!—Gremione!—</p>
+<p class="verse">THE DUENNA (bitterly disappointed):<br> We’ve missed the speech upon the Tender Passion!</p>
+<p>(Goes into Roxane’s house.)</p>
+<p class="verse">ROXANE (still bowing):<br> Urimedonte—adieu!<br> (All bow to Roxane and to each other, and then separate, going up different streets. Roxane suddenly seeing Christian):<br> You!<br> (She goes to him):<br> Evening falls.<br> Let’s sit. Speak on. I listen.</p>
+<p class="verse">CHRISTIAN (sits by her on the bench. A silence):<br> Oh! I love you!</p>
+<p class="verse">ROXANE (shutting her eyes):<br> Ay, speak to me of love.</p>
+<p class="verse">CHRISTIAN:<br> I love thee!</p>
+<p class="verse">ROXANE:<br> That’s<br> The theme! But vary it.</p>
+<p class="verse">CHRISTIAN:<br> I. . .</p>
+<p class="verse">ROXANE:<br> Vary it!</p>
+<p class="verse">CHRISTIAN:<br> I love you so!</p>
+<p class="verse">ROXANE:<br> Oh! without doubt!—and then?. . .</p>
+<p class="verse">CHRISTIAN:<br> And then—I should be—oh!—so glad—so glad<br> If you would love me!—Roxane, tell me so!</p>
+<p class="verse">ROXANE (with a little grimace):<br> I hoped for cream,—you give me gruel! Say<br> How love possesses you?</p>
+<p class="verse">CHRISTIAN:<br> Oh utterly!</p>
+<p class="verse">ROXANE:<br> Come, come!. . .unknot those tangled sentiments!</p>
+<p class="verse">CHRISTIAN:<br> Your throat I’d kiss it!</p>
+<p class="verse">ROXANE:<br> Christian!</p>
+<p class="verse">CHRISTIAN:<br> I love thee!</p>
+<p class="verse">ROXANE (half-rising):<br> Again!</p>
+<p class="verse">CHRISTIAN (eagerly, detaining her):<br> No, no! I love thee not!</p>
+<p class="verse">ROXANE (reseating herself):<br> ’Tis well!</p>
+<p class="verse">CHRISTIAN:<br> But I adore thee!</p>
+<p class="verse">ROXANE (rising, and going further off):<br> Oh!</p>
+<p class="verse">CHRISTIAN:<br> I am grown stupid!</p>
+<p class="verse">ROXANE (dryly):<br> And that displeases me, almost as much<br> As ’twould displease me if you grew ill-favored.</p>
+<p class="verse">CHRISTIAN:<br> But. . .</p>
+<p class="verse">ROXANE:<br> Rally your poor eloquence that’s flown!</p>
+<p class="verse">CHRISTIAN:<br> I. . .</p>
+<p class="verse">ROXANE:<br> Yes, you love me, that I know. Adieu.</p>
+<p>(She goes toward her house.)</p>
+<p class="verse">CHRISTIAN:<br> Oh, go not yet! I’d tell you—</p>
+<p class="verse">ROXANE (opening the door):<br> You adore me?<br> I’ve heard it very oft. No!—Go away!</p>
+<p class="verse">CHRISTIAN:<br> But I would fain. . .</p>
+<p>(She shuts the door in his face.)</p>
+<p class="verse">CYRANO (who has re-entered unseen):<br> I’ faith! It is successful!</p>

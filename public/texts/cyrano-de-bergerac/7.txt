@@ -1,0 +1,20 @@
+<p>Cyrano, Le Bret, the duenna.</p>
+<p class="verse">THE DUENNA (with a low bow):<br> I was bid ask you where a certain lady<br> Could see her valiant cousin—but in secret.</p>
+<p class="verse">CYRANO (overwhelmed):<br> See me?</p>
+<p class="verse">THE DUENNA (courtesying):<br> Ay, Sir! She has somewhat to tell.</p>
+<p class="verse">CYRANO:<br> Somewhat?. . .</p>
+<p class="verse">THE DUENNA (still courtesying):<br> Ay, private matters!</p>
+<p class="verse">CYRANO (staggering):<br> Ah, my God!</p>
+<p class="verse">THE DUENNA:<br> To-morrow, at the early blush of dawn,<br> We go to hear mass at St. Roch.</p>
+<p class="verse">CYRANO (leaning against Le Bret):<br> My God!</p>
+<p class="verse">THE DUENNA:<br> After—what place for a few minutes’ speech?</p>
+<p class="verse">CYRANO (confused):<br> Where? Ah!. . .but. . .Ah, my God!. . .</p>
+<p class="verse">THE DUENNA:<br> Say!</p>
+<p class="verse">CYRANO:<br> I reflect!. . .</p>
+<p class="verse">THE DUENNA:<br> Where?</p>
+<p class="verse">CYRANO:<br> At—the pastry-house of Ragueneau.</p>
+<p class="verse">THE DUENNA:<br> Where lodges he?</p>
+<p class="verse">CYRANO:<br> The Rue—God!—St. Honore!</p>
+<p class="verse">THE DUENNA (going):<br> Good. Be you there. At seven.</p>
+<p class="verse">CYRANO:<br> Without fail.</p>
+<p>(The duenna goes out.)</p>

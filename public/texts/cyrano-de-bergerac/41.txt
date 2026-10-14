@@ -1,0 +1,73 @@
+<p>The same. De Guiche.</p>
+<p class="verse">DE GUICHE:<br> It smells good here.</p>
+<p class="verse">A CADET (humming):<br> Lo! Lo-lo!</p>
+<p class="verse">DE GUICHE (looking at him):<br> What is the matter?—You are very red.</p>
+<p class="verse">THE CADET:<br> The matter?—Nothing!—’Tis my blood—boiling at the thought of the coming<br> battle!</p>
+<p class="verse">ANOTHER:<br> Poum, poum—poum. . .</p>
+<p class="verse">DE GUICHE (turning round):<br> What’s that?</p>
+<p class="verse">THE CADET (slightly drunk):<br> Nothing!. . .’Tis a song!—a little. . .</p>
+<p class="verse">DE GUICHE:<br> You are merry, my friend!</p>
+<p class="verse">THE CADET:<br> The approach of danger is intoxicating!</p>
+<p class="verse">DE GUICHE (calling Carbon de Castel-Jaloux, to give him an order):<br> Captain! I. . .<br> (He stops short on seeing him):<br> Plague take me! but you look bravely, too!</p>
+<p class="verse">CARBON (crimson in the face, hiding a bottle behind his back, with an evasive movement):<br> Oh!. . .</p>
+<p class="verse">DE GUICHE:<br> I have one cannon left, and have had it carried there—<br> (he points behind the scenes):<br> —in that corner. . .Your men can use it in case of need.</p>
+<p class="verse">A CADET (reeling slightly):<br> Charming attention!</p>
+<p class="verse">ANOTHER (with a gracious smile):<br> Kind solicitude!</p>
+<p class="verse">DE GUICHE:<br> How? they are all gone crazy?<br> (Drily):<br> As you are not used to cannon, beware of the recoil.</p>
+<p class="verse">FIRST CADET:<br> Pooh!</p>
+<p class="verse">DE GUICHE (furious, going up to him):<br> But. . .</p>
+<p class="verse">THE CADET:<br> Gascon cannons never recoil!</p>
+<p class="verse">DE GUICHE (taking him by the arm and shaking him):<br> You are tipsy!—but what with?</p>
+<p class="verse">THE CADET (grandiloquently):<br> —With the smell of powder!</p>
+<p class="verse">DE GUICHE (shrugging his shoulders and pushing him away, then going quickly to Roxane):<br> Briefly, Madame, what decision do you deign to take?</p>
+<p class="verse">ROXANE:<br> I stay here.</p>
+<p class="verse">DE GUICHE:<br> You must fly!</p>
+<p class="verse">ROXANE:<br> No! I will stay.</p>
+<p class="verse">DE GUICHE:<br> Since things are thus, give me a musket, one of you!</p>
+<p class="verse">CARBON:<br> Wherefore?</p>
+<p class="verse">DE GUICHE:<br> Because I too—mean to remain.</p>
+<p class="verse">CYRANO:<br> At last! This is true valor, Sir!</p>
+<p class="verse">FIRST CADET:<br> Then you are Gascon after all, spite of your lace collar?</p>
+<p class="verse">ROXANE:<br> What is all this?</p>
+<p class="verse">DE GUICHE:<br> I leave no woman in peril.</p>
+<p class="verse">SECOND CADET (to the first):<br> Hark you! Think you not we might give him something to eat?</p>
+<p>(All the viands reappear as if by magic.)</p>
+<p class="verse">DE GUICHE (whose eyes sparkle):<br> Victuals!</p>
+<p class="verse">THE THIRD CADET:<br> Yes, you’ll see them coming from under every coat!</p>
+<p class="verse">DE GUICHE (controlling himself, haughtily):<br> Do you think I will eat your leavings?</p>
+<p class="verse">CYRANO (saluting him):<br> You make progress.</p>
+<p class="verse">DE GUICHE (proudly, with a light touch of accent on the word ‘breaking’):<br> I will fight without br-r-eaking my fast!</p>
+<p class="verse">FIRST CADET (with wild delight):<br> Br-r-r-eaking! He has got the accent!</p>
+<p class="verse">DE GUICHE (laughing):<br> I?</p>
+<p class="verse">THE CADET:<br> ’Tis a Gascon!</p>
+<p>(All begin to dance.)</p>
+<p class="verse">CARBON DE CASTEL-JALOUX (who had disappeared behind the rampart, reappearing on the ridge):<br> I have drawn my pikemen up in line. They are a resolute troop.</p>
+<p>(He points to a row of pikes, the tops of which are seen over the ridge.)</p>
+<p class="verse">DE GUICHE (bowing to Roxane):<br> Will you accept my hand, and accompany me while I review them?</p>
+<p>(She takes it, and they go up toward the rampart. All uncover and follow them.)</p>
+<p class="verse">CHRISTIAN (going to Cyrano, eagerly):<br> Tell me quickly!</p>
+<p>(As Roxane appears on the ridge, the tops of the lances disappear, lowered for the salute, and a shout is raised. She bows.)</p>
+<p class="verse">THE PIKEMEN (outside):<br> Vivat!</p>
+<p class="verse">CHRISTIAN:<br> What is this secret?</p>
+<p class="verse">CYRANO:<br> If Roxane should. . .</p>
+<p class="verse">CHRISTIAN:<br> Should?. . .</p>
+<p class="verse">CYRANO:<br> Speak of the letters?. . .</p>
+<p class="verse">CHRISTIAN:<br> Yes, I know!. . .</p>
+<p class="verse">CYRANO:<br> Do not spoil all by seeming surprised. . .</p>
+<p class="verse">CHRISTIAN:<br> At what?</p>
+<p class="verse">CYRANO:<br> I must explain to you!. . .Oh! ’tis no great matter—I but thought of it to-<br> day on seeing her. You have. . .</p>
+<p class="verse">CHRISTIAN:<br> Tell quickly!</p>
+<p class="verse">CYRANO:<br> You have. . .written to her oftener than you think. . .</p>
+<p class="verse">CHRISTIAN:<br> How so?</p>
+<p class="verse">CYRANO:<br> Thus, ’faith! I had taken it in hand to express your flame for you!. . .At<br> times I wrote without saying, ‘I am writing!’</p>
+<p class="verse">CHRISTIAN:<br> Ah!. . .</p>
+<p class="verse">CYRANO:<br> ’Tis simple enough!</p>
+<p class="verse">CHRISTIAN:<br> But how did you contrive, since we have been cut off, thus. . .to?. . .</p>
+<p class="verse">CYRANO:<br> . . .Oh! before dawn. . .I was able to get through. . .</p>
+<p class="verse">CHRISTIAN (folding his arms):<br> That was simple, too? And how oft, pray you, have I written?. . .Twice in<br> the week?. . .Three times?. . .Four?. . .</p>
+<p class="verse">CYRANO:<br> More often still.</p>
+<p class="verse">CHRISTIAN:<br> What! Every day?</p>
+<p class="verse">CYRANO:<br> Yes, every day,—twice.</p>
+<p class="verse">CHRISTIAN (violently):<br> And that became so mad a joy for you, that you braved death. . .</p>
+<p class="verse">CYRANO (seeing Roxane returning):<br> Hush! Not before her!</p>
+<p>(He goes hurriedly into his tent.)</p>

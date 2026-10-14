@@ -38,7 +38,13 @@ const BOOKS = [...catalogue.matchAll(/\n    id: '([^']+)'[\s\S]*?(?=\n  \{\n    
   .filter((book) => book.gutenberg);
 
 /** Where the story starts, for the books in which the guess below is wrong: a section index. */
-const OPENS_AT = { 'on-the-origin-of-species': 2, middlemarch: 1, 'noli-me-tangere': 6 };
+const OPENS_AT = { 'on-the-origin-of-species': 2, middlemarch: 1, 'noli-me-tangere': 6, 'the-red-and-the-black': 1, 'cyrano-de-bergerac': 2, bushido: 3, beowulf: 6 };
+/**
+ * Books whose chapters are made of many short numbered pieces (the Analects' sayings,
+ * Nietzsche's aphorisms): each chapter is read as one section, every piece under its number,
+ * rather than as hundreds of sections.
+ */
+const GATHERED = new Set(['the-analects', 'beyond-good-and-evil']);
 
 // ---------------------------------------------------------------------------------------
 // Cleaning
@@ -180,7 +186,7 @@ function title(text) {
 const SE_SKIP = /\b(titlepage|imprint|toc|colophon|copyright-page|loi|halftitlepage|landmarks|cover)\b/;
 const NOT_THE_STORY = /\b(epigraph|dedication|preface|foreword|introduction|preamble|acknowledgments|endnotes|appendix|afterword|glossary|bibliography|index|frontmatter|backmatter)\b/;
 
-function fromStandardEbooks(html) {
+function fromStandardEbooks(html, gather = false) {
   const $ = cheerio.load(html);
   const labels = new Map();
   $('nav#toc a').each((_, link) => {
@@ -200,6 +206,18 @@ function fromStandardEbooks(html) {
     const body = list.filter((block) => !block.heading);
     const label = labels.get(section.attribs?.id ?? '') || headings.map((block) => block.text).join(' · ') || title(type.split(/\s+/).find((word) => !/matter$|^z3998|^se:/.test(word)) ?? '');
     const html = body.map((block) => block.html).join('\n');
+    if (gather && children.length && children.every((child) => !child.children?.some((inner) => inner.type === 'tag' && (inner.name === 'section' || inner.name === 'article')))) {
+      const pieces = children.map((child) => {
+        const inner = blocks(child);
+        return {
+          label: labels.get(child.attribs?.id ?? '') || inner.filter((block) => block.heading).map((block) => block.text).join(' · '),
+          html: inner.filter((block) => !block.heading).map((block) => block.html).join('\n'),
+        };
+      });
+      const joined = [html, ...pieces.map((piece) => (piece.label ? `<h3>${piece.label}</h3>\n` : '') + piece.html)].filter(Boolean).join('\n');
+      sections.push({ title: label, part: take(), html: joined, story: within });
+      return;
+    }
     if (children.length) {
       // A part or a volume. With nothing of its own to read, it is only a label for what follows.
       if (words(plain(html)) < 40) pending.push(label);
@@ -337,7 +355,7 @@ for (const book of BOOKS) {
     report.push(`${book.id}: NO TEXT`);
     continue;
   }
-  const sections = (source.from === 'standardebooks' ? fromStandardEbooks : fromGutenberg)(source.html);
+  const sections = (source.from === 'standardebooks' ? fromStandardEbooks : fromGutenberg)(source.html, GATHERED.has(book.id));
   if (sections.length === 0) {
     report.push(`${book.id}: no sections found (${source.from})`);
     continue;

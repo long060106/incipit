@@ -1,0 +1,37 @@
+<p>Ragueneau, Lise, Cyrano, then the musketeer.</p>
+<p class="verse">CYRANO:<br> What’s o’clock?</p>
+<p class="verse">RAGUENEAU (bowing low):<br> Six o’clock.</p>
+<p class="verse">CYRANO (with emotion):<br> In one hour’s time!</p>
+<p>(He paces up and down the shop.)</p>
+<p class="verse">RAGUENEAU (following him):<br> Bravo! I saw. . .</p>
+<p class="verse">CYRANO:<br> Well, what saw you, then?</p>
+<p class="verse">RAGUENEAU:<br> Your combat!. . .</p>
+<p class="verse">CYRANO:<br> Which?</p>
+<p class="verse">RAGUENEAU:<br> That in the Burgundy Hotel, ’faith!</p>
+<p class="verse">CYRANO (contemptuously):<br> Ah!. . .the duel!</p>
+<p class="verse">RAGUENEAU (admiringly):<br> Ay! the duel in verse!. . .</p>
+<p class="verse">LISE:<br> He can talk of naught else!</p>
+<p class="verse">CYRANO:<br> Well! Good! let be!</p>
+<p class="verse">RAGUENEAU (making passes with a spit that he catches up):<br> ‘At the envoi’s end, I touch!. . .At the envoi’s end, I touch!’. . .’Tis fine, fine!<br> (With increasing enthusiasm):<br> ‘At the envoi’s end—’</p>
+<p class="verse">CYRANO:<br> What hour is it now, Ragueneau?</p>
+<p class="verse">RAGUENEAU (stopping short in the act of thrusting to look at the clock):<br> Five minutes after six!. . .’I touch!’<br> (He straightens himself):<br> . . .Oh! to write a ballade!</p>
+<p class="verse">LISE (to Cyrano, who, as he passes by the counter, has absently shaken hands with her):<br> What’s wrong with your hand?</p>
+<p class="verse">CYRANO:<br> Naught; a slight cut.</p>
+<p class="verse">RAGUENEAU:<br> Have you been in some danger?</p>
+<p class="verse">CYRANO:<br> None in the world.</p>
+<p class="verse">LISE (shaking her finger at him):<br> Methinks you speak not the truth in saying that!</p>
+<p class="verse">CYRANO:<br> Did you see my nose quiver when I spoke? ’Faith, it must have been a<br> monstrous lie that should move it!<br> (Changing his tone):<br> I wait some one here. Leave us alone, and disturb us for naught an it were<br> not for crack of doom!</p>
+<p class="verse">RAGUENEAU:<br> But ’tis impossible; my poets are coming. . .</p>
+<p class="verse">LISE (ironically):<br> Oh, ay, for their first meal o’ the day!</p>
+<p class="verse">CYRANO:<br> Prythee, take them aside when I shall make you sign to do so. . .What’s<br> o’clock?</p>
+<p class="verse">RAGUENEAU:<br> Ten minutes after six.</p>
+<p class="verse">CYRANO (nervously seating himself at Ragueneau’s table, and drawing some paper<br> toward him):<br> A pen!. . .</p>
+<p class="verse">RAGUENEAU (giving him the one from behind his ear):<br> Here—a swan’s quill.</p>
+<p class="verse">A MUSKETEER (with fierce mustache, enters, and in a stentorian voice):<br> Good-day!</p>
+<p>(Lise goes up to him quickly.)</p>
+<p class="verse">CYRANO (turning round):<br> Who’s that?</p>
+<p class="verse">RAGUENEAU:<br> ’Tis a friend of my wife—a terrible warrior—at least so says he himself.</p>
+<p class="verse">CYRANO (taking up the pen, and motioning Ragueneau away):<br> Hush!<br> (To himself):<br> I will write, fold it, give it her, and fly!<br> (Throws down the pen):<br> Coward!. . .But strike me dead if I dare to speak to her,. . .ay, even one<br> single word!<br> (To Ragueneau):<br> What time is it?</p>
+<p class="verse">RAGUENEAU:<br> A quarter after six!. . .</p>
+<p class="verse">CYRANO (striking his breast):<br> Ay—a single word of all those here! here! But writing, ’tis easier done. .<br> .<br> (He takes up the pen):<br> Go to, I will write it, that love-letter! Oh! I have writ it and rewrit it<br> in my own mind so oft that it lies there ready for pen and ink; and if I lay<br> but my soul by my letter-sheet, ’tis naught to do but to copy from it.</p>
+<p>(He writes. Through the glass of the door the silhouettes of their figures move uncertainly and hesitatingly.)</p>

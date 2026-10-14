@@ -1,0 +1,104 @@
+<p>Roxane, Cyrano. Then Le Bret, Carbon de Castel-Jaloux, the cadets, Ragueneau, De Guiche, etc.</p>
+<p class="verse">ROXANE:<br> Important, how?</p>
+<p class="verse">CYRANO (in despair. to Roxane):<br> He’s gone! ’Tis naught!—Oh, you know how he sees<br> Importance in a trifle!</p>
+<p class="verse">ROXANE (warmly):<br> Did he doubt<br> Of what I said?—Ah, yes, I saw he doubted!</p>
+<p class="verse">CYRANO (taking her hand):<br> But are you sure you told him all the truth?</p>
+<p class="verse">ROXANE:<br> Yes, I would love him were he. . .</p>
+<p>(She hesitates.)</p>
+<p class="verse">CYRANO:<br> Does that word<br> Embarrass you before my face, Roxane?</p>
+<p class="verse">ROXANE:<br> I. . .</p>
+<p class="verse">CYRANO (smiling sadly):<br> ’Twill not hurt me! Say it! If he were<br> Ugly!. . .</p>
+<p class="verse">ROXANE:<br> Yes, ugly!<br> (Musket report outside):<br> Hark! I hear a shot!</p>
+<p class="verse">CYRANO (ardently):<br> Hideous!</p>
+<p class="verse">ROXANE:<br> Hideous! yes!</p>
+<p class="verse">CYRANO:<br> Disfigured.</p>
+<p class="verse">ROXANE:<br> Ay!</p>
+<p class="verse">CYRANO:<br> Grotesque?</p>
+<p class="verse">ROXANE:<br> He could not be grotesque to me!</p>
+<p class="verse">CYRANO:<br> You’d love the same?. . .</p>
+<p class="verse">ROXANE:<br> The same—nay, even more!</p>
+<p class="verse">CYRANO (losing command over himself—aside):<br> My God! it’s true, perchance, love waits me there!<br> (To Roxane):<br> I. . .Roxane. . .listen. . .</p>
+<p class="verse">LE BRET (entering hurriedly—to Cyrano):<br> Cyrano!</p>
+<p class="verse">CYRANO (turning round):<br> What?</p>
+<p class="verse">LE BRET:<br> Hush!</p>
+<p>(He whispers something to him.)</p>
+<p class="verse">CYRANO (letting go Roxane’s hand and exclaiming):<br> Ah, God!</p>
+<p class="verse">ROXANE:<br> What is it?</p>
+<p class="verse">CYRANO (to himself—stunned):<br> All is over now.</p>
+<p>(Renewed reports.)</p>
+<p class="verse">ROXANE:<br> What is the matter? Hark! another shot!</p>
+<p>(She goes up to look outside.)</p>
+<p class="verse">CYRANO:<br> It is too late, now I can never tell!</p>
+<p class="verse">ROXANE (trying to rush out):<br> What has chanced?</p>
+<p class="verse">CYRANO (rushing to stop her):<br> Nothing!</p>
+<p>(Some cadets enter, trying to hide something they are carrying, and close round it to prevent Roxane approaching.)</p>
+<p class="verse">ROXANE:<br> And those men?<br> (Cyrano draws her away):<br> What were you just about to say before. . .?</p>
+<p class="verse">CYRANO:<br> What was I saying? Nothing now, I swear!<br> (Solemnly):<br> I swear that Christian’s soul, his nature, were. . .<br> (Hastily correcting himself):<br> Nay, that they are, the noblest, greatest. . .</p>
+<p class="verse">ROXANE:<br> Were?<br> (With a loud scream):<br> Oh!</p>
+<p>(She rushes up, pushing every one aside.)</p>
+<p class="verse">CYRANO:<br> All is over now!</p>
+<p class="verse">ROXANE (seeing Christian lying on the ground, wrapped in his cloak):<br> O Christian!</p>
+<p class="verse">LE BRET (to Cyrano):<br> Struck by first shot of the enemy!</p>
+<p>(Roxane flings herself down by Christian. Fresh reports of cannon—clash of arms—clamor—beating of drums.)</p>
+<p class="verse">CARBON (with sword in the air):<br> O come! Your muskets.</p>
+<p>(Followed by the cadets, he passes to the other side of the ramparts.)</p>
+<p class="verse">ROXANE:<br> Christian!</p>
+<p class="verse">THE VOICE OF CARBON (from the other side):<br> Ho! make haste!</p>
+<p class="verse">ROXANE:<br> Christian!</p>
+<p class="verse">CARBON:<br> FORM LINE!</p>
+<p class="verse">ROXANE:<br> Christian!</p>
+<p class="verse">CARBON:<br> HANDLE YOUR MATCH!</p>
+<p>(Ragueneau rushes up, bringing water in a helmet.)</p>
+<p class="verse">CHRISTIAN (in a dying voice):<br> Roxane!</p>
+<p class="verse">CYRANO (quickly, whispering into Christian’s ear, while Roxane distractedly tears a piece of linen from his breast, which she dips into the water, trying to stanch the bleeding):<br> I told her all. She loves you still.</p>
+<p>(Christian closes his eyes.)</p>
+<p class="verse">ROXANE:<br> How, my sweet love?</p>
+<p class="verse">CARBON:<br> DRAW RAMRODS!</p>
+<p class="verse">ROXANE (to Cyrano):<br> He is not dead?</p>
+<p class="verse">CARBON:<br> OPEN YOUR CHARGES WITH YOUR TEETH!</p>
+<p class="verse">ROXANE:<br> His cheek<br> Grows cold against my own!</p>
+<p class="verse">CARBON:<br> READY! PRESENT!</p>
+<p class="verse">ROXANE (seeing a letter in Christian’s doublet):<br> A letter!. . .<br> ’Tis for me!</p>
+<p>(She opens it.)</p>
+<p class="verse">CYRANO (aside):<br> My letter!</p>
+<p class="verse">CARBON:<br> FIRE!</p>
+<p>(Musket reports—shouts—noise of battle.)</p>
+<p class="verse">CYRANO (trying to disengage his hand, which Roxane on her knees is holding):<br> But, Roxane, hark, they fight!</p>
+<p class="verse">ROXANE (detaining him):<br> Stay yet awhile.<br> For he is dead. You knew him, you alone.<br> (Weeping quietly):<br> Ah, was not his a beauteous soul, a soul<br> Wondrous!</p>
+<p class="verse">CYRANO (standing up—bareheaded):<br> Ay, Roxane.</p>
+<p class="verse">ROXANE:<br> An inspired poet?</p>
+<p class="verse">CYRANO:<br> Ay, Roxane.</p>
+<p class="verse">ROXANE:<br> And a mind sublime?</p>
+<p class="verse">CYRANO:<br> Oh, yes!</p>
+<p class="verse">ROXANE:<br> A heart too deep for common minds to plumb,<br> A spirit subtle, charming?</p>
+<p class="verse">CYRANO (firmly):<br> Ay, Roxane.</p>
+<p class="verse">ROXANE (flinging herself on the dead body):<br> Dead, my love!</p>
+<p class="verse">CYRANO (aside—drawing his sword):<br> Ay, and let me die to-day,<br> Since, all unconscious, she mourns me—in him!</p>
+<p>(Sounds of trumpets in the distance.)</p>
+<p class="verse">DE GUICHE (appearing on the ramparts—bareheaded—with a wound on his forehead—in a voice of thunder):<br> It is the signal! Trumpet flourishes!<br> The French bring the provisions into camp!<br> Hold but the place awhile!</p>
+<p class="verse">ROXANE:<br> See, there is blood<br> Upon the letter—tears!</p>
+<p class="verse">A VOICE (outside—shouting):<br> Surrender!</p>
+<p class="verse">VOICE OF CADETS:<br> No!</p>
+<p class="verse">RAGUENEAU (standing on the top of his carriage, watches the battle over the edge of the ramparts):<br> The danger’s ever greater!</p>
+<p class="verse">CYRANO (to De Guiche—pointing to Roxane):<br> I will charge!<br> Take her away!</p>
+<p class="verse">ROXANE (kissing the letter—in a half-extinguished voice):<br> O God! his tears! his blood!. . .</p>
+<p class="verse">RAGUENEAU (jumping down from the carriage and rushing toward her):<br> She’s swooned away!</p>
+<p class="verse">DE GUICHE (on the rampart—to the cadets—with fury):<br> Stand fast!</p>
+<p class="verse">A VOICE (outside):<br> Lay down your arms!</p>
+<p class="verse">THE CADETS:<br> No!</p>
+<p class="verse">CYRANO (to De Guiche):<br> Now that you have proved your valor, Sir,<br> (Pointing to Roxane):<br> Fly, and save her!</p>
+<p class="verse">DE GUICHE (rushing to Roxane, and carrying her away in his arms):<br> So be it! Gain but time,<br> The victory’s ours!</p>
+<p class="verse">CYRANO:<br> Good.<br> (Calling out to Roxane, whom De Guiche, aided by Ragueneau, is bearing away in a fainting condition):<br> Farewell, Roxane!</p>
+<p>(Tumult. Shouts. Cadets reappear, wounded, falling on the scene. Cyrano, rushing to the battle, is stopped by Carbon de Castel-Jaloux, who is streaming with blood.)</p>
+<p class="verse">CARBON:<br> We are breaking! I am wounded—wounded twice!</p>
+<p class="verse">CYRANO (shouting to the Gascons):<br> GASCONS! HO, GASCONS! NEVER TURN YOUR BACKS!<br> (To Carbon, whom he is supporting):<br> Have no fear! I have two deaths to avenge:<br> My friend who’s slain;—and my dead happiness!<br> (They come down, Cyrano brandishing the lance to which is attached Roxane’s handkerchief):<br> Float there! laced kerchief broidered with her name!<br> (He sticks it in the ground and shouts to the cadets):<br> FALL ON THEM, GASCONS! CRUSH THEM!<br> (To the fifer):<br> Fifer, play!</p>
+<p>(The fife plays. The wounded try to rise. Some cadets, falling one over the other down the slope, group themselves round Cyrano and the little flag. The carriage is crowded with men inside and outside, and, bristling with arquebuses, is turned into a fortress.)</p>
+<p class="verse">A CADET (appearing on the crest, beaten backward, but still fighting, cries):<br> They’re climbing the redoubt!<br> (and falls dead.)</p>
+<p class="verse">CYRANO:<br> Let us salute them!<br> (The rampart is covered instantly by a formidable row of enemies. The standards of the Imperialists are raised):<br> Fire!</p>
+<p>(General discharge.)</p>
+<p class="verse">A CRY IN THE ENEMY’S RANKS:<br> Fire!</p>
+<p>(A deadly answering volley. The cadets fall on all sides.)</p>
+<p class="verse">A SPANISH OFFICER (uncovering):<br> Who are these men who rush on death?</p>
+<p class="verse">CYRANO (reciting, erect, amid a storm of bullets):<br> The bold Cadets of Gascony,<br> Of Carbon of Castel-Jaloux!<br> Brawling, swaggering boastfully,<br> (He rushes forward, followed by a few survivors):<br> The bold Cadets. . .</p>
+<p>(His voice is drowned in the battle.)</p>
+<p>Curtain.</p>

@@ -1,0 +1,68 @@
+<p>The public, arriving by degrees. Troopers, burghers, lackeys, pages, a pickpocket, the doorkeeper, etc., followed by the marquises. Cuigy, Brissaille, the buffet-girl, the violinists, etc.</p>
+<p>(A confusion of loud voices is heard outside the door. A trooper enters hastily.)</p>
+<p class="verse">THE DOORKEEPER (following him):<br> Hollo! You there! Your money!</p>
+<p class="verse">THE TROOPER:<br> I enter gratis.</p>
+<p class="verse">THE DOORKEEPER:<br> Why?</p>
+<p class="verse">THE TROOPER:<br> Why? I am of the King’s Household Cavalry, ’faith!</p>
+<p class="verse">THE DOORKEEPER (to another trooper who enters):<br> And you?</p>
+<p class="verse">SECOND TROOPER:<br> I pay nothing.</p>
+<p class="verse">THE DOORKEEPER:<br> How so?</p>
+<p class="verse">SECOND TROOPER:<br> I am a musketeer.</p>
+<p class="verse">FIRST TROOPER (to the second):<br> The play will not begin till two. The pit is empty. Come, a bout with the<br> foils to pass the time.</p>
+<p>(They fence with the foils they have brought.)</p>
+<p class="verse">A LACKEY (entering):<br> Pst. . .Flanquin. . .!</p>
+<p class="verse">ANOTHER (already there):<br> Champagne?. . .</p>
+<p class="verse">THE FIRST (showing him cards and dice which he takes from his doublet):<br> See, here be cards and dice.<br> (He seats himself on the floor):<br> Let’s play.</p>
+<p class="verse">THE SECOND (doing the same):<br> Good; I am with you, villain!</p>
+<p class="verse">FIRST LACKEY (taking from his pocket a candle-end, which he lights, and sticks on the floor):<br> I made free to provide myself with light at my master’s expense!</p>
+<p class="verse">A GUARDSMAN (to a shop-girl who advances):<br> ’Twas prettily done to come before the lights were lit!</p>
+<p>(He takes her round the waist.)</p>
+<p class="verse">ONE OF THE FENCERS (receiving a thrust):<br> A hit!</p>
+<p class="verse">ONE OF THE CARD-PLAYERS:<br> Clubs!</p>
+<p class="verse">THE GUARDSMAN (following the girl):<br> A kiss!</p>
+<p class="verse">THE SHOP-GIRL (struggling to free herself):<br> They’re looking!</p>
+<p class="verse">THE GUARDSMAN (drawing her to a dark corner):<br> No fear! No one can see!</p>
+<p class="verse">A MAN (sitting on the ground with others, who have brought their provisions):<br> By coming early, one can eat in comfort.</p>
+<p class="verse">A BURGHER (conducting his son):<br> Let us sit here, son.</p>
+<p class="verse">A CARD-PLAYER:<br> Triple ace!</p>
+<p class="verse">A MAN (taking a bottle from under his cloak,<br> and also seating himself on the floor):<br> A tippler may well quaff his Burgundy<br> (he drinks):<br> in the Burgundy Hotel!</p>
+<p class="verse">THE BURGHER (to his son):<br> ’Faith! A man might think he had fallen in a bad house here!<br> (He points with his cane to the drunkard):<br> What with topers!<br> (One of the fencers in breaking off, jostles him):<br> brawlers!<br> (He stumbles into the midst of the card-players):<br> gamblers!</p>
+<p class="verse">THE GUARDSMAN (behind him, still teasing the shop-girl):<br> Come, one kiss!</p>
+<p class="verse">THE BURGHER (hurriedly pulling his son away):<br> By all the holies! And this, my boy, is the theater where they played<br> Rotrou erewhile.</p>
+<p class="verse">THE YOUNG MAN:<br> Ay, and Corneille!</p>
+<p class="verse">A TROOP OF PAGES (hand-in-hand, enter dancing the farandole, and singing):<br> Tra’ a la, la, la, la, la, la, la, lere. . .</p>
+<p class="verse">THE DOORKEEPER (sternly, to the pages):<br> You pages there, none of your tricks!. . .</p>
+<p class="verse">FIRST PAGE (with an air of wounded dignity):<br> Oh, sir!—such a suspicion!. . .<br> (Briskly, to the second page, the moment the doorkeeper’s back is turned):<br> Have you string?</p>
+<p class="verse">THE SECOND:<br> Ay, and a fish-hook with it.</p>
+<p class="verse">FIRST PAGE:<br> We can angle for wigs, then, up there i’ th’ gallery.</p>
+<p class="verse">A PICKPOCKET (gathering about him some evil-looking youths):<br> Hark ye, young cut-purses, lend an ear, while I give you your first lesson<br> in thieving.</p>
+<p class="verse">SECOND PAGE (calling up to others in the top galleries):<br> You there! Have you peashooters?</p>
+<p class="verse">THIRD PAGE (from above):<br> Ay, have we, and peas withal!</p>
+<p>(He blows, and peppers them with peas.)</p>
+<p class="verse">THE YOUNG MAN (to his father):<br> What piece do they give us?</p>
+<p class="verse">THE BURGHER:<br> ‘Clorise.’</p>
+<p class="verse">THE YOUNG MAN:<br> Who may the author be?</p>
+<p class="verse">THE BURGHER:<br> Master Balthazar Baro. It is a play!. . .</p>
+<p>(He goes arm-in-arm with his son.)</p>
+<p class="verse">THE PICKPOCKET (to his pupils):<br> Have a care, above all, of the lace knee-ruffles—cut them off!</p>
+<p class="verse">A SPECTATOR (to another, showing him a corner in the gallery):<br> I was up there, the first night of the ‘Cid.’</p>
+<p class="verse">THE PICKPOCKET (making with his fingers the gesture of filching):<br> Thus for watches—</p>
+<p class="verse">THE BURGHER (coming down again with his son):<br> Ah! You shall presently see some renowned actors. . .</p>
+<p class="verse">THE PICKPOCKET (making the gestures of one who pulls something stealthily, with little jerks):<br> Thus for handkerchiefs—</p>
+<p class="verse">THE BURGHER:<br> Montfleury. . .</p>
+<p class="verse">SOME ONE (shouting from the upper gallery):<br> Light up, below there!</p>
+<p class="verse">THE BURGHER:<br> . . .Bellerose, L’Epy, La Beaupre, Jodelet!</p>
+<p class="verse">A PAGE (in the pit):<br> Here comes the buffet-girl!</p>
+<p class="verse">THE BUFFET-GIRL (taking her place behind the buffet):<br> Oranges, milk, raspberry-water, cedar bitters!</p>
+<p>(A hubbub outside the door is heard.)</p>
+<p class="verse">A FALSETTO VOICE:<br> Make place, brutes!</p>
+<p class="verse">A LACKEY (astonished):<br> The Marquises!—in the pit?. . .</p>
+<p class="verse">ANOTHER LACKEY:<br> Oh! only for a minute or two!</p>
+<p>(Enter a band of young marquises.)</p>
+<p class="verse">A MARQUIS (seeing that the hall is half empty):<br> What now! So we make our entrance like a pack of woolen-drapers!<br> Peaceably, without disturbing the folk, or treading on their toes!—Oh, fie!<br> Fie!<br> (Recognizing some other gentlemen who have entered a little before him):<br> Cuigy! Brissaille!</p>
+<p>(Greetings and embraces.)</p>
+<p class="verse">CUIGY:<br> True to our word!. . .Troth, we are here before the candles are lit.</p>
+<p class="verse">THE MARQUIS:<br> Ay, indeed! Enough! I am of an ill humor.</p>
+<p class="verse">ANOTHER:<br> Nay, nay, Marquis! see, for your consolation, they are coming to light up!</p>
+<p class="verse">ALL THE AUDIENCE (welcoming the entrance of the lighter):<br> Ah!. . .</p>
+<p>(They form in groups round the lusters as they are lit. Some people have taken their seats in the galleries. Lignière, a distinguished-looking roue, with disordered shirt-front arm-in-arm with christian de Neuvillette. Christian, who is dressed elegantly, but rather behind the fashion, seems preoccupied, and keeps looking at the boxes.)</p>

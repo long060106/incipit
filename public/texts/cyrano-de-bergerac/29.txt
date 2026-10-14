@@ -1,0 +1,6 @@
+<p>Cyrano, Christian.</p>
+<p class="verse">CHRISTIAN:<br> Oh! win for me that kiss. . .</p>
+<p class="verse">CYRANO:<br> No!</p>
+<p class="verse">CHRISTIAN:<br> Soon or late!. . .</p>
+<p class="verse">CYRANO:<br> ’Tis true! The moment of intoxication—<br> Of madness,—when your mouths are sure to meet<br> Thanks to your fair mustache—and her rose lips!<br> (To himself):<br> I’d fainer it should come thanks to. . .</p>
+<p>(A sound of shutters reopening. Christian goes in again under the balcony.)</p>

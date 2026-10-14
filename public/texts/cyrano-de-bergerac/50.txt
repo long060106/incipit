@@ -1,0 +1,91 @@
+<p>Roxane, Cyrano and, for a moment, Sister Martha.</p>
+<p class="verse">ROXANE (without turning round):<br> What was I saying?. . .<br> (She embroiders. Cyrano, very pale, his hat pulled down over his eyes, appears. The sister who had announced him retires. He descends the steps slowly, with a visible difficulty in holding himself upright, bearing heavily on his cane. Roxane still works at her tapestry):<br> Time has dimmed the tints. . .<br> How harmonize them now?<br> (To Cyrano, with playful reproach):<br> For the first time<br> Late!—For the first time, all these fourteen years!<br> <br> CYRANO (who has succeeded in reaching the chair, and has seated himself—in a lively voice, which is in great contrast with his pale face):<br> Ay! It is villainous! I raged—was stayed. . .</p>
+<p class="verse">ROXANE:<br> By?. . .</p>
+<p class="verse">CYRANO:<br> By a bold, unwelcome visitor.</p>
+<p class="verse">ROXANE (absently, working):<br> Some creditor?</p>
+<p class="verse">CYRANO:<br> Ay, cousin,—the last creditor<br> Who has a debt to claim from me.</p>
+<p class="verse">ROXANE:<br> And you<br> Have paid it?</p>
+<p class="verse">CYRANO:<br> No, not yet! I put it off;<br> —Said, ‘Cry you mercy; this is Saturday,<br> When I have get a standing rendezvous<br> That naught defers. Call in an hour’s time!’</p>
+<p class="verse">ROXANE (carelessly):<br> Oh, well, a creditor can always wait!<br> I shall not let you go ere twilight falls.</p>
+<p class="verse">CYRANO:<br> Haply, perforce, I quit you ere it falls!</p>
+<p>(He shuts his eyes, and is silent for a moment. Sister Martha crosses the park from the chapel to the flight of steps. Roxane, seeing her, signs to her to approach.)</p>
+<p class="verse">ROXANE (to Cyrano):<br> How now? You have not teased the Sister?</p>
+<p class="verse">CYRANO (hastily opening his eyes):<br> True!<br> (In a comically loud voice):<br> Sister! come here!<br> (The sister glides up to him):<br> Ha! ha! What? Those bright eyes<br> Bent ever on the ground?</p>
+<p class="verse">SISTER MARTHA (who makes a movement of astonishment on seeing his face):<br> Oh!</p>
+<p class="verse">CYRANO (in a whisper, pointing to Roxane):<br> Hush! ’tis naught!—<br> (Loudly, in a blustering voice):<br> I broke fast yesterday!</p>
+<p class="verse">SISTER MARTHA (aside):<br> I know, I know!<br> That’s how he is so pale! Come presently<br> To the refectory, I’ll make you drink<br> A famous bowl of soup. . .You’ll come?</p>
+<p class="verse">CYRANO:<br> Ay, ay!</p>
+<p class="verse">SISTER MARTHA:<br> There, see! You are more reasonable to-day!</p>
+<p class="verse">ROXANE (who hears them whispering):<br> The Sister would convert you?</p>
+<p class="verse">SISTER MARTHA:<br> Nay, not I!</p>
+<p class="verse">CYRANO:<br> Hold! but it’s true! You preach to me no more,<br> You, once so glib with holy words! I am<br> Astonished!. . .<br> (With burlesque fury):<br> Stay, I will surprise you too!<br> Hark! I permit you. . .<br> (He pretends to be seeking for something to tease her with, and to have found it):<br> . . .It is something new!—<br> To—pray for me, to-night, at chapel-time!</p>
+<p class="verse">ROXANE:<br> Oh! oh!</p>
+<p class="verse">CYRANO (laughing):<br> Good Sister Martha is struck dumb!</p>
+<p class="verse">SISTER MARTHA (gently):<br> I did not wait your leave to pray for you.</p>
+<p>(She goes out.)</p>
+<p class="verse">CYRANO (turning to Roxane, who is still bending over her work):<br> That tapestry! Beshrew me if my eyes<br> Will ever see it finished!</p>
+<p class="verse">ROXANE:<br> I was sure<br> To hear that well-known jest!</p>
+<p>(A light breeze causes the leaves to fall.)</p>
+<p class="verse">CYRANO:<br> The autumn leaves!</p>
+<p class="verse">ROXANE (lifting her head, and looking down the distant alley):<br> Soft golden brown, like a Venetian’s hair.<br> —See how they fall!</p>
+<p class="verse">CYRANO:<br> Ay, see how brave they fall,<br> In their last journey downward from the bough,<br> To rot within the clay; yet, lovely still,<br> Hiding the horror of the last decay,<br> With all the wayward grace of careless flight!</p>
+<p class="verse">ROXANE:<br> What, melancholy—you?</p>
+<p class="verse">CYRANO (collecting himself):<br> Nay, nay, Roxane!</p>
+<p class="verse">ROXANE:<br> Then let the dead leaves fall the way they will. . .<br> And chat. What, have you nothing new to tell,<br> My Court Gazette?</p>
+<p class="verse">CYRANO:<br> Listen.</p>
+<p class="verse">ROXANE:<br> Ah!</p>
+<p class="verse">CYRANO (growing whiter and whiter):<br> Saturday<br> The nineteenth: having eaten to excess<br> Of pear-conserve, the King felt feverish;<br> The lancet quelled this treasonable revolt,<br> And the august pulse beats at normal pace.<br> At the Queen’s ball on Sunday thirty score<br> Of best white waxen tapers were consumed.<br> Our troops, they say, have chased the Austrians.<br> Four sorcerers were hanged. The little dog<br> Of Madame d’Athis took a dose. . .</p>
+<p class="verse">ROXANE:<br> I bid<br> You hold your tongue, Monsieur de Bergerac!</p>
+<p class="verse">CYRANO:<br> Monday—not much—Claire changed protector.</p>
+<p class="verse">ROXANE:<br> Oh!</p>
+<p class="verse">CYRANO (whose face changes more and more):<br> Tuesday, the Court repaired to Fontainebleau.<br> Wednesday, the Montglat said to Comte de Fiesque. . .<br> No! Thursday—Mancini, Queen of France! (almost!)<br> Friday, the Monglat to Count Fiesque said—‘Yes!’<br> And Saturday the twenty-sixth. . .</p>
+<p>(He closes his eyes. His head falls forward. Silence.)</p>
+<p class="verse">ROXANE (surprised at his voice ceasing, turns round, looks at him, and rising, terrified):<br> He swoons!<br> (She runs toward him crying):<br> Cyrano!</p>
+<p class="verse">CYRANO (opening his eyes, in an unconcerned voice):<br> What is this?<br> (He sees Roxane bending over him, and, hastily pressing his hat on his head, and shrinking back in his chair):<br> Nay, on my word<br> ’Tis nothing! Let me be!</p>
+<p class="verse">ROXANE:<br> But. . .</p>
+<p class="verse">CYRANO:<br> That old wound<br> Of Arras, sometimes,—as you know. . .</p>
+<p class="verse">ROXANE:<br> Dear friend!</p>
+<p class="verse">CYRANO:<br> ’Tis nothing, ’twill pass soon;<br> (He smiles with an effort):<br> See!—it has passed!</p>
+<p class="verse">ROXANE:<br> Each of us has his wound; ay, I have mine,—<br> Never healed up—not healed yet, my old wound!<br> (She puts her hand on her breast):<br> ’Tis here, beneath this letter brown with age,<br> All stained with tear-drops, and still stained with blood.</p>
+<p>(Twilight begins to fall.)</p>
+<p class="verse">CYRANO:<br> His letter! Ah! you promised me one day<br> That I should read it.</p>
+<p class="verse">ROXANE:<br> What would you?—His letter?</p>
+<p class="verse">CYRANO:<br> Yes, I would fain,—to-day. . .</p>
+<p class="verse">ROXANE (giving the bag hung at her neck):<br> See! here it is!</p>
+<p class="verse">CYRANO (taking it):<br> Have I your leave to open?</p>
+<p class="verse">ROXANE:<br> Open—read!</p>
+<p>(She comes back to her tapestry frame, folds it up, sorts her wools.)</p>
+<p class="verse">CYRANO (reading):<br> ‘Roxane, adieu! I soon must die!<br> This very night, beloved; and I<br> Feel my soul heavy with love untold.<br> I die! No more, as in days of old,<br> My loving, longing eyes will feast<br> On your least gesture—ay, the least!<br> I mind me the way you touch your cheek<br> With your finger, softly, as you speak!<br> Ah me! I know that gesture well!<br> My heart cries out!—I cry “Farewell”!’</p>
+<p class="verse">ROXANE:<br> But how you read that letter! One would think. . .</p>
+<p class="verse">CYRANO (continuing to read):<br> ‘My life, my love, my jewel, my sweet,<br> My heart has been yours in every beat!’</p>
+<p>(The shades of evening fall imperceptibly.)</p>
+<p class="verse">ROXANE:<br> You read in such a voice—so strange—and yet—<br> It is not the first time I hear that voice!</p>
+<p>(She comes nearer very softly, without his perceiving it, passes behind his chair, and, noiselessly leaning over him, looks at the letter. The darkness deepens.)</p>
+<p class="verse">CYRANO:<br> ‘Here, dying, and there, in the land on high,<br> I am he who loved, who loves you,—I. . .’</p>
+<p class="verse">ROXANE (putting her hand on his shoulder):<br> How can you read? It is too dark to see!<br> (He starts, turns, sees her close to him. Suddenly alarmed, he holds his head down. Then in the dusk, which has now completely enfolded them, she says, very slowly, with clasped hands):<br> And, fourteen years long, he has played this part<br> Of the kind old friend who comes to laugh and chat.</p>
+<p class="verse">CYRANO:<br> Roxane!</p>
+<p class="verse">ROXANE:<br> ’Twas you!</p>
+<p class="verse">CYRANO:<br> No, never; Roxane, no!</p>
+<p class="verse">ROXANE:<br> I should have guessed, each time he said my name!</p>
+<p class="verse">CYRANO:<br> No, it was not I!</p>
+<p class="verse">ROXANE:<br> It was you!</p>
+<p class="verse">CYRANO:<br> I swear!</p>
+<p class="verse">ROXANE:<br> I see through all the generous counterfeit—<br> The letters—you!</p>
+<p class="verse">CYRANO:<br> No.</p>
+<p class="verse">ROXANE:<br> The sweet, mad love-words!<br> You!</p>
+<p class="verse">CYRANO:<br> No!</p>
+<p class="verse">ROXANE:<br> The voice that thrilled the night—you, you!</p>
+<p class="verse">CYRANO:<br> I swear you err.</p>
+<p class="verse">ROXANE:<br> The soul—it was your soul!</p>
+<p class="verse">CYRANO:<br> I loved you not.</p>
+<p class="verse">ROXANE:<br> You loved me not?</p>
+<p class="verse">CYRANO:<br> ’Twas he!</p>
+<p class="verse">ROXANE:<br> You loved me!</p>
+<p class="verse">CYRANO:<br> No!</p>
+<p class="verse">ROXANE:<br> See! how you falter now!</p>
+<p class="verse">CYRANO:<br> No, my sweet love, I never loved you!</p>
+<p class="verse">ROXANE:<br> Ah!<br> Things dead, long dead, see! how they rise again!<br> —Why, why keep silence all these fourteen years,<br> When, on this letter, which he never wrote,<br> The tears were your tears?</p>
+<p class="verse">CYRANO (holding out the letter to her):<br> The bloodstains were his.</p>
+<p class="verse">ROXANE:<br> Why, then, that noble silence,—kept so long—<br> Broken to-day for the first time—why?</p>
+<p class="verse">CYRANO:<br> Why?. . .</p>
+<p>(Le Bret and Ragueneau enter running.)</p>

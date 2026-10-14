@@ -1,0 +1,37 @@
+<p>Christian, Carbon de Castel-Jaloux, Le Bret, the cadets, then Cyrano.</p>
+<p class="verse">LE BRET:<br> ’Tis terrible.</p>
+<p class="verse">CARBON:<br> Not a morsel left.</p>
+<p class="verse">LE BRET:<br> Mordioux!</p>
+<p class="verse">CARBON (making a sign that he should speak lower):<br> Curse under your breath. You will awake them.<br> (To the cadets):<br> Hush! Sleep on.<br> (To Le Bret):<br> He who sleeps, dines!</p>
+<p class="verse">LE BRET:<br> But that is sorry comfort for the sleepless!. . .<br> What starvation!</p>
+<p>(Firing is heard in the distance.)</p>
+<p class="verse">CARBON:<br> Oh, plague take their firing! ’Twill wake my sons.<br> (To the cadets, who lift up their heads):<br> Sleep on!</p>
+<p>(Firing is again heard, nearer this time.)</p>
+<p class="verse">A CADET (moving):<br> The devil!. . .Again.</p>
+<p class="verse">CARBON:<br> ’Tis nothing! ’Tis Cyrano coming back!</p>
+<p>(Those who have lifted up their heads prepare to sleep again.)</p>
+<p class="verse">A SENTINEL (from without):<br> Ventrebieu! Who goes there?</p>
+<p class="verse">THE VOICE OF CYRANO:<br> Bergerac.</p>
+<p class="verse">THE SENTINEL (who is on the redoubt):<br> Ventrebieu! Who goes there?</p>
+<p class="verse">CYRANO (appearing at the top):<br> Bergerac, idiot!</p>
+<p>(He comes down; Le Bret advances anxiously to meet him.)</p>
+<p class="verse">LE BRET:<br> Heavens!</p>
+<p class="verse">CYRANO (making signs that he should not awake the others):<br> Hush!</p>
+<p class="verse">LE BRET:<br> Wounded?</p>
+<p class="verse">CYRANO:<br> Oh! you know it has become their custom to shoot at me every morning and to<br> miss me.</p>
+<p class="verse">LE BRET:<br> This passes all! To take letters at each day’s dawn. To risk. . .</p>
+<p class="verse">CYRANO (stopping before Christian):<br> I promised he should write often.<br> (He looks at him):<br> He sleeps. How pale he is! But how handsome still, despite his sufferings.<br> If his poor little lady-love knew that he is dying of hunger. . .</p>
+<p class="verse">LE BRET:<br> Get you quick to bed.</p>
+<p class="verse">CYRANO:<br> Nay, never scold, Le Bret. I ran but little risk. I have found me a spot<br> to pass the Spanish lines, where each night they lie drunk.</p>
+<p class="verse">LE BRET:<br> You should try to bring us back provision.</p>
+<p class="verse">CYRANO:<br> A man must carry no weight who would get by there! But there will be<br> surprise for us this night. The French will eat or die. . .if I mistake not!</p>
+<p class="verse">LE BRET:<br> Oh!. . .tell me!. . .</p>
+<p class="verse">CYRANO:<br> Nay, not yet. I am not certain. . .You will see!</p>
+<p class="verse">CARBON:<br> It is disgraceful that we should starve while we’re besieging!</p>
+<p class="verse">LE BRET:<br> Alas, how full of complication is this siege of Arras! To think that while<br> we are besieging, we should ourselves be caught in a trap and besieged by the<br> Cardinal Infante of Spain.</p>
+<p class="verse">CYRANO:<br> It were well done if he should be besieged in his turn.</p>
+<p class="verse">LE BRET:<br> I am in earnest.</p>
+<p class="verse">CYRANO:<br> Oh! indeed!</p>
+<p class="verse">LE BRET:<br> To think you risk a life so precious. . .for the sake of a letter. . .Thankless one.<br> (Seeing him turning to enter the tent):<br> Where are you going?</p>
+<p class="verse">CYRANO:<br> I am going to write another.</p>
+<p>(He enters the tent and disappears.)</p>

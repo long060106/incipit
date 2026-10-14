@@ -1,0 +1,51 @@
+<p>The SAME. Cyrano.</p>
+<p class="verse">CYRANO (appearing from the tent, very calm, with a pen stuck behind his ear and a book in his hand):<br> What is wrong?<br> (Silence. To the first cadet):<br> Why drag you your legs so sorrowfully?</p>
+<p class="verse">THE CADET:<br> I have something in my heels which weighs them down.</p>
+<p class="verse">CYRANO:<br> And what may that be?</p>
+<p class="verse">THE CADET:<br> My stomach!</p>
+<p class="verse">CYRANO:<br> So have I, ’faith!</p>
+<p class="verse">THE CADET:<br> It must be in your way?</p>
+<p class="verse">CYRANO:<br> Nay, I am all the taller.</p>
+<p class="verse">A THIRD:<br> My stomach’s hollow.</p>
+<p class="verse">CYRANO:<br> ’Faith, ’twill make a fine drum to sound the assault.</p>
+<p class="verse">ANOTHER:<br> I have a ringing in my ears.</p>
+<p class="verse">CYRANO:<br> No, no, ’tis false; a hungry stomach has no ears.</p>
+<p class="verse">ANOTHER:<br> Oh, to eat something—something oily!</p>
+<p class="verse">CYRANO (pulling off the cadet’s helmet and holding it out to him):<br> Behold your salad!</p>
+<p class="verse">ANOTHER:<br> What, in God’s name, can we devour?</p>
+<p class="verse">CYRANO (throwing him the book which he is carrying):<br> The ‘Iliad’.</p>
+<p class="verse">ANOTHER:<br> The first minister in Paris has his four meals a day!</p>
+<p class="verse">CYRANO:<br> ’Twere courteous an he sent you a few partridges!</p>
+<p class="verse">THE SAME:<br> And why not? with wine, too!</p>
+<p class="verse">CYRANO:<br> A little Burgundy. Richelieu, s’il vous plait!</p>
+<p class="verse">THE SAME:<br> He could send it by one of his friars.</p>
+<p class="verse">CYRANO:<br> Ay! by His Eminence Joseph himself.</p>
+<p class="verse">ANOTHER:<br> I am as ravenous as an ogre!</p>
+<p class="verse">CYRANO:<br> Eat your patience, then.</p>
+<p class="verse">THE FIRST CADET (shrugging his shoulders):<br> Always your pointed word!</p>
+<p class="verse">CYRANO:<br> Ay, pointed words!<br> I would fain die thus, some soft summer eve,<br> Making a pointed word for a good cause.<br> —To make a soldier’s end by soldier’s sword,<br> Wielded by some brave adversary—die<br> On blood-stained turf, not on a fever-bed,<br> A point upon my lips, a point within my heart.</p>
+<p class="verse">CRIES FROM ALL:<br> I’m hungry!</p>
+<p class="verse">CYRANO (crossing his arms):<br> All your thoughts of meat and drink!<br> Bertrand the fifer!—you were shepherd once,—<br> Draw from its double leathern case your fife,<br> Play to these greedy, guzzling soldiers. Play<br> Old country airs with plaintive rhythm recurring,<br> Where lurk sweet echoes of the dear home-voices,<br> Each note of which calls like a little sister,<br> Those airs slow, slow ascending, as the smoke-wreaths<br> Rise from the hearthstones of our native hamlets,<br> Their music strikes the ear like Gascon patois!. . .<br> (The old man seats himself, and gets his flute ready):<br> Your flute was now a warrior in durance;<br> But on its stem your fingers are a-dancing<br> A bird-like minuet! O flute! Remember<br> That flutes were made of reeds first, not laburnum;<br> Make us a music pastoral days recalling—<br> The soul-time of your youth, in country pastures!. . .<br> (The old man begins to play the airs of Languedoc):<br> Hark to the music, Gascons!. . .’Tis no longer<br> The piercing fife of camp—but ’neath his fingers<br> The flute of the woods! No more the call to combat,<br> ’Tis now the love-song of the wandering goat-herds!. . .<br> Hark!. . .’tis the valley, the wet landes, the forest,<br> The sunburnt shepherd-boy with scarlet beret,<br> The dusk of evening on the Dordogne river,—<br> ’Tis Gascony! Hark, Gascons, to the music!</p>
+<p>(The cadets sit with bowed heads; their eyes have a far-off look as if dreaming, and they surreptitiously wipe away their tears with their cuffs and the corner of their cloaks.)</p>
+<p class="verse">CARBON (to Cyrano in a whisper):<br> But you make them weep!</p>
+<p class="verse">CYRANO:<br> Ay, for homesickness. A nobler pain than hunger,—’tis of the soul, not of<br> the body! I am well pleased to see their pain change its viscera. Heart-ache<br> is better than stomach-ache.</p>
+<p class="verse">CARBON:<br> But you weaken their courage by playing thus on their heart-strings!</p>
+<p class="verse">CYRANO (making a sign to a drummer to approach):<br> Not I. The hero that sleeps in Gascon blood is ever ready to awake in them.<br> ’Twould suffice. . .</p>
+<p>(He makes a signal; the drum beats.)</p>
+<p class="verse">ALL THE CADETS (stand up and rush to take arms):<br> What? What is it?</p>
+<p class="verse">CYRANO (smiling):<br> You see! One roll of the drum is enough! Good-by dreams, regrets, native<br> land, love. . .All that the pipe called forth the drum has chased away!</p>
+<p class="verse">A CADET (looking toward the back of the stage):<br> Ho! here comes Monsieur de Guiche.</p>
+<p class="verse">ALL THE CADETS (muttering):<br> Ugh!. . .Ugh!. . .</p>
+<p class="verse">CYRANO (smiling):<br> A flattering welcome!</p>
+<p class="verse">A CADET:<br> We are sick to death of him!</p>
+<p class="verse">ANOTHER CADET:<br> —With his lace collar over his armor, playing the fine gentleman!</p>
+<p class="verse">ANOTHER:<br> As if one wore linen over steel!</p>
+<p class="verse">THE FIRST:<br> It were good for a bandage had he boils on his neck.</p>
+<p class="verse">THE SECOND:<br> Another plotting courtier!</p>
+<p class="verse">ANOTHER CADET:<br> His uncle’s own nephew!</p>
+<p class="verse">CARBON:<br> For all that—a Gascon.</p>
+<p class="verse">THE FIRST:<br> Ay, false Gascon!. . .trust him not. . .<br> Gascons should ever be crack-brained. . .<br> Naught more dangerous than a rational Gascon.</p>
+<p class="verse">LE BRET:<br> How pale he is!</p>
+<p class="verse">ANOTHER:<br> Oh! he is hungry, just like us poor devils; but under his cuirass, with its<br> fine gilt nails, his stomach-ache glitters brave in the sun.</p>
+<p class="verse">CYRANO (hurriedly):<br> Let us not seem to suffer either! Out with your cards, pipes, and dice. . .<br> (All begin spreading out the games on the drums, the stools, the ground, and on their cloaks, and light long pipes):<br> And I shall read Descartes.</p>
+<p>(He walks up and down, reading a little book which he has drawn from his pocket. Tableau. Enter De Guiche. All appear absorbed and happy. He is very pale. He goes up to Carbon.)</p>
