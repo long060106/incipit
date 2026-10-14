@@ -12,6 +12,7 @@ import type { KeywordId, Mood } from './data/types';
 import { useI18n } from './i18n';
 import { Light } from './lib/light';
 import { runLoader } from './lib/loader';
+import { bookUrl } from './lib/links';
 import { EMPTY_FILTERS, matchBooks, type Filters } from './lib/match';
 import type { CellState, CoverOrigin } from './lib/wall';
 
@@ -125,17 +126,37 @@ function useTheme(): [Theme, (event?: MouseEvent) => void] {
   return [theme, toggle];
 }
 
+/** The book open in the address: /book/<id>, or #book=<id> as links to the site once were. */
 const bookFromHash = () => {
-  const id = /^#book=([\w-]+)$/.exec(window.location.hash)?.[1];
+  const id = /^\/book\/([\w-]+)\/?$/.exec(window.location.pathname)?.[1] ?? /^#book=([\w-]+)$/.exec(window.location.hash)?.[1];
   return id && BOOKS_BY_ID.has(id) ? id : null;
 };
 
-/** The open book lives in the URL hash, so a book can be linked to and Back closes it. */
+/**
+ * The open book lives in the address, /book/<id>, so a book can be linked to and Back closes
+ * it. The server gives that address the book's own title and cover (worker/index.ts).
+ */
 function useOpenBook() {
   const [bookId, setBookId] = useState(bookFromHash);
 
+  // An old link, #book=<id>, takes the address a book has now.
+  const settle = () => {
+    const id = bookFromHash();
+    if (id && window.location.hash.startsWith('#book=')) history.replaceState(history.state, '', bookUrl(id));
+  };
+  useEffect(settle, []);
+
+  // The tab says which book is open.
   useEffect(() => {
-    const sync = () => setBookId(bookFromHash());
+    const book = bookId ? BOOKS_BY_ID.get(bookId) : null;
+    document.title = book ? `${book.title} · ${book.author} · Incipit` : 'Incipit';
+  }, [bookId]);
+
+  useEffect(() => {
+    const sync = () => {
+      settle();
+      setBookId(bookFromHash());
+    };
     window.addEventListener('popstate', sync);
     window.addEventListener('hashchange', sync);
     return () => {
@@ -146,8 +167,8 @@ function useOpenBook() {
 
   const open = useCallback((id: string) => {
     // Going from one open book to another replaces the entry, so Back still closes the sheet.
-    if (bookFromHash()) history.replaceState(history.state, '', `#book=${id}`);
-    else history.pushState({ sheet: true }, '', `#book=${id}`);
+    if (bookFromHash()) history.replaceState(history.state, '', bookUrl(id));
+    else history.pushState({ sheet: true }, '', bookUrl(id));
     setBookId(id);
   }, []);
 
@@ -156,7 +177,7 @@ function useOpenBook() {
       history.back();
     } else {
       // Arrived straight on a book link: there is no earlier entry of ours to go back to.
-      history.replaceState(null, '', window.location.pathname + window.location.search);
+      history.replaceState(null, '', import.meta.env.BASE_URL + window.location.search);
       setBookId(null);
     }
   }, []);

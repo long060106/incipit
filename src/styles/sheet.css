@@ -718,3 +718,189 @@
 .sheet-credit a:hover {
   color: var(--accent);
 }
+
+/* What readers say (Readers.tsx). */
+.mood-readers {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.readers-average,
+.readers-sign-in {
+  margin: 0 0 1.25rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.review-stars {
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+
+.review-stars span {
+  color: var(--line-strong);
+}
+
+.review-form {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+
+.review-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.review-pick {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.review-pick button {
+  padding: 0 0.125rem;
+  border: 0;
+  background: none;
+  color: var(--line-strong);
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: var(--cursor-press);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.review-pick button:hover,
+.review-pick button.is-on {
+  color: var(--accent);
+}
+
+.review-pick button:hover {
+  transform: scale(1.12);
+}
+
+.review-felt summary {
+  color: var(--text);
+  font-size: 0.875rem;
+  cursor: var(--cursor-press);
+}
+
+.review-felt .card-note {
+  margin: 0.5rem 0 0.75rem;
+}
+
+.review-mood input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.review-words {
+  display: grid;
+  gap: 0.375rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.review-words textarea {
+  min-height: 5rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+}
+
+.review-words textarea:focus {
+  border-color: var(--accent);
+}
+
+.review-words small {
+  justify-self: end;
+}
+
+.reviews {
+  display: grid;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A review that arrives while the page is open comes in quietly. */
+.reviews li {
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+  animation: review-in 0.8s ease both;
+}
+
+@keyframes review-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.review-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.875rem;
+  margin: 0 0 0.375rem;
+  font-size: 0.8125rem;
+}
+
+.review-name {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.review-head time {
+  color: var(--muted);
+}
+
+.review-head .text-button {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.review-text {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reviews li {
+    animation: none;
+  }
+}
+
+.review-form .card-actions,
+.mood-review .card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+}
+
+.readers .card-note,
+.readers .card-problem {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.readers .card-problem {
+  color: var(--accent);
+}

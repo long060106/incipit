@@ -7,6 +7,7 @@ import { keptText } from '../lib/kepttext';
 import { isOwn, ownBook, ownText, type OwnText } from '../lib/mybooks';
 import { useShelf } from '../lib/shelf';
 import { bookOf, markLine, markUrl, NOTE_TEXT, TiePicker } from '../notes/notes';
+import { bookUrl } from '../lib/links';
 import { pageUrl, useQuickLoader } from '../pages/PageHeader';
 import { installAmbience } from './ambience';
 import { blockOffsets, paintMarks, selectionIn } from './marks';
@@ -375,7 +376,7 @@ export default function ReaderPage() {
       <div className="reader reader-missing">
         <h1>{tl(TEXT.missing)}</h1>
         <p>{tl(TEXT.missingWhy)}</p>
-        <a className="button" href={book ? `${pageUrl('')}#book=${book.id}` : pageUrl('')}>
+        <a className="button" href={book ? bookUrl(book.id) : pageUrl('')}>
           {tl(book ? TEXT.backToBook : TEXT.home)}
         </a>
       </div>
@@ -391,7 +392,7 @@ export default function ReaderPage() {
       <div className="reader-progress" style={{ transform: `scaleX(${through})` }} />
 
       <header className="reader-bar" data-hidden={barHidden && !tocOpen}>
-        <a className="reader-back" href={book.own ? pageUrl('notebook') : `${pageUrl('')}#book=${book.id}`} aria-label={tl(book.own ? TEXT.notebook : TEXT.backToBook)}>
+        <a className="reader-back" href={book.own ? pageUrl('notebook') : bookUrl(book.id)} aria-label={tl(book.own ? TEXT.notebook : TEXT.backToBook)}>
           <span aria-hidden="true">←</span>
           <span className="reader-book">{book.title}</span>
         </a>

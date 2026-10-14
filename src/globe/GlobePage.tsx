@@ -4,8 +4,8 @@ import { ERAS, eraOf, settingYear } from '../data/eras';
 import type { Book, L } from '../data/types';
 import { countryName } from '../data/vocab';
 import { useI18n } from '../i18n';
-import { coverUrl } from '../lib/links';
-import { PageHeader, pageUrl, useQuickLoader } from '../pages/PageHeader';
+import { bookUrl, coverUrl } from '../lib/links';
+import { PageHeader, useQuickLoader } from '../pages/PageHeader';
 import { createGlobe, type GlobeHandle } from './globe';
 import { installSky } from './sky';
 import './globe.css';
@@ -103,7 +103,7 @@ export default function GlobePage() {
     <ul className="globe-books">
       {entries.map((book) => (
         <li key={book.id}>
-          <a className="globe-book" href={`${pageUrl('')}#book=${book.id}`}>
+          <a className="globe-book" href={bookUrl(book.id)}>
             <img src={coverUrl(book, 'sm')} alt="" width={54} height={81} loading="lazy" />
             <span>
               <strong>{book.title}</strong>

@@ -69,8 +69,8 @@
 */
 
 import { BOOKS } from '../src/data/books';
-import type { Book, L } from '../src/data/types';
-import { GENRES, KEYWORDS, LANGUAGES } from '../src/data/vocab';
+import type { Book, L, Mood } from '../src/data/types';
+import { AXES, GENRES, KEYWORDS, LANGUAGES } from '../src/data/vocab';
 
 export interface Env {
   DB: D1Database;
@@ -328,10 +328,10 @@ async function sealUnder(password: string, code: string): Promise<{ salt: string
 
 const goodPassword = (password: unknown): password is string => typeof password === 'string' && password.length >= MIN_PASSWORD && password.length <= 200;
 
-async function bodyOf(request: Request): Promise<Record<string, unknown> | null> {
+async function bodyOf(request: Request, most = 2000): Promise<Record<string, unknown> | null> {
   try {
     const text = await request.text();
-    if (text.length > 2000) return null;
+    if (text.length > most) return null;
     const body: unknown = JSON.parse(text);
     return body && typeof body === 'object' ? (body as Record<string, unknown>) : null;
   } catch {
@@ -410,6 +410,7 @@ async function resetAccount(env: Env, name: string): Promise<Response> {
   await env.DB.batch([
     env.DB.prepare('INSERT INTO cards (id, created, seen, role) SELECT ?1, created, seen, role FROM cards WHERE id = ?2').bind(id, row.card),
     env.DB.prepare('UPDATE rows SET card = ?1 WHERE card = ?2').bind(id, row.card),
+    env.DB.prepare('UPDATE reviews SET card = ?1 WHERE card = ?2').bind(id, row.card),
     env.DB.prepare('UPDATE accounts SET card = ?1, salt = ?2, hash = ?3, iv = ?4, sealed = ?5 WHERE name = ?6').bind(id, kept.salt, kept.hash, kept.iv, kept.sealed, name),
     env.DB.prepare('DELETE FROM keeper_sessions WHERE card = ?1').bind(row.card),
     env.DB.prepare('DELETE FROM cards WHERE id = ?1').bind(row.card),
@@ -420,6 +421,174 @@ async function resetAccount(env: Env, name: string): Promise<Response> {
 async function accounts(env: Env): Promise<Response> {
   const { results } = await env.DB.prepare('SELECT name, created FROM accounts ORDER BY created DESC LIMIT 500').all<{ name: string; created: number }>();
   return json({ accounts: results });
+}
+
+// ── What readers say ────────────────────────────────────────────────────────
+
+const MAX_REVIEWS_PER_DAY = 60; // written or changed, from one address
+const MAX_WORDS = 1000; // characters in a review's text
+const SHOWN_REVIEWS = 100;
+
+interface ReviewRow {
+  card: string;
+  name: string | null;
+  stars: number | null;
+  mood: string | null;
+  text: string | null;
+  changed: number;
+}
+
+/**
+ * Everything readers have said of a book: how many stars on average, how it felt to them on
+ * average, and the reviews with words in them, newest first. With the card of the reader
+ * asking, their own review as well.
+ */
+async function reviewsOf(env: Env, book: string, card: Card | null): Promise<Response> {
+  const { results } = await env.DB.prepare(
+    `SELECT reviews.card AS card, accounts.name AS name, stars, mood, text, changed
+     FROM reviews LEFT JOIN accounts ON accounts.card = reviews.card
+     WHERE book = ?1 ORDER BY changed DESC LIMIT 2000`,
+  )
+    .bind(book)
+    .all<ReviewRow>();
+  let stars = 0;
+  let starsN = 0;
+  let moodN = 0;
+  const sums = Object.fromEntries(AXES.map(({ id }) => [id, 0])) as Mood;
+  let mine: { stars: number | null; mood: Mood | null; text: string | null } | null = null;
+  const reviews: { name: string; stars: number | null; text: string; changed: number; mine: boolean }[] = [];
+  for (const row of results) {
+    const mood = row.mood ? (JSON.parse(row.mood) as Mood) : null;
+    if (row.stars) {
+      stars += row.stars;
+      starsN += 1;
+    }
+    if (mood) {
+      moodN += 1;
+      for (const { id } of AXES) sums[id] += mood[id];
+    }
+    const own = !!card && row.card === card.id;
+    if (own) mine = { stars: row.stars, mood, text: row.text };
+    if (row.text && row.name && reviews.length < SHOWN_REVIEWS) reviews.push({ name: row.name, stars: row.stars, text: row.text, changed: row.changed, mine: own });
+  }
+  const mood = moodN ? (Object.fromEntries(AXES.map(({ id }) => [id, Math.round(sums[id] / moodN)])) as Mood) : null;
+  return json({
+    summary: { n: results.length, stars: starsN ? Math.round((stars / starsN) * 100) / 100 : null, starsN, mood, moodN },
+    reviews,
+    mine,
+  });
+}
+
+/** Writes the review of the reader asking, in place of the one they had. Nothing in it takes it back. */
+async function writeReview(request: Request, env: Env, card: Card, book: string): Promise<Response> {
+  if (!(await known(env, book))) return refuse(404, 'no-such-book');
+  if (!(await env.DB.prepare('SELECT 1 FROM accounts WHERE card = ?1').bind(card.id).first())) return refuse(403, 'needs-account');
+  const body = await bodyOf(request, 8000);
+  if (!body) return refuse(400, 'not-json');
+  const stars = body.stars ?? null;
+  if (stars !== null && (typeof stars !== 'number' || !Number.isInteger(stars) || stars < 1 || stars > 5)) return refuse(400, 'bad-stars');
+  const mood = body.mood == null ? null : moodFrom(body.mood);
+  if (body.mood != null && !mood) return refuse(400, 'bad-mood');
+  if (body.text != null && typeof body.text !== 'string') return refuse(400, 'bad-text');
+  const text = typeof body.text === 'string' && body.text.trim() ? body.text.trim().replace(/\r\n?/g, '\n').replace(/\n{3,}/g, '\n\n') : null;
+  if (text && text.length > MAX_WORDS) return refuse(400, 'too-long');
+  if (!(await within(env, request, 'review', MAX_REVIEWS_PER_DAY))) return refuse(429, 'too-many');
+  if (stars === null && !mood && !text) {
+    await env.DB.prepare('DELETE FROM reviews WHERE book = ?1 AND card = ?2').bind(book, card.id).run();
+  } else {
+    const now = Date.now();
+    await env.DB.prepare(
+      `INSERT INTO reviews (book, card, stars, mood, text, created, changed) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6)
+       ON CONFLICT (book, card) DO UPDATE SET stars = excluded.stars, mood = excluded.mood, text = excluded.text, changed = excluded.changed`,
+    )
+      .bind(book, card.id, stars, mood ? JSON.stringify(mood) : null, text, now)
+      .run();
+  }
+  return reviewsOf(env, book, card);
+}
+
+// ── A page of its own for each book ─────────────────────────────────────────
+
+const BY_ID = new Map(BOOKS.map((book) => [book.id, book]));
+const inAttribute = (text: string) => text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const shortened = (text: string, most: number) => (text.length <= most ? text : `${text.slice(0, text.lastIndexOf(' ', most - 1))}…`);
+
+/** A book as readers see it: the catalogue's entry or one the keeper added, with the keeper's corrections. */
+async function entryOf(env: Env, id: string): Promise<Book | null> {
+  let book = BY_ID.get(id) ?? null;
+  if (!book) {
+    const row = await env.DB.prepare('SELECT data FROM added_books WHERE id = ?1').bind(id).first<{ data: string }>();
+    book = row ? (JSON.parse(row.data) as Book) : null;
+  }
+  if (!book) return null;
+  const row = await env.DB.prepare('SELECT edits FROM book_overrides WHERE book = ?1').bind(id).first<{ edits: string }>();
+  const edits = row ? (JSON.parse(row.edits) as Edits) : {};
+  return { ...book, title: edits.title ?? book.title, author: edits.author ?? book.author, year: edits.year ?? book.year, description: { ...book.description, ...edits.description } };
+}
+
+/**
+ * /book/<id>: the site itself, with the book's name, words and cover written into the head,
+ * so that search engines find each book, and a link to one shows its cover where it is shared.
+ * The page then opens the book over the wall (src/App.tsx).
+ */
+async function bookPage(request: Request, env: Env, id: string): Promise<Response> {
+  const origin = new URL(request.url).origin;
+  const shell = await env.ASSETS.fetch(new Request(`${origin}/`, { headers: { accept: 'text/html' } }));
+  const book = BOOK.test(id) ? await entryOf(env, id) : null;
+  const headers = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300' };
+  if (!book) return new Response(shell.body, { status: 404, headers });
+  const title = `${book.title} by ${book.author} · Incipit`;
+  const description = shortened(book.description.en, 220);
+  const page = `${origin}/book/${book.id}`;
+  const image = KNOWN.has(book.id) ? `${origin}/covers/${book.id}-md.webp` : `${origin}/api/covers/${book.id}`;
+  const facts = {
+    '@context': 'https://schema.org',
+    '@type': 'Book',
+    name: book.title,
+    author: { '@type': 'Person', name: book.author },
+    datePublished: String(book.year),
+    numberOfPages: book.pages,
+    inLanguage: book.language,
+    image,
+    url: page,
+    description,
+  };
+  const content = (value: string) => ({
+    element(element: Element) {
+      element.setAttribute('content', value);
+    },
+  });
+  const page_ = new HTMLRewriter()
+    .on('title', {
+      element(element) {
+        element.setInnerContent(title);
+      },
+    })
+    .on('meta[name="description"]', content(description))
+    .on('meta[property="og:type"]', content('book'))
+    .on('meta[property="og:title"]', content(title))
+    .on('meta[property="og:description"]', content(description))
+    .on('meta[property="og:url"]', content(page))
+    .on('meta[property="og:image"]', content(image))
+    .on('meta[name="twitter:title"]', content(title))
+    .on('meta[name="twitter:description"]', content(description))
+    .on('meta[name="twitter:image"]', content(image))
+    .on('head', {
+      element(element) {
+        element.append(`<link rel="canonical" href="${inAttribute(page)}" /><script type="application/ld+json">${JSON.stringify(facts).replace(/</g, '\\u003c')}</script>`, { html: true });
+      },
+    })
+    .transform(shell);
+  return new Response(page_.body, { headers });
+}
+
+/** Every page there is, for search engines. */
+async function sitemap(request: Request, env: Env): Promise<Response> {
+  const origin = new URL(request.url).origin;
+  const { results } = await env.DB.prepare('SELECT id FROM added_books').all<{ id: string }>();
+  const paths = ['', 'globe', 'first-pages', 'about', ...BOOKS.map((book) => `book/${book.id}`), ...results.map((row) => `book/${row.id}`)];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${paths.map((path) => `  <url><loc>${origin}/${path}</loc></url>`).join('\n')}\n</urlset>\n`;
+  return new Response(xml, { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
 }
 
 async function passwordIn(request: Request): Promise<{ password?: unknown; current?: unknown } | null> {
@@ -469,6 +638,10 @@ interface Edits {
   author?: string;
   year?: number;
   description?: { en?: string; fr?: string };
+  /** The five axes, 0 to 100, in place of the catalogue's. */
+  mood?: Mood;
+  /** The keeper has looked the entry over, its mood above all. */
+  reviewed?: boolean;
 }
 
 interface KeptFile {
@@ -506,7 +679,29 @@ function editsFrom(value: unknown): Edits | null {
       edits.description[lang] = text;
     }
   }
+  if (given.mood !== undefined) {
+    const mood = moodFrom(given.mood);
+    if (!mood) return null;
+    edits.mood = mood;
+  }
+  if (given.reviewed !== undefined) {
+    if (typeof given.reviewed !== 'boolean') return null;
+    if (given.reviewed) edits.reviewed = true;
+  }
   return edits;
+}
+
+/** The five axes of a mood, each a whole number from 0 to 100, or null if anything is amiss. */
+function moodFrom(value: unknown): Mood | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const given = value as Record<string, unknown>;
+  const mood = {} as Mood;
+  for (const { id } of AXES) {
+    const at = given[id];
+    if (typeof at !== 'number' || !Number.isInteger(at) || at < 0 || at > 100) return null;
+    mood[id] = at;
+  }
+  return mood;
 }
 
 /** A book as the keeper wrote it at the desk, kept only if every part of it is what it should be. */
@@ -840,6 +1035,8 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
   if (path === '/api/portrait' && request.method === 'GET') return portrait(env);
 
   const [, , section, book, rest] = path.split('/');
+  // What readers say of a book is for everyone to read; whose own it is, only the card can tell.
+  if (section === 'reviews' && request.method === 'GET' && BOOK.test(book ?? '') && rest === undefined) return reviewsOf(env, book, await cardOf(request, env));
   if (section === 'covers' && request.method === 'GET' && BOOK.test(book ?? '')) return cover(env, book);
   const fetching = section === 'files' && request.method === 'GET' && BOOK.test(book ?? '') && /^\d{1,4}$/.test(rest ?? '');
   // An open file needs no card.
@@ -890,6 +1087,21 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
     if (NAME.test(book ?? '') && rest === 'reset' && request.method === 'POST') return resetAccount(env, book);
     return refuse(404, 'not-found');
   }
+  if (section === 'reviews' && BOOK.test(book ?? '')) {
+    if (rest === undefined && request.method === 'PUT') return writeReview(request, env, card, book);
+    if (rest === undefined && request.method === 'DELETE') {
+      await env.DB.prepare('DELETE FROM reviews WHERE book = ?1 AND card = ?2').bind(book, card.id).run();
+      return reviewsOf(env, book, card);
+    }
+    // The keeper can take down what a reader wrote.
+    if (NAME.test(rest ?? '') && request.method === 'DELETE') {
+      const shut = await keeperGate(request, env, card);
+      if (shut) return shut;
+      await env.DB.prepare('DELETE FROM reviews WHERE book = ?1 AND card = (SELECT card FROM accounts WHERE name = ?2)').bind(book, rest).run();
+      return reviewsOf(env, book, card);
+    }
+    return refuse(404, 'not-found');
+  }
   if (path === '/api/account' && request.method === 'POST') return makeAccount(request, env, card);
   if (path === '/api/account' && request.method === 'PUT') return changeAccount(request, env, card);
 
@@ -912,6 +1124,7 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
     await env.DB.batch([
       env.DB.prepare('DELETE FROM rows WHERE card = ?1').bind(card.id),
       env.DB.prepare('DELETE FROM accounts WHERE card = ?1').bind(card.id),
+      env.DB.prepare('DELETE FROM reviews WHERE card = ?1').bind(card.id),
       env.DB.prepare('DELETE FROM cards WHERE id = ?1').bind(card.id),
     ]);
     return json({ ok: true });
@@ -922,6 +1135,13 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(request.url);
+    try {
+      if (pathname.startsWith('/book/')) return await bookPage(request, env, decodeURIComponent(pathname.slice('/book/'.length)).replace(/\/$/, ''));
+      if (pathname === '/sitemap.xml') return await sitemap(request, env);
+    } catch (error) {
+      console.error(error);
+      return env.ASSETS.fetch(new Request(new URL('/', request.url)));
+    }
     if (!pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
     try {
       return await api(request, env, pathname);
