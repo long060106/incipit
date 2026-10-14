@@ -25,11 +25,12 @@ import {
   type KeptFile,
 } from '../lib/keeper';
 import { reads } from '../lib/kepttext';
-import { bookLinks } from '../lib/links';
+import { bookLinks, bookUrl } from '../lib/links';
 import { fold } from '../lib/match';
 import { BookForm } from './BookForm';
 import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
 import { AccountsDesk } from './AccountsDesk';
+import { MoodReview } from './MoodReview';
 import { ProfileForm } from './ProfileForm';
 import './admin.css';
 
@@ -45,6 +46,7 @@ const TEXT = {
   title: { en: 'Keeper’s desk', fr: 'Bureau du gardien' },
   profile: { en: 'Your profile and the About page', fr: 'Votre profil et la page À propos' },
   accounts: { en: 'Readers’ accounts', fr: 'Comptes des lecteurs' },
+  moods: { en: 'Look the moods over', fr: 'Revoir les ambiances' },
   signIn: { en: 'Sign in as admin', fr: 'Connexion administrateur' },
   closed: {
     en: 'This page is for the keeper of the site. Enter the keeper’s card; its password is asked for next.',
@@ -248,6 +250,7 @@ export default function Admin() {
   const [changing, setChanging] = useState(false);
   const [profiling, setProfiling] = useState(false);
   const [accounting, setAccounting] = useState(false);
+  const [reviewing, setReviewing] = useState(false);
   useEffect(() => {
     if (keeper) void deskState(keeper).then((state) => setDesk(state ?? 'unreachable'));
   }, [keeper]);
@@ -332,7 +335,15 @@ export default function Admin() {
           <button type="button" className="text-button" onClick={() => setAccounting(!accounting)} aria-expanded={accounting}>
             {tl(TEXT.accounts)}
           </button>
+          <button type="button" className="text-button" onClick={() => setReviewing(!reviewing)} aria-expanded={reviewing}>
+            {tl(TEXT.moods)}
+          </button>
         </div>
+        {reviewing && (
+          <div className="admin-desk">
+            <MoodReview code={keeper} onClose={() => setReviewing(false)} />
+          </div>
+        )}
         {accounting && (
           <div className="admin-desk">
             <AccountsDesk code={keeper} onClose={() => setAccounting(false)} />
@@ -513,7 +524,7 @@ function Desk({
           <button type="button" className="text-button" onClick={reset}>
             {tl(TEXT.reset)}
           </button>
-          <a className="text-link" href={`${pageUrl('')}#book=${book.id}`}>
+          <a className="text-link" href={bookUrl(book.id)}>
             {tl(TEXT.open)} →
           </a>
         </div>

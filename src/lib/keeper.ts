@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { BOOKS } from '../data/books';
+import type { Mood } from '../data/types';
 import { answer } from './added';
 
 /*
@@ -24,6 +25,10 @@ export interface Edits {
   author?: string;
   year?: number;
   description?: { en?: string; fr?: string };
+  /** The five axes in place of the catalogue's. */
+  mood?: Mood;
+  /** The keeper has looked the entry over, its mood above all. */
+  reviewed?: boolean;
 }
 
 export interface KeptFile {
@@ -55,7 +60,7 @@ let asked = false;
 const changed: Record<string, Decided> = {};
 
 /** Each book as the catalogue wrote it, so that a correction can be taken back. */
-const PRINTED = new Map(BOOKS.map((book) => [book.id, { title: book.title, author: book.author, year: book.year, description: { ...book.description } }]));
+const PRINTED = new Map(BOOKS.map((book) => [book.id, { title: book.title, author: book.author, year: book.year, description: { ...book.description }, mood: { ...book.mood } }]));
 export const printed = (bookId: string) => PRINTED.get(bookId);
 
 /** Writes the keeper's corrections into the catalogue held in memory, where every page reads it. */
@@ -67,6 +72,7 @@ function correct(bookId: string, edits: Edits = {}) {
   book.author = edits.author ?? first.author;
   book.year = edits.year ?? first.year;
   book.description = { ...first.description, ...edits.description };
+  book.mood = { ...(edits.mood ?? first.mood) };
 }
 
 const tell = () => {

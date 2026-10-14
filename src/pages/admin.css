@@ -480,3 +480,78 @@
   letter-spacing: 0.08em;
   user-select: all;
 }
+
+/* Looking the moods over (MoodReview.tsx). */
+.mood-review {
+  display: grid;
+  gap: 1rem;
+}
+
+.mood-review h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.5rem;
+}
+
+.mood-review-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.mood-review > ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mood-review-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 1.25rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.mood-review-row > img {
+  width: 56px;
+  border-radius: 2px;
+}
+
+.mood-review-row[data-looked] > img {
+  opacity: 0.6;
+}
+
+.mood-review-name {
+  margin: 0 0 0.75rem;
+}
+
+.mood-review-name a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.mood-review-name span {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.mood-review .review-mood {
+  margin-bottom: 0.75rem;
+}
+
+.mood-review .review-mood li {
+  grid-template-columns: 5.5rem minmax(0, 1fr) 5.5rem 2rem;
+}
+
+.mood-review output {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

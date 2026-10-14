@@ -6,6 +6,9 @@ export const COVER_WIDTHS = { sm: 180, md: 320 } as const;
 export type CoverSize = keyof typeof COVER_WIDTHS;
 
 /** A catalogue book's cover is a file of the site; an added book's is kept by the server, in one size. */
+/** A book's own page: the wall with that book open over it (src/App.tsx, worker/index.ts). */
+export const bookUrl = (id: string) => `${import.meta.env.BASE_URL}book/${id}`;
+
 export const coverUrl = (book: Book, size: CoverSize) =>
   book.added ? `${import.meta.env.BASE_URL}api/covers/${book.id}?v=${book.coverAt ?? 0}` : `${import.meta.env.BASE_URL}covers/${book.id}-${size}.webp`;
 

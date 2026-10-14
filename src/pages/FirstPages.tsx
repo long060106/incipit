@@ -3,7 +3,7 @@ import { BOOKS } from '../data/books';
 import { OPENINGS } from '../data/openings';
 import type { L } from '../data/types';
 import { useI18n } from '../i18n';
-import { coverUrl } from '../lib/links';
+import { bookUrl, coverUrl } from '../lib/links';
 import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
 import './first-pages.css';
 
@@ -152,7 +152,7 @@ export default function FirstPages() {
                 <a className="button" href={`${pageUrl('')}read/${book.id}#${opening.section}:0`}>
                   {tl(TEXT.readOn)}
                 </a>
-                <a className="button button-quiet" href={`${pageUrl('')}#book=${book.id}`}>
+                <a className="button button-quiet" href={bookUrl(book.id)}>
                   {tl(TEXT.about)}
                 </a>
               </div>

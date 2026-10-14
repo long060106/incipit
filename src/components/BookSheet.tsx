@@ -8,6 +8,7 @@ import { saveFile, useDecided } from '../lib/keeper';
 import { reads } from '../lib/kepttext';
 import { bookLinks, coverUrl } from '../lib/links';
 import { useProfile } from '../lib/profile';
+import { blendedMood, blendedRating, useReviews } from '../lib/reviews';
 import { useShelf } from '../lib/shelf';
 import { pageUrl } from '../pages/PageHeader';
 import { MIN_RATINGS, similarBooks } from '../lib/match';
@@ -15,6 +16,7 @@ import { coverOrigin, type CoverOrigin } from '../lib/wall';
 import { Around } from './Around';
 import { Dialog } from './Dialog';
 import { Keeper } from './Keeper';
+import { Readers } from './Readers';
 import { CloseIcon, DownloadIcon, ExternalIcon } from './Icons';
 import { Roll } from './Roll';
 
@@ -55,6 +57,10 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
   // An EPUB or a text file is read on the site, at the book's own address (src/lib/kepttext.ts).
   const keptReads = reads(kept) && !READABLE.has(book.id);
   const similar = useMemo(() => similarBooks(book, BOOKS), [book]);
+  // What readers say, asked again every few seconds while the page is open (src/lib/reviews.ts).
+  const { said, save, remove, takeDown } = useReviews(book.id);
+  const mood = blendedMood(book, said?.summary ?? null);
+  const scored = blendedRating(book, said?.summary ?? null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const coverRef = useRef<HTMLImageElement>(null);
   // Fixed for the life of the sheet: whether it opened with a cover in flight decides how
@@ -143,8 +149,8 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
         ? t('translationNote')
         : t('libraryNote');
   const readable = READABLE.has(book.id) || keptReads;
-  const rated = book.rating.count >= MIN_RATINGS;
-  const rating = book.rating.value.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const rated = scored.count >= MIN_RATINGS;
+  const rating = scored.value.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
   return (
     <Dialog
@@ -215,7 +221,7 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
 
           <dl className="stats">
             <div>
-              <dt>{rated ? t('ratingCount', { n: number(book.rating.count) }) : t('tooFewRatings')}</dt>
+              <dt>{rated ? t(scored.ours ? 'ratingCountBoth' : 'ratingCount', { n: number(scored.count) }) : t('tooFewRatings')}</dt>
               <dd>
                 {rated ? rating : '–'}
                 {rated && <span className="stat-unit">/ 5</span>}
@@ -274,16 +280,19 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
                 <li key={axis.id}>
                   <span>{tl(axis.low)}</span>
                   <span className="mood-track" aria-hidden="true">
-                    <span className="mood-dot" style={{ left: `${book.mood[axis.id]}%` }} />
+                    <span className="mood-dot" style={{ left: `${mood[axis.id]}%` }} />
                   </span>
                   <span>{tl(axis.high)}</span>
                 </li>
               ))}
             </ul>
-            <button type="button" className="text-button" onClick={() => onUseMood(book.mood)}>
+            {!!said?.summary.moodN && <p className="mood-readers">{t(said.summary.moodN === 1 ? 'moodByOne' : 'moodByReaders', { n: number(said.summary.moodN) })}</p>}
+            <button type="button" className="text-button" onClick={() => onUseMood(mood)}>
               <span className="u">{t('useThisMood')}</span>
             </button>
           </section>
+
+          <Readers book={book} said={said} mood={mood} save={save} remove={remove} takeDown={takeDown} />
 
           <section className="sheet-section">
             <h2>{t('similar')}</h2>
