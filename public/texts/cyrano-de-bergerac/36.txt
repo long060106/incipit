@@ -1,0 +1,25 @@
+<p>The same, all but Cyrano. The day is breaking in a rosy light. The town of Arras is golden in the horizon. The report of cannon is heard in the distance, followed immediately by the beating of drums far away to the left. Other drums are heard much nearer. Sounds of stirring in the camp. Voices of officers in the distance.</p>
+<p class="verse">CARBON (sighing):<br> The reveille!<br> (The cadets move and stretch themselves):<br> Nourishing sleep! Thou art at an end!. . .I know well what will be their<br> first cry!</p>
+<p class="verse">A CADET (sitting up):<br> I am so hungry!</p>
+<p class="verse">ANOTHER:<br> I am dying of hunger.</p>
+<p class="verse">TOGETHER:<br> Oh!</p>
+<p class="verse">CARBON:<br> Up with you!</p>
+<p class="verse">THIRD CADET:<br> —Cannot move a limb.</p>
+<p class="verse">FOURTH CADET:<br> Nor can I.</p>
+<p class="verse">THE FIRST (looking at himself in a bit of armor):<br> My tongue is yellow. The air at this season of the year is hard to digest.</p>
+<p class="verse">ANOTHER:<br> My coronet for a bit of Chester!</p>
+<p class="verse">ANOTHER:<br> If none can furnish to my gaster wherewith to make a pint of chyle, I shall<br> retire to my tent—like Achilles!</p>
+<p class="verse">ANOTHER:<br> Oh! something! were it but a crust!</p>
+<p class="verse">CARBON (going to the tent and calling softly):<br> Cyrano!</p>
+<p class="verse">ALL THE CADETS:<br> We are dying!</p>
+<p class="verse">CARBON (continuing to speak under his breath at the opening of the tent):<br> Come to my aid, you, who have the art of quick retort and gay jest. Come,<br> hearten them up.</p>
+<p class="verse">SECOND CADET (rushing toward another who is munching something):<br> What are you crunching there?</p>
+<p class="verse">FIRST CADET:<br> Cannon-wads soaked in axle-grease! ’Tis poor hunting round about Arras!</p>
+<p class="verse">A CADET (entering):<br> I have been after game.</p>
+<p class="verse">ANOTHER (following him):<br> And I after fish.</p>
+<p class="verse">ALL (rushing to the two newcomers):<br> Well! what have you brought?—a pheasant?—a carp?—Come, show us quick!</p>
+<p class="verse">THE ANGLER:<br> A gudgeon!</p>
+<p class="verse">THE SPORTSMAN:<br> A sparrow!</p>
+<p class="verse">ALL TOGETHER (beside themselves):<br> ’Tis more than can be borne! We will mutiny!</p>
+<p class="verse">CARBON:<br> Cyrano! Come to my help.</p>
+<p>(The daylight has now come.)</p>

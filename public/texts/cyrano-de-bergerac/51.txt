@@ -1,0 +1,50 @@
+<p>The same. Le Bret and Ragueneau.</p>
+<p class="verse">LE BRET:<br> What madness! Here? I knew it well!</p>
+<p class="verse">CYRANO (smiling and sitting up):<br> What now?</p>
+<p class="verse">LE BRET:<br> He has brought his death by coming, Madame.</p>
+<p class="verse">ROXANE:<br> God!<br> Ah, then! that faintness of a moment since. . .?</p>
+<p class="verse">CYRANO:<br> Why, true! It interrupted the ‘Gazette:’<br> . . .Saturday, twenty-sixth, at dinner-time,<br> Assassination of De Bergerac.</p>
+<p>(He takes off his hat; they see his head bandaged.)</p>
+<p class="verse">ROXANE:<br> What says he? Cyrano!—His head all bound!<br> Ah, what has chanced? How?—Who?. . .</p>
+<p class="verse">CYRANO:<br> ‘To be struck down,<br> Pierced by sword i’ the heart, from a hero’s hand!’<br> That I had dreamed. O mockery of Fate!<br> —Killed, I! of all men—in an ambuscade!<br> Struck from behind, and by a lackey’s hand!<br> ’Tis very well. I am foiled, foiled in all,<br> Even in my death.</p>
+<p class="verse">RAGUENEAU:<br> Ah, Monsieur!. . .</p>
+<p class="verse">CYRANO (holding out his hand to him):<br> Ragueneau,<br> Weep not so bitterly!. . .What do you now,<br> Old comrade?</p>
+<p class="verse">RAGUENEAU (amid his tears):<br> Trim the lights for Moliere’s stage.</p>
+<p class="verse">CYRANO:<br> Moliere!</p>
+<p class="verse">RAGUENEAU:<br> Yes; but I shall leave to-morrow.<br> I cannot bear it!—Yesterday, they played<br> ’Scapin’—I saw he’d thieved a scene from you!</p>
+<p class="verse">LE BRET:<br> What! a whole scene?</p>
+<p class="verse">RAGUENEAU:<br> Oh, yes, indeed, Monsieur,<br> The famous one, ‘Que Diable allait-il faire?’</p>
+<p class="verse">LE BRET:<br> Moliere has stolen that?</p>
+<p class="verse">CYRANO:<br> Tut! He did well!. . .<br> (to Ragueneau):<br> How went the scene? It told—I think it told?</p>
+<p class="verse">RAGUENEAU (sobbing):<br> Ah! how they laughed!</p>
+<p class="verse">CYRANO:<br> Look you, it was my life<br> To be the prompter every one forgets!<br> (To Roxane):<br> That night when ’neath your window Christian spoke<br> —Under your balcony, you remember? Well!<br> There was the allegory of my whole life:<br> I, in the shadow, at the ladder’s foot,<br> While others lightly mount to Love and Fame!<br> Just! very just! Here on the threshold drear<br> Of death, I pay my tribute with the rest,<br> To Moliere’s genius,—Christian’s fair face!<br> (The chapel-bell chimes. The nuns are seen passing down the alley at the back, to say their office):<br> Let them go pray, go pray, when the bell rings!</p>
+<p class="verse">ROXANE (rising and calling):<br> Sister! Sister!</p>
+<p class="verse">CYRANO (holding her fast):<br> Call no one. Leave me not;<br> When you come back, I should be gone for aye.<br> (The nuns have all entered the chapel. The organ sounds):<br> I was somewhat fain for music—hark! ’tis come.</p>
+<p class="verse">ROXANE:<br> Live, for I love you!</p>
+<p class="verse">CYRANO:<br> No, In fairy tales<br> When to the ill-starred Prince the lady says<br> ‘I love you!’ all his ugliness fades fast—<br> But I remain the same, up to the last!</p>
+<p class="verse">ROXANE:<br> I have marred your life—I, I!</p>
+<p class="verse">CYRANO:<br> You blessed my life!<br> Never on me had rested woman’s love.<br> My mother even could not find me fair:<br> I had no sister; and, when grown a man,<br> I feared the mistress who would mock at me.<br> But I have had your friendship—grace to you<br> A woman’s charm has passed across my path.</p>
+<p class="verse">LE BRET (pointing to the moon, which is seen between the trees):<br> Your other lady-love is come.</p>
+<p class="verse">CYRANO (smiling):<br> I see.</p>
+<p class="verse">ROXANE:<br> I loved but once, yet twice I lose my love!</p>
+<p class="verse">CYRANO:<br> Hark you, Le Bret! I soon shall reach the moon.<br> To-night, alone, with no projectile’s aid!. . .</p>
+<p class="verse">LE BRET:<br> What are you saying?</p>
+<p class="verse">CYRANO:<br> I tell you, it is there,<br> There, that they send me for my Paradise,<br> There I shall find at last the souls I love,<br> In exile,—Galileo—Socrates!</p>
+<p class="verse">LE BRET (rebelliously):<br> No, no! It is too clumsy, too unjust!<br> So great a heart! So great a poet! Die<br> Like this? what, die. . .?</p>
+<p class="verse">CYRANO:<br> Hark to Le Bret, who scolds!</p>
+<p class="verse">LE BRET (weeping):<br> Dear friend. . .</p>
+<p class="verse">CYRANO (starting up, his eyes wild):<br> What ho! Cadets of Gascony!<br> The elemental mass—ah yes! The hic. . .</p>
+<p class="verse">LE BRET:<br> His science still—he raves!</p>
+<p class="verse">CYRANO:<br> Copernicus<br> Said. . .</p>
+<p class="verse">ROXANE:<br> Oh!</p>
+<p class="verse">CYRANO:<br> Mais que diable allait-il faire,<br> Mais que diable allait-il faire dans cette galere?. . .<br> Philosopher, metaphysician,<br> Rhymer, brawler, and musician,<br> Famed for his lunar expedition,<br> And the unnumbered duels he fought,—<br> And lover also,—by interposition!—<br> Here lies Hercule Savinien<br> De Cyrano de Bergerac,<br> Who was everything, yet was naught.<br> I cry you pardon, but I may not stay;<br> See, the moon-ray that comes to call me hence!<br> (He has fallen back in his chair; the sobs of Roxane recall him to reality; he looks long at her, and, touching her veil):<br> I would not bid you mourn less faithfully<br> That good, brave Christian: I would only ask<br> That when my body shall be cold in clay<br> You wear those sable mourning weeds for two,<br> And mourn awhile for me, in mourning him.</p>
+<p class="verse">ROXANE:<br> I swear it you!. . .</p>
+<p class="verse">CYRANO (shivering violently, then suddenly rising):<br> Not there! what, seated?—no!<br> (They spring toward him):<br> Let no one hold me up—<br> (He props himself against the tree):<br> Only the tree!<br> (Silence):<br> It comes. E’en now my feet have turned to stone,<br> My hands are gloved with lead!<br> (He stands erect):<br> But since Death comes,<br> I meet him still afoot,<br> (He draws his sword):<br> And sword in hand!</p>
+<p class="verse">LE BRET:<br> Cyrano!</p>
+<p class="verse">ROXANE (half fainting):<br> Cyrano!</p>
+<p>(All shrink back in terror.)</p>
+<p class="verse">CYRANO:<br> Why, I well believe<br> He dares to mock my nose? Ho! insolent!<br> (He raises his sword):<br> What say you? It is useless? Ay, I know<br> But who fights ever hoping for success?<br> I fought for lost cause, and for fruitless quest!<br> You there, who are you!—You are thousands!<br> Ah!<br> I know you now, old enemies of mine!<br> Falsehood!<br> (He strikes in air with his sword):<br> Have at you! Ha! and Compromise!<br> Prejudice, Treachery!. . .<br> (He strikes):<br> Surrender, I?<br> Parley? No, never! You too, Folly,—you?<br> I know that you will lay me low at last;<br> Let be! Yet I fall fighting, fighting still!<br> (He makes passes in the air, and stops, breathless):<br> You strip from me the laurel and the rose!<br> Take all! Despite you there is yet one thing<br> I hold against you all, and when, to-night,<br> I enter Christ’s fair courts, and, lowly bowed,<br> Sweep with doffed casque the heavens’ threshold blue,<br> One thing is left, that, void of stain or smutch,<br> I bear away despite you.</p>
+<p>(He springs forward, his sword raised; it falls from his hand; he staggers, falls back into the arms of Le Bret and Ragueneau.)</p>
+<p class="verse">ROXANE (bending and kissing his forehead):<br> ’Tis?. . .</p>
+<p class="verse">CYRANO (opening his eyes, recognizing her, and smiling):<br> My panache.</p>
+<p>Curtain.</p>

@@ -1,0 +1,11 @@
+<p>Cyrano, Christian, a capuchin friar.</p>
+<p class="verse">CYRANO (to the friar):<br> What do you, playing at Diogenes?</p>
+<p class="verse">THE FRIAR:<br> I seek the house of Madame. . .</p>
+<p class="verse">CHRISTIAN:<br> Oh! plague take him!</p>
+<p class="verse">THE FRIAR:<br> Madeleine Robin. . .</p>
+<p class="verse">CHRISTIAN:<br> What would he?. . .</p>
+<p class="verse">CYRANO (pointing to a street at the back):<br> This way!<br> Straight on. . .</p>
+<p class="verse">THE FRIAR<br> I thank you, and, in your intention<br> Will tell my rosary to its last bead.</p>
+<p>(He goes out.)</p>
+<p class="verse">CYRANO:<br> Good luck! My blessings rest upon your cowl!</p>
+<p>(He goes back to Christian.)</p>

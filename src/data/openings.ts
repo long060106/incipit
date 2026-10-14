@@ -766,5 +766,212 @@ export const OPENINGS: Record<string, { section: number; lines: string[] }> = {
    "CHAPTER: I., II., III., IV., V., VI., VII., VIII., IX., X., XI., XII., XIII., XIV., XV, XVI., XVII., XVIII., XIX., XX., XXI., XXII., XXIII., XXIV., XXV., XXVI., XXVII., XXVIII., XXIX., XXX., XXXI., XXXII., XXXIII., XXXIV., XXXV., XXXVI., XXXVII., XXXVIII., XXXIX., XL., XLI., XLII., XLIII., XLIV., XLV., XLVI., XLVII., XLVIII., XLIX., L, LI., LII.",
    "NORTH AND SOUTH."
   ]
+ },
+ "notes-from-underground": {
+  "section": 0,
+  "lines": [
+   "I am a sick man.⁠ ⁠… I am a spiteful man. I am an unattractive man. I believe my liver is diseased. However, I know nothing at all about my disease, and do not know for certain what ails me. I don’t consult a doctor for it, and never have, though I have a respect for medicine and doctors. Besides, I am extremely superstitious, sufficiently so to respect medicine, anyway (I am well-educated enough not to be superstitious, but I am superstitious). No, I refuse to consult a doctor from spite. That you probably will not understand. Well, I understand it, though."
+  ]
+ },
+ "fathers-and-sons": {
+  "section": 0,
+  "lines": [
+   "“Well, Piotr, not in sight yet?” was the question asked on May the 20th, 1859, by a gentleman of a little over forty, in a dusty coat and checked trousers, who came out without his hat on to the low steps of the posting station at S⁠⸺. He was addressing his servant, a chubby young fellow, with whitish down on his chin, and little, lacklustre eyes.",
+   "The servant, in whom everything⁠—the turquoise ring in his ear, the streaky hair plastered with grease, and the civility of his movements⁠—indicated a man of the new, improved generation, glanced with an air of indulgence along the road, and made answer:"
+  ]
+ },
+ "dead-souls": {
+  "section": 2,
+  "lines": [
+   "To the door of an inn in the provincial town of N. there drew up a smart britchka⁠—a light spring-carriage of the sort affected by bachelors, retired lieutenant-colonels, staff-captains, landowners possessed of about a hundred souls, and, in short, all persons who rank as gentlemen of the intermediate category. In the britchka was seated such a gentleman⁠—a man who, though not handsome, was not ill-favoured, not over-fat, and not over-thin. Also, though not over-elderly, he was not over-young."
+  ]
+ },
+ "pere-goriot": {
+  "section": 1,
+  "lines": [
+   "Mme. Vauquer (née de Conflans) is an elderly person, who for the past forty years has kept a lodging-house in the Rue Neuve-Sainte-Geneviève, in the district that lies between the Latin Quarter and the Faubourg Saint-Marcel. Her house (known in the neighborhood as the “Maison Vauquer”) receives men and women, old and young, and no word has ever been breathed against her respectable establishment; but, at the same time, it must be said that as a matter of fact no young woman has been under her roof for thirty years, and that if a young man stays there for any length of time it is a sure sign that his allowance must be of the slenderest. In 1819, however, the time when this drama opens, there was an almost penniless young girl among Mme. Vauquer’s boarders."
+  ]
+ },
+ "the-red-and-the-black": {
+  "section": 1,
+  "lines": [
+   "Put thousands together less bad,\nBut the cage less gay.—Hobbes.",
+   "The little town of Verrières can pass for one of the prettiest in Franche-Comté. Its white houses with their pointed red-tiled roofs stretch along the slope of a hill, whose slightest undulations are marked by groups of vigorous chestnuts. The Doubs flows to within some hundred feet above its fortifications, which were built long ago by the Spaniards, and are now in ruins."
+  ]
+ },
+ "cyrano-de-bergerac": {
+  "section": 2,
+  "lines": [
+   "The public, arriving by degrees. Troopers, burghers, lackeys, pages, a pickpocket, the doorkeeper, etc., followed by the marquises. Cuigy, Brissaille, the buffet-girl, the violinists, etc.",
+   "(A confusion of loud voices is heard outside the door. A trooper enters hastily.)",
+   "THE DOORKEEPER (following him):\nHollo! You there! Your money!",
+   "THE TROOPER:\nI enter gratis.",
+   "THE DOORKEEPER:\nWhy?",
+   "THE TROOPER:\nWhy? I am of the King’s Household Cavalry, ’faith!",
+   "THE DOORKEEPER (to another trooper who enters):\nAnd you?"
+  ]
+ },
+ "the-sorrows-of-young-werther": {
+  "section": 1,
+  "lines": [
+   "May 4. How happy I am that I am gone! My dear friend, what a thing is the heart of man! To leave you, from whom I have been inseparable, whom I love so dearly, and yet to feel happy! I know you will forgive me. Have not other attachments been specially appointed by fate to torment a head like mine? Poor Leonora! and yet I was not to blame. Was it my fault, that, whilst the peculiar charms of her sister afforded me an agreeable entertainment, a passion for me was engendered in her feeble heart? And yet am I wholly blameless? Did I not encourage her emotions?"
+  ]
+ },
+ "vanity-fair": {
+  "section": 0,
+  "lines": [
+   "As the manager of the Performance sits before the curtain on the boards and looks into the Fair, a feeling of profound melancholy comes over him in his survey of the bustling place. There is a great quantity of eating and drinking, making love and jilting, laughing and the contrary, smoking, cheating, fighting, dancing and fiddling; there are bullies pushing about, bucks ogling the women, knaves picking pockets, policemen on the lookout, quacks (other quacks, plague take them!) bawling in front of their booths, and yokels looking up at the tinselled dancers and poor old rouged tumblers, while the light-fingered folk are operating upon their pockets behind."
+  ]
+ },
+ "silas-marner": {
+  "section": 1,
+  "lines": [
+   "In the days when the spinning-wheels hummed busily in the farmhouses⁠—and even great ladies, clothed in silk and thread-lace, had their toy spinning-wheels of polished oak⁠—there might be seen in districts far away among the lanes, or deep in the bosom of the hills, certain pallid undersized men, who, by the side of the brawny country-folk, looked like the remnants of a disinherited race. The shepherd’s dog barked fiercely when one of these alien-looking men appeared on the upland, dark against the early winter sunset; for what dog likes a figure bent under a heavy bag?⁠—and these pale men rarely stirred abroad without that mysterious burden."
+  ]
+ },
+ "the-woman-in-white": {
+  "section": 2,
+  "lines": [
+   "This is the story of what a woman’s patience can endure, and what a Man’s resolution can achieve.",
+   "If the machinery of the Law could be depended on to fathom every case of suspicion, and to conduct every process of inquiry, with moderate assistance only from the lubricating influences of oil of gold, the events which fill these pages might have claimed their share of the public attention in a Court of Justice."
+  ]
+ },
+ "the-moonstone": {
+  "section": 0,
+  "lines": [
+   "I address these lines⁠—written in India⁠—to my relatives in England.",
+   "My object is to explain the motive which has induced me to refuse the right hand of friendship to my cousin, John Herncastle. The reserve which I have hitherto maintained in this matter has been misinterpreted by members of my family whose good opinion I cannot consent to forfeit. I request them to suspend their decision until they have read my narrative. And I declare, on my word of honour, that what I am now about to write is, strictly and literally, the truth."
+  ]
+ },
+ "kidnapped": {
+  "section": 1,
+  "lines": [
+   "I will begin the story of my adventures with a certain morning early in the month of June, the year of grace 1751, when I took the key for the last time out of the door of my father’s house. The sun began to shine upon the summit of the hills as I went down the road; and by the time I had come as far as the manse, the blackbirds were whistling in the garden lilacs, and the mist that hung around the valley in the time of the dawn was beginning to arise and die away."
+  ]
+ },
+ "ivanhoe": {
+  "section": 3,
+  "lines": [
+   "In that pleasant district of merry England which is watered by the river Don, there extended in ancient times a large forest, covering the greater part of the beautiful hills and valleys which lie between Sheffield and the pleasant town of Doncaster. The remains of this extensive wood are still to be seen at the noble seats of Wentworth, of Warncliffe Park, and around Rotherham. Here haunted of yore the fabulous Dragon of Wantley; here were fought many of the most desperate battles during the Civil Wars of the Roses; and here also flourished in ancient times those bands of gallant outlaws, whose deeds have been rendered so popular in English song."
+  ]
+ },
+ "the-scarlet-pimpernel": {
+  "section": 1,
+  "lines": [
+   "A surging, seething, murmuring crowd, of beings that are human only in name, for to the eye and ear they seem naught but savage creatures, animated by vile passions and by the lust of vengeance and of hate. The hour, some little time before sunset, and the place, the West Barricade, at the very spot where, a decade later, a proud tyrant raised an undying monument to the nation’s glory and his own vanity."
+  ]
+ },
+ "the-island-of-doctor-moreau": {
+  "section": 1,
+  "lines": [
+   "I do not propose to add anything to what has already been written concerning the loss of the Lady Vain. As everyone knows, she collided with a derelict when ten days out from Callao. The longboat, with seven of the crew, was picked up eighteen days after by H.M. gunboat Myrtle, and the story of their terrible privations has become quite as well known as the far more horrible Medusa case. But I have to add to the published story of the Lady Vain another, possibly as horrible and far stranger. It has hitherto been supposed that the four men who were in the dingey perished, but this is incorrect. I have the best of evidence for this assertion: I was one of the four men."
+  ]
+ },
+ "the-king-in-yellow": {
+  "section": 2,
+  "lines": [
+   "Toward the end of the year 1920 the government of the United States had practically completed the programme, adopted during the last months of President Winthrop’s administration. The country was apparently tranquil. Everybody knows how the Tariff and Labour questions were settled. The war with Germany, incident on that country’s seizure of the Samoan Islands, had left no visible scars upon the republic, and the temporary occupation of Norfolk by the invading army had been forgotten in the joy over repeated naval victories, and the subsequent ridiculous plight of General Von Gartenlaube’s forces in the State of New Jersey."
+  ]
+ },
+ "the-legend-of-sleepy-hollow": {
+  "section": 0,
+  "lines": [
+   "A pleasing land of drowsy head it was,\nOf dreams that wave before the half-shut eye;\nAnd of gay castles in the clouds that pass,\nForever flushing round a summer sky.\nCASTLE OF INDOLENCE.",
+   "In the bosom of one of those spacious coves which indent the eastern shore of the Hudson, at that broad expansion of the river denominated by the ancient Dutch navigators the Tappan Zee, and where they always prudently shortened sail and implored the protection of St. Nicholas when they crossed, there lies a small market town or rural port, which by some is called Greensburgh, but which is more generally and properly known by the name of Tarry Town."
+  ]
+ },
+ "the-last-of-the-mohicans": {
+  "section": 1,
+  "lines": [
+   "It was a feature peculiar to the colonial wars of North America, that the toils and dangers of the wilderness were to be encountered before the adverse hosts could meet. A wide and apparently an impervious boundary of forests severed the possessions of the hostile provinces of France and England. The hardy colonist, and the trained European who fought at his side, frequently expended months in struggling against the rapids of the streams, or in effecting the rugged passes of the mountains, in quest of an opportunity to exhibit their courage in a more martial conflict."
+  ]
+ },
+ "ethan-frome": {
+  "section": 1,
+  "lines": [
+   "I had the story, bit by bit, from various people, and, as generally happens in such cases, each time it was a different story.",
+   "If you know Starkfield, Massachusetts, you know the post-office. If you know the post-office you must have seen Ethan Frome drive up to it, drop the reins on his hollow-backed bay and drag himself across the brick pavement to the white colonnade; and you must have asked who he was."
+  ]
+ },
+ "my-antonia": {
+  "section": 3,
+  "lines": [
+   "I first heard of Ántonia on what seemed to me an interminable journey across the great midland plain of North America. I was ten years old then; I had lost both my father and mother within a year, and my Virginia relatives were sending me out to my grandparents, who lived in Nebraska. I traveled in the care of a mountain boy, Jake Marpole, one of the “hands” on my father’s old farm under the Blue Ridge, who was now going West to work for my grandfather. Jake’s experience of the world was not much wider than mine. He had never been in a railway train until the morning when we set out together to try our fortunes in a new world."
+  ]
+ },
+ "sister-carrie": {
+  "section": 0,
+  "lines": [
+   "When Caroline Meeber boarded the afternoon train for Chicago, her total outfit consisted of a small trunk, a cheap imitation alligator-skin satchel, a small lunch in a paper box, and a yellow leather snap purse, containing her ticket, a scrap of paper with her sister’s address in Van Buren Street, and four dollars in money. It was in August, 1889. She was eighteen years of age, bright, timid, and full of the illusions of ignorance and youth. Whatever touch of regret at parting characterised her thoughts, it was certainly not for advantages now being given up."
+  ]
+ },
+ "sons-and-lovers": {
+  "section": 0,
+  "lines": [
+   "“The Bottoms” succeeded to “Hell Row.” Hell Row was a block of thatched, bulging cottages that stood by the brookside on Greenhill Lane. There lived the colliers who worked in the little gin-pits two fields away. The brook ran under the alder trees, scarcely soiled by these small mines, whose coal was drawn to the surface by donkeys that plodded wearily in a circle round a gin. And all over the countryside were these same pits, some of which had been worked in the time of Charles II, the few colliers and the donkeys burrowing down like ants into the earth, making queer mounds and little black places among the cornfields and the meadows. And the cottages of these coal-miners, in blocks and pairs here and there, together with odd farms and homes of the stockingers, straying over the parish, formed the village of Bestwood."
+  ]
+ },
+ "kim": {
+  "section": 0,
+  "lines": [
+   "He sat, in defiance of municipal orders, astride the gun Zam Zammah on her brick platform opposite the old Ajaib-Gher⁠—the Wonder House, as the natives call the Lahore Museum. Who hold Zam-Zammah, that “fire-breathing dragon,” hold the Punjab, for the great green-bronze piece is always first of the conqueror’s loot.",
+   "There was some justification for Kim⁠—he had kicked Lala Dinanath’s boy off the trunnions⁠—since the English held the Punjab and Kim was English."
+  ]
+ },
+ "gitanjali": {
+  "section": 3,
+  "lines": [
+   "Thou hast made me endless, such is thy pleasure. This frail vessel thou emptiest again and again, and fillest it ever with fresh life.",
+   "This little flute of a reed thou hast carried over hills and dales, and hast breathed through it melodies eternally new.",
+   "At the immortal touch of thy hands my little heart loses its limits in joy and gives birth to utterance ineffable.",
+   "Thy infinite gifts come to me only on these very small hands of mine. Ages pass, and still thou pourest, and still there is room to fill."
+  ]
+ },
+ "the-analects": {
+  "section": 0,
+  "lines": [
+   "The Master said, “Is it not pleasant to learn with a constant perseverance and application?",
+   "“Is it not delightful to have friends coming from distant quarters?",
+   "“Is he not a man of complete virtue, who feels no discomposure though men may take no note of him?”",
+   "The philosopher Yû said, “They are few who, being filial and fraternal, are fond of offending against their superiors. There have been none, who, not liking to offend against their superiors, have been fond of stirring up confusion."
+  ]
+ },
+ "bushido": {
+  "section": 3,
+  "lines": [
+   "Chivalry is a flower no less indigenous to the soil of Japan than its emblem, the cherry blossom; nor is it a dried-up specimen of an antique virtue preserved in the herbarium of our history. It is still a living object of power and beauty among us; and if it assumes no tangible shape or form, it not the less scents the moral atmosphere, and makes us aware that we are still under its potent spell."
+  ]
+ },
+ "beyond-good-and-evil": {
+  "section": 1,
+  "lines": [
+   "The Will to Truth, which is to tempt us to many a hazardous enterprise, the famous Truthfulness of which all philosophers have hitherto spoken with respect, what questions has this Will to Truth not laid before us! What strange, perplexing, questionable questions! It is already a long story; yet it seems as if it were hardly commenced. Is it any wonder if we at last grow distrustful, lose patience, and turn impatiently away? That this Sphinx teaches us at last to ask questions ourselves? Who is it really that puts questions to us here? What really is this “Will to Truth” in us?"
+  ]
+ },
+ "black-beauty": {
+  "section": 0,
+  "lines": [
+   "The first place that I can well remember was a large pleasant meadow with a pond of clear water in it. Some shady trees leaned over it, and rushes and water-lilies grew at the deep end. Over the hedge on one side we looked into a plowed field, and on the other we looked over a gate at our master’s house, which stood by the roadside; at the top of the meadow was a grove of fir trees, and at the bottom a running brook overhung by a steep bank."
+  ]
+ },
+ "beowulf": {
+  "section": 6,
+  "lines": [
+   "The famous race of Spear-Danes.",
+   "Lo! the Spear-Danes’ glory through splendid achievements",
+   "The folk-kings’ former fame we have heard of,",
+   "How princes displayed then their prowess-in-battle.",
+   "Scyld, their mighty king, in honor of whom they are often called Scyldings. He is the great-grandfather of Hrothgar, so prominent in the poem.",
+   "Oft Scyld the Scefing from scathers in numbers",
+   "5",
+   "From many a people their mead-benches tore.",
+   "Since first he found him friendless and wretched,"
+  ]
+ },
+ "the-decameron": {
+  "section": 0,
+  "lines": [
+   "A kindly thing it is to have compassion of the afflicted and albeit it well beseemeth every one, yet of those is it more particularly required who have erst had need of comfort and have found it in any, amongst whom, if ever any had need thereof or held it dear or took pleasure therein aforetimes, certes, I am one of these."
+  ]
  }
 };

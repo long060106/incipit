@@ -1,0 +1,33 @@
+<p>Cyrano, Christian, Roxane.</p>
+<p class="verse">ROXANE (coming out on the balcony):<br> Still there?<br> We spoke of a. . .</p>
+<p class="verse">CYRANO:<br> A kiss! The word is sweet.<br> I see not why your lip should shrink from it;<br> If the word burns it,—what would the kiss do?<br> Oh! let it not your bashfulness affright;<br> Have you not, all this time, insensibly,<br> Left badinage aside, and unalarmed<br> Glided from smile to sigh,—from sigh to weeping?<br> Glide gently, imperceptibly, still onward—<br> From tear to kiss,—a moment’s thrill!—a heartbeat!</p>
+<p class="verse">ROXANE:<br> Hush! hush!</p>
+<p class="verse">CYRANO:<br> A kiss, when all is said,—what is it?<br> An oath that’s ratified,—a sealed promise,<br> A heart’s avowal claiming confirmation,—<br> A rose-dot on the ‘i’ of ‘adoration,’—<br> A secret that to mouth, not ear, is whispered,—<br> Brush of a bee’s wing, that makes time eternal,—<br> Communion perfumed like the spring’s wild flowers,—<br> The heart’s relieving in the heart’s outbreathing,<br> When to the lips the soul’s flood rises, brimming!</p>
+<p class="verse">ROXANE:<br> Hush! hush!</p>
+<p class="verse">CYRANO:<br> A kiss, Madame, is honorable:<br> The Queen of France, to a most favored lord<br> Did grant a kiss—the Queen herself!</p>
+<p class="verse">ROXANE:<br> What then?</p>
+<p class="verse">CYRANO (speaking more warmly):<br> Buckingham suffered dumbly,—so have I,—<br> Adored his Queen, as loyally as I,—<br> Was sad, but faithful,—so am I. . .</p>
+<p class="verse">ROXANE:<br> And you<br> Are fair as Buckingham!</p>
+<p class="verse">CYRANO (aside—suddenly cooled):<br> True,—I forgot!</p>
+<p class="verse">ROXANE:<br> Must I then bid thee mount to cull this flower?</p>
+<p class="verse">CYRANO (pushing Christian toward the balcony):<br> Mount!</p>
+<p class="verse">ROXANE:<br> This heart-breathing!. . .</p>
+<p class="verse">CYRANO:<br> Mount!</p>
+<p class="verse">ROXANE:<br> This brush of bee’s wing!. . .</p>
+<p class="verse">CYRANO:<br> Mount!</p>
+<p class="verse">CHRISTIAN (hesitating):<br> But I feel now, as though ’twere ill done!</p>
+<p class="verse">ROXANE:<br> This moment infinite!. . .</p>
+<p class="verse">CYRANO (still pushing him):<br> Come, blockhead, mount!</p>
+<p>(Christian springs forward, and by means of the bench, the branches, and the pillars, climbs to the balcony and strides over it.)</p>
+<p class="verse">CHRISTIAN:<br> Ah, Roxane!</p>
+<p>(He takes her in his arms, and bends over her lips.)</p>
+<p class="verse">CYRANO:<br> Aie! Strange pain that wrings my heart!<br> The kiss, love’s feast, so near! I, Lazarus,<br> Lie at the gate in darkness. Yet to me<br> Falls still a crumb or two from the rich man’s board—<br> Ay, ’tis my heart receives thee, Roxane—mine!<br> For on the lips you press you kiss as well<br> The words I spoke just now!—my words—my words!<br> (The lutes play):<br> A sad air,—a gay air: the monk!<br> (He begins to run as if he came from a long way off, and cries out):<br> Hola!</p>
+<p class="verse">ROXANE:<br> Who is it?</p>
+<p class="verse">CYRANO:<br> I—I was but passing by. . .<br> Is Christian there?</p>
+<p class="verse">CHRISTIAN (astonished):<br> Cyrano!</p>
+<p class="verse">ROXANE:<br> Good-day, cousin!</p>
+<p class="verse">CYRANO:<br> Cousin, good-day!</p>
+<p class="verse">ROXANE:<br> I’m coming!</p>
+<p>(She disappears into the house. At the back re-enter the friar.)</p>
+<p class="verse">CHRISTIAN (seeing him):<br> Back again!</p>
+<p>(He follows Roxane.)</p>

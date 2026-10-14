@@ -35,6 +35,12 @@ const OWN = {
   'narrative-of-the-life-of-frederick-douglass': 'Narrative of the Life of Frederick Douglass, an American Slave',
   'crime-and-punishment': 'Crime and Punishment',
   'the-brothers-karamazov': 'The Brothers Karamazov',
+  beowulf: 'Beowulf',
+  'notes-from-underground': 'Notes from Underground',
+  'the-analects': 'Analects',
+  bushido: 'Bushido: The Soul of Japan',
+  kim: 'Kim (novel)',
+  gitanjali: 'Gitanjali',
 };
 /** The same for the author. */
 const BY = {
@@ -46,6 +52,10 @@ const BY = {
   'heaven-and-earth': 'Paolo Giordano',
   'crime-and-punishment': 'Fyodor Dostoevsky',
   'the-brothers-karamazov': 'Fyodor Dostoevsky',
+  'the-analects': 'Confucius',
+  'notes-from-underground': 'Fyodor Dostoevsky',
+  bushido: 'Nitobe Inazō',
+  gitanjali: 'Rabindranath Tagore',
 };
 
 // What Wikidata records that is no help as background: bare dates, and subjects too broad to say anything.

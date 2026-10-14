@@ -1,0 +1,36 @@
+<p>Mother Marguerite, Sister Martha, Sister Claire, other sisters.</p>
+<p class="verse">SISTER MARTHA (to Mother Marguerite):<br> Sister Claire glanced in the mirror, once—nay, twice, to see if her coif<br> suited.</p>
+<p class="verse">MOTHER MARGUERITE (to Sister Claire):<br> ’Tis not well.</p>
+<p class="verse">SISTER CLAIRE:<br> But I saw Sister Martha take a plum<br> Out of the tart.</p>
+<p class="verse">MOTHER MARGUERITE (to Sister Martha):<br> That was ill done, my sister.</p>
+<p class="verse">SISTER CLAIRE:<br> A little glance!</p>
+<p class="verse">SISTER MARTHA:<br> And such a little plum!</p>
+<p class="verse">MOTHER MARGUERITE:<br> I shall tell this to Monsieur Cyrano.</p>
+<p class="verse">SISTER CLAIRE:<br> Nay, prithee do not!—he will mock!</p>
+<p class="verse">SISTER MARTHA:<br> He’ll say we nuns are vain!</p>
+<p class="verse">SISTER CLAIRE:<br> And greedy!</p>
+<p class="verse">MOTHER MARGUERITE (smiling):<br> Ay, and kind!</p>
+<p class="verse">SISTER CLAIRE:<br> Is it not true, pray, Mother Marguerite,<br> That he has come, each week, on Saturday<br> For ten years, to the convent?</p>
+<p class="verse">MOTHER MARGUERITE:<br> Ay! and more!<br> Ever since—fourteen years ago—the day<br> His cousin brought here, ’midst our woolen coifs,<br> The worldly mourning of her widow’s veil,<br> Like a blackbird’s wing among the convent doves!</p>
+<p class="verse">SISTER MARTHA:<br> He only has the skill to turn her mind<br> From grief—unsoftened yet by Time—unhealed!</p>
+<p class="verse">ALL THE SISTERS:<br> He is so droll!—It’s cheerful when he comes!—<br> He teases us!—But we all like him well!—<br> —We make him pasties of angelica!</p>
+<p class="verse">SISTER MARTHA:<br> But, he is not a faithful Catholic!</p>
+<p class="verse">SISTER CLAIRE:<br> We will convert him!</p>
+<p class="verse">THE SISTERS:<br> Yes! Yes!</p>
+<p class="verse">MOTHER MARGUERITE:<br> I forbid,<br> My daughters, you attempt that subject. Nay,<br> Weary him not—he might less oft come here!</p>
+<p class="verse">SISTER MARTHA:<br> But. . .God. . .</p>
+<p class="verse">MOTHER MARGUERITE:<br> Nay, never fear! God knows him well!</p>
+<p class="verse">SISTER MARTHA:<br> But—every Saturday, when he arrives,<br> He tells me, ‘Sister, I eat meat on Friday!’</p>
+<p class="verse">MOTHER MARGUERITE:<br> Ah! says he so? Well, the last time he came<br> Food had not passed his lips for two whole days!</p>
+<p class="verse">SISTER MARTHA:<br> Mother!</p>
+<p class="verse">MOTHER MARGUERITE:<br> He’s poor.</p>
+<p class="verse">SISTER MARTHA:<br> Who told you so, dear Mother?</p>
+<p class="verse">MOTHER MARGUERITE:<br> Monsieur Le Bret.</p>
+<p class="verse">SISTER MARTHA:<br> None help him?</p>
+<p class="verse">MOTHER MARGUERITE:<br> He permits not.<br> (In an alley at the back Roxane appears, dressed in black, with a widow’s coif and veil. De Guiche, imposing-looking and visibly aged, walks by her side. They saunter slowly. Mother Marguerite rises):<br> ’Tis time we go in; Madame Madeleine<br> Walks in the garden with a visitor.</p>
+<p class="verse">SISTER MARTHA (to Sister Claire, in a low voice):<br> The Marshal of Grammont?</p>
+<p class="verse">SISTER CLAIRE (looking at him):<br> ’Tis he, I think.</p>
+<p class="verse">SISTER MARTHA:<br> ’Tis many months now since he came to see her.</p>
+<p class="verse">THE SISTERS:<br> He is so busy!—The Court,—the camp!. . .</p>
+<p class="verse">SISTER CLAIRE:<br> The world!</p>
+<p>(They go out. De Guiche and Roxane come forward in silence, and stop close to the embroidery frame.)</p>

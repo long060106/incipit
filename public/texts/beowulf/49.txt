@@ -1,0 +1,19 @@
+<p>Several discrepancies and other oversights have been noticed in the H.-So. glossary. Of these a good part were avoided by Harrison and Sharp, the American editors of Beowulf, in their last edition, 1888. The rest will, I hope, be noticed in their fourth edition. As, however, this book may fall into the hands of some who have no copy of the American edition, it seems best to notice all the principal oversights of the German editors.</p>
+<p><b>From hám</b> (194).—Notes and glossary conflict; the latter not having been altered to suit the conclusions accepted in the former.</p>
+<p><b>Þær gelýfan sceal dryhtnes dóme</b> (440).—Under ‘dóm’ H. says ‘the might of the Lord’; while under ‘gelýfan’ he says ‘the judgment of the Lord.’</p>
+<p><b>Eal bencþelu</b> (486).—Under ‘benc-þelu’ H. says <i>nom. plu.</i>; while under ‘eal’ he says <i>nom. sing.</i></p>
+<p><b>Heatho-ræmas</b> (519).—Under ‘ætberan’ H. translates ‘to the Heathoremes’; while under ‘Heatho-ræmas’ he says ‘Heathoræmas reaches Breca in the swimming-match with Beowulf.’ Harrison and Sharp (3d edition, 1888) avoid the discrepancy.</p>
+<p><b>Fáh féond-scaða</b> (554).—Under ‘féond-scaða’ H. says ‘a gleaming sea-monster’; under ‘fáh’ he says ‘hostile.’</p>
+<p><b>Onfeng hraðe inwit-þancum</b> (749).—Under ‘onfón’ H. says ‘he <i>received</i> the maliciously-disposed one’; under ‘inwit-þanc’ he says ‘he <i>grasped</i>,’ etc.</p>
+<p><b>Níð-wundor séon</b> (1366).—Under ‘níð-wundor’ H. calls this word itself <i>nom. sing.</i>; under ‘séon’ he translates it as accus. sing., understanding ‘man’ as subject of ‘séon.’ H. and S. (3d edition) make the correction.</p>
+<p><b>Forgeaf hilde-bille</b> (1521).—H., under the second word, calls it instr. dat.; while under ‘forgifan’ he makes it the dat. of indir. obj. H. and S. (3d edition) make the change.</p>
+<p><b>Brád</b> and <b>brún-ecg</b> (1547).—Under ‘brád’ H. says ‘das breite Hüftmesser mit bronzener Klinge’; under ‘brún-ecg’ he says ‘ihr breites Hüftmesser mit blitzender Klinge.’</p>
+<p><b>Yðelíce</b> (1557).—Under this word H. makes it modify ‘ástód.’ If this be right, the punctuation of the fifth edition is wrong. See H. and S., appendix.</p>
+<p><b>Sélran gesóhte</b> (1840).—Under ‘sél’ and ‘gesécan’ H. calls these two words accus. plu.; but this is clearly an error, as both are nom. plu., pred. nom. H. and S. correct under ‘sél.’</p>
+<p><b>Wið sylfne</b> (1978).—Under ‘wið’ and ‘gesittan’ H. says ‘wið = near, by’; under ‘self’ he says ‘opposite.’</p>
+<p><b>þéow</b> (2225) is omitted from the glossary.</p>
+<p><b>For duguðum</b> (2502).—Under ‘duguð’ H. translates this phrase, ‘in Tüchtigkeit’; under ‘for,’ by ‘vor der edlen Kriegerschaar.’</p>
+<p><b>þær</b> (2574).—Under ‘wealdan’ H. translates <i>þær</i> by ‘wo’; under ‘mótan,’ by ‘da.’ H. and S. suggest ‘if’ in both passages.</p>
+<p><b>Wunde</b> (2726).—Under ‘wund’ H. says ‘dative,’ and under ‘wæl-bléate’ he says ‘accus.’ It is without doubt accus., parallel with ‘benne.’</p>
+<p><b>Strengum gebæded</b> (3118).—Under ‘strengo’ H. says ‘Strengum’ = mit Macht; under ‘gebæded’ he translates ‘von den Sehnen.’ H. and S. correct this discrepancy by rejecting the second reading.</p>
+<p><b>Bronda be láfe</b> (3162).—A recent emendation. The fourth edition had ‘bronda betost.’ In the fifth edition the editor neglects to change the glossary to suit the new emendation. See ‘bewyrcan.’</p>

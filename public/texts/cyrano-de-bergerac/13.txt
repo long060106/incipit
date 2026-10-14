@@ -1,0 +1,65 @@
+<p>Ragueneau, Lise, the musketeer. Cyrano at the little table writing. The poets, dressed in black, their stockings ungartered, and covered with mud.</p>
+<p class="verse">LISE (entering, to Ragueneau):<br> Here they come, your mud-bespattered friends!</p>
+<p class="verse">FIRST POET (entering, to Ragueneau):<br> Brother in art!. . .</p>
+<p class="verse">SECOND POET (to Ragueneau, shaking his hands):<br> Dear brother!</p>
+<p class="verse">THIRD POET:<br> High soaring eagle among pastry-cooks!<br> (He sniffs):<br> Marry! it smells good here in your eyrie!</p>
+<p class="verse">FOURTH POET:<br> ’Tis at Phoebus’ own rays that thy roasts turn!</p>
+<p class="verse">FIFTH POET:<br> Apollo among master-cooks—</p>
+<p class="verse">RAGUENEAU (whom they surround and embrace):<br> Ah! how quick a man feels at his ease with them!. . .</p>
+<p class="verse">FIRST POET:<br> We were stayed by the mob; they are crowded all round the Porte de Nesle!. . .</p>
+<p class="verse">SECOND POET:<br> Eight bleeding brigand carcasses strew the pavements there—all slit open<br> with sword-gashes!</p>
+<p class="verse">CYRANO (raising his head a minute):<br> Eight?. . .hold, methought seven.</p>
+<p>(He goes on writing.)</p>
+<p class="verse">RAGUENEAU (to Cyrano):<br> Know you who might be the hero of the fray?</p>
+<p class="verse">CYRANO (carelessly):<br> Not I.</p>
+<p class="verse">LISE (to the musketeer):<br> And you? Know you?</p>
+<p class="verse">THE MUSKETEER (twirling his mustache):<br> Maybe!</p>
+<p class="verse">CYRANO (writing a little way off:—he is heard murmuring a word from time to time):<br> ‘I love thee!’</p>
+<p class="verse">FIRST POET:<br> ’Twas one man, say they all, ay, swear to it, one man who, single-handed, put the whole band to the rout!</p>
+<p class="verse">SECOND POET:<br> ’Twas a strange sight!—pikes and cudgels strewed thick upon the ground.</p>
+<p class="verse">CYRANO (writing):<br> . . .’Thine eyes’. . .</p>
+<p class="verse">THIRD POET:<br> And they were picking up hats all the way to the Quai d’Orfevres!</p>
+<p class="verse">FIRST POET:<br> Sapristi! but he must have been a ferocious. . .</p>
+<p class="verse">CYRANO (same play):<br> . . .’Thy lips’. . .</p>
+<p class="verse">FIRST POET:<br> ’Twas a parlous fearsome giant that was the author of such exploits!</p>
+<p class="verse">CYRANO (same play):<br> . . .’And when I see thee come, I faint for fear.’</p>
+<p class="verse">SECOND POET (filching a cake):<br> What hast rhymed of late, Ragueneau?</p>
+<p class="verse">CYRANO (same play):<br> . . .’Who worships thee’. . .<br> (He stops, just as he is about to sign, and gets up, slipping the letter into his doublet):<br> No need I sign, since I give it her myself.</p>
+<p class="verse">RAGUENEAU (to second poet):<br> I have put a recipe into verse.</p>
+<p class="verse">THIRD POET (seating himself by a plate of cream-puffs):<br> Go to! Let us hear these verses!</p>
+<p class="verse">FOURTH POET (looking at a cake which he has taken):<br> Its cap is all a’ one side!</p>
+<p>(He makes one bite of the top.)</p>
+<p class="verse">FIRST POET:<br> See how this gingerbread woos the famished rhymer with its almond eyes, and its eyebrows of angelica!</p>
+<p>(He takes it.)</p>
+<p class="verse">SECOND POET:<br> We listen.</p>
+<p class="verse">THIRD POET (squeezing a cream-puff gently):<br> How it laughs! Till its very cream runs over!</p>
+<p class="verse">SECOND POET (biting a bit off the great lyre of pastry):<br> This is the first time in my life that ever I drew any means of nourishing me from the lyre!</p>
+<p class="verse">RAGUENEAU (who has put himself ready for reciting, cleared his throat, settled his cap, struck an attitude):<br> A recipe in verse!. . .</p>
+<p class="verse">SECOND POET (to first, nudging him):<br> You are breakfasting?</p>
+<p class="verse">FIRST POET (to second):<br> And you dining, methinks.</p>
+<p class="verse">RAGUENEAU:<br> How almond tartlets are made.</p>
+<p class="verse">Beat your eggs up, light and quick;<br> Froth them thick;<br> Mingle with them while you beat<br> Juice of lemon, essence fine;<br> Then combine<br> The burst milk of almonds sweet.</p>
+<p class="verse">Circle with a custard paste<br> The slim waist<br> Of your tartlet-molds; the top<br> With a skillful finger print,<br> Nick and dint,<br> Round their edge, then, drop by drop,<br> In its little dainty bed<br> Your cream shed:<br> In the oven place each mold:<br> Reappearing, softly browned,<br> The renowned<br> Almond tartlets you behold!</p>
+<p class="verse">THE POETS (with mouths crammed full):<br> Exquisite! Delicious!</p>
+<p class="verse">A POET (choking):<br> Homph!</p>
+<p>(They go up, eating.)</p>
+<p class="verse">CYRANO (who has been watching, goes toward Ragueneau):<br> Lulled by your voice, did you see how they were stuffing themselves?</p>
+<p class="verse">RAGUENEAU (in a low voice, smiling):<br> Oh, ay! I see well enough, but I never will seem to look, fearing to<br> distress them; thus I gain a double pleasure when I recite to them my poems;<br> for I leave those poor fellows who have not breakfasted free to eat, even<br> while I gratify my own dearest foible, see you?</p>
+<p class="verse">CYRANO (clapping him on the shoulder):<br> Friend, I like you right well!. . .<br> (Ragueneau goes after his friends. Cyrano follows him with his eyes, then,<br> rather sharply):<br> Ho there! Lise!<br> (Lise, who is talking tenderly to the musketeer, starts, and comes down toward<br> Cyrano):<br> So this fine captain is laying siege to you?</p>
+<p class="verse">LISE (offended):<br> One haughty glance of my eye can conquer any man that should dare venture<br> aught ’gainst my virtue.</p>
+<p class="verse">CYRANO:<br> Pooh! Conquering eyes, methinks, are oft conquered eyes.</p>
+<p class="verse">LISE (choking with anger):<br> But—</p>
+<p class="verse">CYRANO (incisively):<br> I like Ragueneau well, and so—mark me, Dame Lise—I permit not that he be<br> rendered a laughing-stock by any. . .</p>
+<p class="verse">LISE:<br> But. . .</p>
+<p class="verse">CYRANO (who has raised his voice so as to be heard by the gallant):<br> A word to the wise. . .</p>
+<p>(He bows to the musketeer, and goes to the doorway to watch, after looking at the clock.)</p>
+<p class="verse">LISE (to the musketeer, who has merely bowed in answer to Cyrano’s bow):<br> How now? Is this your courage?. . .Why turn you not a jest on his nose?</p>
+<p class="verse">THE MUSKETEER:<br> On his nose?. . .ay, ay. . .his nose.</p>
+<p>(He goes quickly farther away; Lise follows him.)</p>
+<p class="verse">CYRANO (from the doorway, signing to Ragueneau to draw the poets away):<br> Hist!. . .</p>
+<p class="verse">RAGUENEAU (showing them the door on the right):<br> We shall be more private there. . .</p>
+<p class="verse">CYRANO (impatiently):<br> Hist! Hist!. . .</p>
+<p class="verse">RAGUENEAU (drawing them farther):<br> To read poetry, ’tis better here. . .</p>
+<p class="verse">FIRST POET (despairingly, with his mouth full):<br> What! leave the cakes?. . .</p>
+<p class="verse">SECOND POET:<br> Never! Let’s take them with us!</p>
+<p>(They all follow Ragueneau in procession, after sweeping all the cakes off the trays.)</p>

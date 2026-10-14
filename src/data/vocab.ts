@@ -87,6 +87,7 @@ export const LANGUAGES: Record<LanguageId, L> = {
   ar: { en: 'Arabic', fr: 'arabe' },
   bn: { en: 'Bengali', fr: 'bengali' },
   id: { en: 'Indonesian', fr: 'indonésien' },
+  ang: { en: 'Old English', fr: 'vieil anglais' },
 };
 
 /** Stands for books set nowhere on the map, among the ISO country codes of the settings. */
