@@ -26,6 +26,8 @@ export interface Summary {
 
 export interface Review {
   name: string;
+  /** The colour behind their initial (lib/people.ts). */
+  tone: number;
   stars: number | null;
   text: string;
   changed: number;

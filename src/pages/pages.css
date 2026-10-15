@@ -54,6 +54,21 @@
   background: var(--accent);
 }
 
+/* A moving picture behind a whole page (threads.ts, incipits.ts): the page's own parts stand over it. */
+.page-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.has-backdrop > :not(.page-backdrop) {
+  position: relative;
+  z-index: 1;
+}
+
 .page-eyebrow {
   margin: 0;
   font-size: 0.6875rem;
@@ -67,8 +82,21 @@
     font-size: 1.25rem;
   }
 
+  .page-wordmark {
+    flex: none;
+  }
+
+  /* More links than a phone is wide: they scroll sideways, fading at the edge that has more. */
   .page-nav {
     gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 1.5rem), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 1.5rem), transparent);
+  }
+
+  .page-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .page-nav > a,
