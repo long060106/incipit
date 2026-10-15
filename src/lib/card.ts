@@ -20,6 +20,8 @@ interface Kept {
   role?: string;
   /** The name of the account in front of this card, if it has one. */
   name?: string | null;
+  /** The email the account can also be opened with; seen only by its owner. */
+  email?: string | null;
   /** When the notebook was last exchanged with the server. */
   syncedAt?: number;
 }
@@ -124,8 +126,8 @@ export const card = {
       const response = await call('/me', code);
       if (response.status === 401) return 'unknown';
       if (!response.ok) return 'offline';
-      const { role, name } = (await response.json()) as { role: string; name?: string | null };
-      set({ code, cursor: 0, pushed: 0, role, name }, 'idle');
+      const { role, name, email } = (await response.json()) as { role: string; name?: string | null; email?: string | null };
+      set({ code, cursor: 0, pushed: 0, role, name, email }, 'idle');
       await sync();
       return 'ok';
     } catch {
@@ -139,8 +141,8 @@ export const card = {
     try {
       const response = await call('/me', kept.code);
       if (!response.ok) return;
-      const { role, name = null } = (await response.json()) as { role: string; name?: string | null };
-      if (kept && (kept.role !== role || (kept.name ?? null) !== name)) set({ ...kept, role, name });
+      const { role, name = null, email = null } = (await response.json()) as { role: string; name?: string | null; email?: string | null };
+      if (kept && (kept.role !== role || (kept.name ?? null) !== name || (kept.email ?? null) !== email)) set({ ...kept, role, name, email });
     } catch {
       // Stays as it was.
     }
@@ -148,33 +150,46 @@ export const card = {
 
   /**
    * Puts a name and a password in front of the card on this device, taking a card first if
-   * there is none. From then on the name and password open it anywhere.
+   * there is none. From then on the name (or the email, if one is given) and the password open
+   * it anywhere.
    */
-  async register(name: string, password: string): Promise<'ok' | 'taken' | 'bad-name' | 'bad-password' | 'too-many' | 'offline'> {
+  async register(name: string, password: string, email: string | null = null): Promise<'ok' | 'taken' | 'email-taken' | 'bad-name' | 'bad-email' | 'bad-password' | 'too-many' | 'offline'> {
     try {
       if (!kept && !(await card.take())) return 'offline';
-      const response = await call('/account', kept!.code, { method: 'POST', body: JSON.stringify({ name, password }) });
+      const response = await call('/account', kept!.code, { method: 'POST', body: JSON.stringify({ name, password, email }) });
       if (response.ok) {
-        const answer = (await response.json()) as { name: string };
-        if (kept) set({ ...kept, name: answer.name });
+        const answer = (await response.json()) as { name: string; email: string | null };
+        if (kept) set({ ...kept, name: answer.name, email: answer.email });
         return 'ok';
       }
       const { error } = (await response.json().catch(() => ({}))) as { error?: string };
-      return error === 'taken' || error === 'bad-name' || error === 'bad-password' || error === 'too-many' ? error : 'offline';
+      return error === 'taken' || error === 'email-taken' || error === 'bad-name' || error === 'bad-email' || error === 'bad-password' || error === 'too-many'
+        ? error
+        : 'offline';
     } catch {
       return 'offline';
     }
   },
 
-  /** Opens the card behind a name and its password. What is in this browser is added to it. */
+  /** Whether nobody has a name yet: `null` when the server cannot say. */
+  async nameFree(name: string): Promise<boolean | null> {
+    try {
+      const response = await call(`/account/free?name=${encodeURIComponent(name)}`, null);
+      return response.ok ? ((await response.json()) as { free: boolean }).free : null;
+    } catch {
+      return null;
+    }
+  },
+
+  /** Opens the card behind a name (or the account's email) and its password. What is in this browser is added to it. */
   async signIn(name: string, password: string): Promise<'ok' | 'wrong' | 'too-many' | 'offline'> {
     try {
       const response = await call('/account/enter', null, { method: 'POST', body: JSON.stringify({ name, password }) });
       if (response.status === 401) return 'wrong';
       if (response.status === 429) return 'too-many';
       if (!response.ok) return 'offline';
-      const answer = (await response.json()) as { code: string; role: string; name: string };
-      set({ code: answer.code, cursor: 0, pushed: 0, role: answer.role, name: answer.name }, 'idle');
+      const answer = (await response.json()) as { code: string; role: string; name: string; email?: string | null };
+      set({ code: answer.code, cursor: 0, pushed: 0, role: answer.role, name: answer.name, email: answer.email ?? null }, 'idle');
       await sync();
       return 'ok';
     } catch {

@@ -42,7 +42,7 @@ export function Header({ theme, showHome, onToggleTheme, onOpenIndex, onHome }: 
           {t(link.label)}
         </a>
       ))}
-      <a className="header-link" href={`${pageUrl('notebook')}#account`}>
+      <a className="header-link" href={pageUrl('signin')}>
         {mine?.name ?? t('navSignIn')}
       </a>
       <button

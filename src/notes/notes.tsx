@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { BOOKS } from '../data/books';
 import type { L } from '../data/types';
 import { useI18n } from '../i18n';
@@ -21,6 +21,9 @@ export const NOTE_TEXT = {
   noMatch: { en: 'No note matches.', fr: 'Aucune note ne correspond.' },
   done: { en: 'Done', fr: 'Terminé' },
   open: { en: 'Open in the book', fr: 'Ouvrir dans le livre' },
+  thoughts: { en: 'Thoughts', fr: 'Pensées' },
+  removeSure: { en: 'Yes, remove it', fr: 'Oui, le retirer' },
+  keep: { en: 'Keep it', fr: 'Le garder' },
 } satisfies Record<string, L>;
 
 /** The book a mark was made in: one of the catalogue's, or one of the reader's own. */
@@ -83,5 +86,78 @@ export function TiePicker({ markId, onPick, onClose }: { markId: string; onPick:
         </ul>
       )}
     </div>
+  );
+}
+
+/**
+ * One note as it is kept in a file of the notebook: the marked words, the reader's own words
+ * under them, and what it is tied to. Shared by the notebook (/notebook) and the reader's
+ * notebook drawer. `follow` is what a tie leads to; `place` is the link back into the book.
+ */
+export function NoteEntry({ mark, follow, place, lit }: { mark: Mark; follow: (other: Mark) => void; place?: ReactNode; lit?: boolean }) {
+  const { tl, lang } = useI18n();
+  const shelf = useShelf();
+  const [tying, setTying] = useState(false);
+  const [sure, setSure] = useState(false);
+  const time = new Date(mark.created).toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
+
+  return (
+    <article className="note-entry" id={`note-${mark.id}`} data-lit={lit || undefined}>
+      <p className="note-entry-head">
+        <time dateTime={new Date(mark.created).toISOString()}>{time}</time>
+        {place}
+      </p>
+      {mark.quote && <blockquote className="note-entry-quote">{mark.quote}</blockquote>}
+      <textarea
+        className="note-entry-text"
+        defaultValue={mark.note}
+        placeholder={tl(NOTE_TEXT.write)}
+        onChange={(event) => shelf.editMark(mark.id, { note: event.target.value })}
+        autoFocus={!mark.quote && !mark.note}
+        rows={mark.quote ? 2 : 4}
+      />
+      {mark.links.length > 0 && (
+        <ul className="note-entry-ties" aria-label={tl(NOTE_TEXT.tied)}>
+          {mark.links.map((id) => {
+            const other = shelf.mark(id);
+            if (!other) return null;
+            return (
+              <li key={id}>
+                <button type="button" onClick={() => follow(other)}>
+                  <span className={other.quote ? 'tie-quote' : 'tie-note'}>{markLine(other, 90)}</span>
+                  <small>{bookOf(other)?.title ?? tl(NOTE_TEXT.thoughts)}</small>
+                </button>
+                <button type="button" className="text-button" onClick={() => shelf.untie(mark.id, id)} aria-label={tl(NOTE_TEXT.untie)} title={tl(NOTE_TEXT.untie)}>
+                  ×
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      {tying ? (
+        <TiePicker markId={mark.id} onPick={(id) => shelf.tie(mark.id, id)} onClose={() => setTying(false)} />
+      ) : (
+        <div className="note-entry-actions">
+          <button type="button" className="text-button" onClick={() => setTying(true)}>
+            + {tl(NOTE_TEXT.tie)}
+          </button>
+          {sure ? (
+            <>
+              <button type="button" className="text-button note-entry-remove" onClick={() => shelf.removeMark(mark.id)}>
+                {tl(NOTE_TEXT.removeSure)}
+              </button>
+              <button type="button" className="text-button" onClick={() => setSure(false)}>
+                {tl(NOTE_TEXT.keep)}
+              </button>
+            </>
+          ) : (
+            <button type="button" className="text-button" onClick={() => setSure(true)}>
+              {tl(NOTE_TEXT.remove)}
+            </button>
+          )}
+        </div>
+      )}
+    </article>
   );
 }

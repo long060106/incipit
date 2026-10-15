@@ -196,7 +196,7 @@ export function Readers({ book, said, mood, save, remove, takeDown }: ReadersPro
       ) : (
         <p className="readers-sign-in">
           {tl(TEXT.signIn)}{' '}
-          <a className="text-link" href={`${pageUrl('notebook')}#account`}>
+          <a className="text-link" href={`${pageUrl('signin')}?next=${encodeURIComponent(location.pathname)}`}>
             {tl(TEXT.signInLink)} →
           </a>
         </p>
