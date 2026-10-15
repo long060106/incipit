@@ -4,7 +4,7 @@ import { useI18n } from '../i18n';
 import { card, printed, useCard } from '../lib/card';
 
 /*
-  The library card, at the foot of the notebook's list: taking one, typing in one from
+  The library card, folded under the door of the sign-in page (/signin): taking one, typing in one from
   another device, and, once there is a card, its number and whether the notebook is in step.
 */
 

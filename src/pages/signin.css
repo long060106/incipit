@@ -1,0 +1,323 @@
+/* Signing in (/signin): a quiet line about what an account keeps, beside the door itself. */
+
+.signin {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.signin-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
+  gap: clamp(2.5rem, 8vw, 8rem);
+  align-items: center;
+  width: min(100%, 72rem);
+  margin: 0 auto;
+  padding: clamp(2rem, 7vh, 5rem) var(--gutter) 5rem;
+}
+
+.signin-aside {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+  align-content: center;
+  animation: signin-in 1.2s var(--ease-out) both;
+}
+
+/* One great initial behind the line, as at the head of an old page. */
+.signin-initial {
+  position: absolute;
+  top: -0.32em;
+  left: -0.06em;
+  z-index: 0;
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--font-initial);
+  font-size: clamp(12rem, 24vw, 20rem);
+  line-height: 1;
+  opacity: 0.16;
+  pointer-events: none;
+  user-select: none;
+}
+
+.signin-aside h1 {
+  position: relative;
+  max-width: 13ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: clamp(2.5rem, 5.2vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: var(--display-tracking);
+  text-wrap: balance;
+}
+
+.signin-aside ul {
+  position: relative;
+  display: grid;
+  max-width: 24rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--faint);
+}
+
+.signin-aside li {
+  display: flex;
+  gap: 0.875rem;
+  padding: 0.8125rem 0;
+  border-bottom: 1px solid var(--faint);
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.signin-aside li::before {
+  content: '❧';
+  color: var(--accent);
+}
+
+.signin-card {
+  display: grid;
+  gap: 1.5rem;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--raised);
+  box-shadow: var(--dialog-shadow);
+  animation: signin-in 1.2s 0.12s var(--ease-out) both;
+}
+
+@keyframes signin-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* Sign in | Create an account. */
+.signin-doors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--line);
+}
+
+.signin-doors button {
+  position: relative;
+  padding: 0.25rem 0 0.875rem;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  transition: color 0.3s ease;
+}
+
+.signin-doors button:hover,
+.signin-doors button[aria-selected='true'] {
+  color: var(--text);
+}
+
+.signin-doors button::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transition: transform 0.5s var(--ease-out);
+}
+
+.signin-doors button[aria-selected='true']::after {
+  transform: scaleX(1);
+}
+
+.signin-form {
+  display: grid;
+  gap: 1.125rem;
+}
+
+.signin-form label {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.signin-form label > span:first-child {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+}
+
+.signin-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.5625rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+  outline: none;
+  cursor: text;
+  transition: border-color 0.3s ease;
+}
+
+.signin-form input:focus {
+  border-color: var(--accent);
+}
+
+.signin-form input[aria-invalid] {
+  border-color: #c0564a;
+}
+
+.signin-form small {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.signin-form small[data-problem] {
+  color: #d27466;
+}
+
+/* The name field, with what the server says of it at its end. */
+.signin-field {
+  position: relative;
+  display: block;
+}
+
+.signin-field input {
+  padding-right: 6.5rem;
+}
+
+.signin-badge {
+  position: absolute;
+  right: 0;
+  bottom: 0.625rem;
+  color: var(--muted);
+  font-style: normal;
+  font-size: 0.75rem;
+}
+
+.signin-badge[data-good] {
+  color: #8fb47f;
+}
+
+.signin-badge[data-bad] {
+  color: #d27466;
+}
+
+/* With a name | With an email. */
+.signin-by {
+  display: inline-grid;
+  grid-auto-flow: column;
+  justify-self: start;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.signin-by button {
+  padding: 0.375rem 0.9375rem;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  transition: background-color 0.4s ease, color 0.3s ease;
+}
+
+.signin-by button[aria-checked='true'] {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.signin-submit {
+  justify-self: stretch;
+  margin-top: 0.375rem;
+}
+
+.signin-form .card-note,
+.signin-form .card-problem {
+  margin: 0;
+}
+
+/* Signed in. */
+.signin-account {
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+}
+
+.signin-account .page-eyebrow {
+  margin: 0;
+}
+
+.signin-name {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1.05;
+}
+
+.signin-email {
+  margin: -0.25rem 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.signin-account .signin-form {
+  width: 100%;
+}
+
+/* The library card, folded away under the door. */
+.signin-library {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--faint);
+}
+
+.signin-library summary {
+  color: var(--muted);
+  font-size: 0.875rem;
+  cursor: var(--cursor-press);
+  transition: color 0.3s ease;
+}
+
+.signin-library summary:hover,
+.signin-library[open] summary {
+  color: var(--text);
+}
+
+.signin-library .card-panel {
+  margin-top: 1rem;
+}
+
+.signin-library .card-panel > .page-eyebrow:first-child {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .signin-body {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 2.5rem;
+  }
+
+  .signin-aside {
+    gap: 1.25rem;
+  }
+
+  .signin-aside ul {
+    display: none;
+  }
+
+  .signin-initial {
+    font-size: 10rem;
+  }
+
+  .signin-doors button {
+    font-size: 1.0625rem;
+  }
+}

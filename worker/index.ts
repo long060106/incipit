@@ -110,6 +110,9 @@ const MAX_UNLOCKS_PER_DAY = 30; // tries from one address
 const MAX_ENTERS_PER_DAY = 40; // tries at a name and password, from one address
 const MAX_ACCOUNTS_PER_DAY = 10; // from one address
 const NAME = /^[a-z0-9][a-z0-9._-]{2,23}$/;
+/** An email address a reader may sign in with; it is never shown to anyone. */
+const EMAIL = /^[^\s@]{1,64}@[^\s@.]+(\.[^\s@.]+)+$/;
+const MAX_NAME_LOOKUPS_PER_DAY = 400; // asking whether a name is free, from one address
 const STRETCH = 100_000; // rounds of PBKDF2
 const MAX_COVER = 400_000; // bytes
 const MAX_ADDED = 500; // books
@@ -303,6 +306,7 @@ async function keeperGate(request: Request, env: Env, card: Card): Promise<Respo
 
 interface Account {
   name: string;
+  email: string | null;
   card: string;
   salt: string;
   hash: string;
@@ -346,38 +350,56 @@ const codeIn = (request: Request) => tidy((request.headers.get('authorization') 
 async function makeAccount(request: Request, env: Env, card: Card): Promise<Response> {
   const body = await bodyOf(request);
   const name = typeof body?.name === 'string' ? body.name.trim().toLowerCase() : '';
+  // The email is optional: with one, the reader may sign in with it instead of the name.
+  const email = typeof body?.email === 'string' && body.email.trim() ? body.email.trim().toLowerCase() : null;
   const password = body?.password;
   if (!NAME.test(name)) return refuse(400, 'bad-name');
+  if (email !== null && (email.length > 254 || !EMAIL.test(email))) return refuse(400, 'bad-email');
   if (!goodPassword(password)) return refuse(400, 'bad-password');
   if (await env.DB.prepare('SELECT 1 FROM accounts WHERE card = ?1').bind(card.id).first()) return refuse(409, 'has-account');
   if (await env.DB.prepare('SELECT 1 FROM accounts WHERE name = ?1').bind(name).first()) return refuse(409, 'taken');
+  if (email && (await env.DB.prepare('SELECT 1 FROM accounts WHERE email = ?1').bind(email).first())) return refuse(409, 'email-taken');
   if (!(await within(env, request, 'account', MAX_ACCOUNTS_PER_DAY))) return refuse(429, 'too-many');
   const kept = await sealUnder(password, codeIn(request));
   try {
-    await env.DB.prepare('INSERT INTO accounts (name, card, salt, hash, iv, sealed, created) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)')
-      .bind(name, card.id, kept.salt, kept.hash, kept.iv, kept.sealed, Date.now())
+    await env.DB.prepare('INSERT INTO accounts (name, email, card, salt, hash, iv, sealed, created) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)')
+      .bind(name, email, card.id, kept.salt, kept.hash, kept.iv, kept.sealed, Date.now())
       .run();
   } catch {
-    // Someone took the name in the same moment.
+    // Someone took the name, or the email, in the same moment.
     return refuse(409, 'taken');
   }
-  return json({ name }, 201);
+  return json({ name, email }, 201);
+}
+
+/** Whether a name is still free, asked while a reader types one. Names are public; emails are never asked about. */
+async function nameFree(request: Request, env: Env): Promise<Response> {
+  const name = (new URL(request.url).searchParams.get('name') ?? '').trim().toLowerCase();
+  if (!NAME.test(name)) return json({ free: false, reason: 'bad-name' });
+  if (!(await within(env, request, 'lookup', MAX_NAME_LOOKUPS_PER_DAY))) return refuse(429, 'too-many');
+  const found = await env.DB.prepare('SELECT 1 FROM accounts WHERE name = ?1').bind(name).first();
+  return json({ free: !found });
 }
 
 /** A name and its password, for the code of the card behind them. */
 async function enterAccount(request: Request, env: Env): Promise<Response> {
   if (!(await within(env, request, 'enter', MAX_ENTERS_PER_DAY))) return refuse(429, 'too-many');
   const body = await bodyOf(request);
+  // What the reader typed is their name or their email.
   const name = typeof body?.name === 'string' ? body.name.trim().toLowerCase() : '';
   const password = typeof body?.password === 'string' && body.password.length <= 200 ? body.password : '';
-  const row = NAME.test(name) ? await env.DB.prepare('SELECT name, card, salt, hash, iv, sealed FROM accounts WHERE name = ?1').bind(name).first<Account>() : null;
+  const row = NAME.test(name)
+    ? await env.DB.prepare('SELECT name, email, card, salt, hash, iv, sealed FROM accounts WHERE name = ?1').bind(name).first<Account>()
+    : EMAIL.test(name)
+      ? await env.DB.prepare('SELECT name, email, card, salt, hash, iv, sealed FROM accounts WHERE email = ?1').bind(name).first<Account>()
+      : null;
   // The same work whether or not there is such a name, so that the wait tells nothing.
   const { proof, seal } = await keysOf(password, row ? unhex(row.salt) : new Uint8Array(16));
   if (!row || !same(proof, row.hash)) return refuse(401, 'wrong');
   const code = new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unhex(row.iv) }, seal, unhex(row.sealed)));
   const card = await env.DB.prepare('SELECT role FROM cards WHERE id = ?1').bind(row.card).first<{ role: string }>();
   if (!card) return refuse(401, 'wrong');
-  return json({ code, role: card.role, name: row.name });
+  return json({ code, role: card.role, name: row.name, email: row.email });
 }
 
 /** A new password for the account of the card that asks, given the one it has. */
@@ -385,7 +407,7 @@ async function changeAccount(request: Request, env: Env, card: Card): Promise<Re
   if (!(await within(env, request, 'enter', MAX_ENTERS_PER_DAY))) return refuse(429, 'too-many');
   const body = await bodyOf(request);
   const password = body?.password;
-  const row = await env.DB.prepare('SELECT name, card, salt, hash, iv, sealed FROM accounts WHERE card = ?1').bind(card.id).first<Account>();
+  const row = await env.DB.prepare('SELECT name, email, card, salt, hash, iv, sealed FROM accounts WHERE card = ?1').bind(card.id).first<Account>();
   if (!row) return refuse(404, 'no-account');
   const current = typeof body?.current === 'string' && body.current.length <= 200 ? body.current : '';
   if (!same((await keysOf(current, unhex(row.salt))).proof, row.hash)) return refuse(401, 'wrong');
@@ -1030,6 +1052,7 @@ async function claim(request: Request, env: Env, card: Card): Promise<Response> 
 async function api(request: Request, env: Env, path: string): Promise<Response> {
   if (path === '/api/card' && request.method === 'POST') return makeCard(request, env);
   if (path === '/api/account/enter' && request.method === 'POST') return enterAccount(request, env);
+  if (path === '/api/account/free' && request.method === 'GET') return nameFree(request, env);
   if (path === '/api/books' && request.method === 'GET') return overrides(env);
   if (path === '/api/profile' && request.method === 'GET') return profile(env);
   if (path === '/api/portrait' && request.method === 'GET') return portrait(env);
@@ -1116,8 +1139,8 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
 
   if (path === '/api/me' && request.method === 'GET') {
     const held = await env.DB.prepare('SELECT COUNT(*) AS n FROM rows WHERE card = ?1 AND value IS NOT NULL').bind(card.id).first<{ n: number }>();
-    const account = await env.DB.prepare('SELECT name FROM accounts WHERE card = ?1').bind(card.id).first<{ name: string }>();
-    return json({ role: card.role, rows: held?.n ?? 0, created: card.created, name: account?.name ?? null });
+    const account = await env.DB.prepare('SELECT name, email FROM accounts WHERE card = ?1').bind(card.id).first<{ name: string; email: string | null }>();
+    return json({ role: card.role, rows: held?.n ?? 0, created: card.created, name: account?.name ?? null, email: account?.email ?? null });
   }
   if (path === '/api/sync' && request.method === 'POST') return sync(request, env, card);
   if (path === '/api/card' && request.method === 'DELETE') {

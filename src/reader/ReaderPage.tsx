@@ -6,7 +6,9 @@ import { READABLE } from '../data/texts';
 import { keptText } from '../lib/kepttext';
 import { isOwn, ownBook, ownText, type OwnText } from '../lib/mybooks';
 import { useShelf } from '../lib/shelf';
-import { bookOf, markLine, markUrl, NOTE_TEXT, TiePicker } from '../notes/notes';
+import { fileMarks } from '../notes/folders';
+import { bookOf, markLine, markUrl, NOTE_TEXT, NoteEntry, TiePicker } from '../notes/notes';
+import type { Mark } from '../lib/shelf';
 import { bookUrl } from '../lib/links';
 import { pageUrl, useQuickLoader } from '../pages/PageHeader';
 import { installAmbience } from './ambience';
@@ -53,7 +55,13 @@ const TEXT = {
   home: { en: 'Back to the books', fr: 'Retour aux livres' },
   credit: { en: 'Text in the public domain, from', fr: 'Texte du domaine public, d’après' },
   ownCopy: { en: 'Your own copy, kept in this browser only.', fr: 'Votre propre exemplaire, conservé dans ce seul navigateur.' },
-  marksHere: { en: 'Your marks in this book', fr: 'Vos marques dans ce livre' },
+  wholeNotebook: { en: 'The whole notebook', fr: 'Tout le carnet' },
+  close: { en: 'Close', fr: 'Fermer' },
+  toPassage: { en: 'Go to the passage', fr: 'Aller au passage' },
+  folderEmpty: {
+    en: 'Select any words to mark them. This book’s folder fills as you read, with a file for each day: its title and the date.',
+    fr: 'Sélectionnez des mots pour les marquer. Le dossier de ce livre se remplit à mesure, avec un fichier par jour : son titre et la date.',
+  },
   select: { en: 'Select any words to mark them.', fr: 'Sélectionnez des mots pour les marquer.' },
 } satisfies Record<string, L>;
 
@@ -130,6 +138,7 @@ export default function ReaderPage() {
   const [section, setSection] = useState(0);
   const [html, setHtml] = useState<string | null>(null);
   const [tocOpen, setTocOpen] = useState(false);
+  const [drawer, setDrawer] = useState(false);
   const [barHidden, setBarHidden] = useState(false);
   const [size, setSize] = useState(() => {
     const kept = Number(localStorage.getItem(SIZE_KEY));
@@ -365,6 +374,7 @@ export default function ReaderPage() {
       if (event.key === 'Escape') {
         setOpen(null);
         setTocOpen(false);
+        setDrawer(false);
       }
     };
     window.addEventListener('keydown', onKey);
@@ -391,7 +401,7 @@ export default function ReaderPage() {
     <div className="reader" ref={readerRef} data-lamp={lamp ? 'lit' : 'out'} style={{ '--read-size': `${size}rem`, '--read-width': `${width}rem` } as React.CSSProperties}>
       <div className="reader-progress" style={{ transform: `scaleX(${through})` }} />
 
-      <header className="reader-bar" data-hidden={barHidden && !tocOpen}>
+      <header className="reader-bar" data-hidden={barHidden && !tocOpen && !drawer}>
         <a className="reader-back" href={book.own ? pageUrl('notebook') : bookUrl(book.id)} aria-label={tl(book.own ? TEXT.notebook : TEXT.backToBook)}>
           <span aria-hidden="true">←</span>
           <span className="reader-book">{book.title}</span>
@@ -418,7 +428,9 @@ export default function ReaderPage() {
           <button type="button" className="reader-size" onClick={() => resize(1)} aria-label={tl(TEXT.larger)} disabled={size === SIZES.at(-1)}>
             A+
           </button>
-          <a href={pageUrl('notebook')}>{tl(TEXT.notebook)}</a>
+          <button type="button" onClick={() => (setDrawer((value) => !value), setTocOpen(false))} aria-pressed={drawer} aria-controls="reader-drawer">
+            {tl(TEXT.notebook)}
+          </button>
         </nav>
       </header>
 
@@ -443,20 +455,6 @@ export default function ReaderPage() {
                 </li>
               ))}
             </ol>
-            {bookMarks.length > 0 && (
-              <>
-                <p className="page-eyebrow">{tl(TEXT.marksHere)}</p>
-                <ul className="reader-toc-marks">
-                  {bookMarks.map((mark) => (
-                    <li key={mark.id}>
-                      <button type="button" onClick={() => go(mark.section ?? 0, mark.start ?? 0)}>
-                        {markLine(mark, 90)}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
           </aside>
         </>
       )}
@@ -507,6 +505,18 @@ export default function ReaderPage() {
           </footer>
         )}
       </main>
+
+      <NotebookDrawer
+        open={drawer}
+        bookId={book.id}
+        title={book.title}
+        marks={bookMarks}
+        onClose={() => setDrawer(false)}
+        goTo={(mark) => {
+          go(mark.section ?? 0, mark.start ?? 0, true);
+          if (window.matchMedia('(max-width: 900px)').matches) setDrawer(false);
+        }}
+      />
 
       {picked && (
         <div className="reader-pick" style={{ left: picked.x, top: picked.y }} onPointerDown={(event) => event.preventDefault()}>
@@ -580,5 +590,67 @@ export default function ReaderPage() {
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * The notebook beside the book: this book's folder, a file for each day, every note in it to
+ * read and edit, each leading back to its passage. It slides in from the right and leaves the
+ * page where it is.
+ */
+function NotebookDrawer({ open, bookId, title, marks, onClose, goTo }: { open: boolean; bookId: string; title: string; marks: Mark[]; onClose: () => void; goTo: (mark: Mark) => void }) {
+  const { tl } = useI18n();
+  const files = useMemo(() => fileMarks(marks, title)[0]?.files ?? [], [marks, title]);
+  const follow = (other: Mark) => {
+    if (other.bookId === bookId) goTo(other);
+    else location.href = markUrl(other) ?? `${pageUrl('notebook')}#${other.id}`;
+  };
+  return (
+    <>
+      {open && <div className="reader-drawer-scrim" onClick={onClose} />}
+      <aside id="reader-drawer" className="reader-drawer" data-open={open || undefined} aria-hidden={!open} inert={!open}>
+        <header className="reader-drawer-head">
+          <div>
+            <p className="page-eyebrow">{tl(TEXT.notebook)}</p>
+            <h2>{title}</h2>
+          </div>
+          <button type="button" className="reader-drawer-close" onClick={onClose} aria-label={tl(TEXT.close)}>
+            ×
+          </button>
+        </header>
+        <div className="reader-drawer-body" data-scroll>
+          {files.length === 0 ? (
+            <p className="card-note">{tl(TEXT.folderEmpty)}</p>
+          ) : (
+            files.map((file, at) => (
+              <details key={file.id} className="reader-drawer-file" open={at === 0 || undefined}>
+                <summary>
+                  <svg className="file-icon" viewBox="0 0 16 20" width="12" height="15" aria-hidden="true">
+                    <path d="M1.5 1.5h8l5 5v12h-13z M9.5 1.5v5h5" fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
+                  </svg>
+                  <span>{file.name}</span>
+                  <small>{file.marks.length}</small>
+                </summary>
+                {file.marks.map((mark) => (
+                  <NoteEntry
+                    key={mark.id}
+                    mark={mark}
+                    follow={follow}
+                    place={
+                      <button type="button" className="text-link" onClick={() => goTo(mark)}>
+                        {tl(TEXT.toPassage)} →
+                      </button>
+                    }
+                  />
+                ))}
+              </details>
+            ))
+          )}
+        </div>
+        <a className="reader-drawer-foot text-link" href={pageUrl('notebook')}>
+          {tl(TEXT.wholeNotebook)} →
+        </a>
+      </aside>
+    </>
   );
 }

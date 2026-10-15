@@ -4,9 +4,9 @@ import { useCard } from '../lib/card';
 import { runLoader } from '../lib/loader';
 import './pages.css';
 
-export type PageId = 'first-pages' | 'globe' | 'notebook' | 'about';
+export type PageId = 'first-pages' | 'globe' | 'notebook' | 'about' | 'signin';
 
-export const PAGE_LINKS: { id: PageId; label: 'navFirst' | 'navGlobe' | 'navNotebook' | 'navAbout' }[] = [
+export const PAGE_LINKS: { id: Exclude<PageId, 'signin'>; label: 'navFirst' | 'navGlobe' | 'navNotebook' | 'navAbout' }[] = [
   { id: 'first-pages', label: 'navFirst' },
   { id: 'globe', label: 'navGlobe' },
   { id: 'notebook', label: 'navNotebook' },
@@ -35,7 +35,7 @@ export function PageHeader({ here, children }: { here?: PageId; children?: React
             {t(link.label)}
           </a>
         ))}
-        <a className="page-account" href={`${pageUrl('notebook')}#account`}>
+        <a className="page-account" href={pageUrl('signin')} aria-current={here === 'signin' ? 'page' : undefined}>
           {mine?.name ?? t('navSignIn')}
         </a>
         {children}
