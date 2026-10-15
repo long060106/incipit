@@ -10,6 +10,7 @@ const STRINGS = {
   navFirst: { en: 'First pages', fr: 'Premières pages' },
   navGlobe: { en: 'Globe', fr: 'Globe' },
   navNotebook: { en: 'Notebook', fr: 'Carnet' },
+  navEssays: { en: 'Essays', fr: 'Essais' },
   navAbout: { en: 'About', fr: 'À propos' },
   navSignIn: { en: 'Sign in', fr: 'Connexion' },
   developedByLabel: { en: 'Developed by', fr: 'Développé par' },

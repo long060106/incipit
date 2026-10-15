@@ -16,6 +16,7 @@ import { coverOrigin, type CoverOrigin } from '../lib/wall';
 import { Around } from './Around';
 import { Dialog } from './Dialog';
 import { Keeper } from './Keeper';
+import { BookEssays } from './BookEssays';
 import { Readers } from './Readers';
 import { CloseIcon, DownloadIcon, ExternalIcon } from './Icons';
 import { Roll } from './Roll';
@@ -293,6 +294,8 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
           </section>
 
           <Readers book={book} said={said} mood={mood} save={save} remove={remove} takeDown={takeDown} />
+
+          <BookEssays book={book} />
 
           <section className="sheet-section">
             <h2>{t('similar')}</h2>

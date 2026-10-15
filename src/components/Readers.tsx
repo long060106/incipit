@@ -3,8 +3,10 @@ import type { Book, L, Mood } from '../data/types';
 import { AXES } from '../data/vocab';
 import { useI18n } from '../i18n';
 import { useCard } from '../lib/card';
+import { personUrl } from '../lib/people';
 import type { Mine, Problem, Said } from '../lib/reviews';
 import { pageUrl } from '../pages/PageHeader';
+import { Avatar } from './Avatar';
 
 /*
   What readers say, on a book's page (BookSheet.tsx): the reader's own stars, how the book
@@ -207,10 +209,11 @@ export function Readers({ book, said, mood, save, remove, takeDown }: ReadersPro
           {said.reviews.map((review) => (
             <li key={`${review.name}-${review.changed}`}>
               <p className="review-head">
-                <span className="review-name">
-                  {review.name}
+                <a className="review-name" href={personUrl(review.name)}>
+                  <Avatar name={review.name} tone={review.tone} size="sm" />
+                  <span>{review.name}</span>
                   {review.mine && <small> · {tl(TEXT.you)}</small>}
-                </span>
+                </a>
                 {review.stars && <Stars n={review.stars} />}
                 <time dateTime={new Date(review.changed).toISOString()}>{new Date(review.changed).toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' })}</time>
                 {mine?.role === 'admin' && !review.mine && (

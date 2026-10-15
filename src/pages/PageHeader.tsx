@@ -1,14 +1,15 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { SITE_NAME, useI18n } from '../i18n';
 import { useCard } from '../lib/card';
 import { runLoader } from '../lib/loader';
 import './pages.css';
 
-export type PageId = 'first-pages' | 'globe' | 'notebook' | 'about' | 'signin';
+export type PageId = 'first-pages' | 'globe' | 'notebook' | 'essays' | 'about' | 'signin';
 
-export const PAGE_LINKS: { id: Exclude<PageId, 'signin'>; label: 'navFirst' | 'navGlobe' | 'navNotebook' | 'navAbout' }[] = [
+export const PAGE_LINKS: { id: Exclude<PageId, 'signin'>; label: 'navFirst' | 'navGlobe' | 'navNotebook' | 'navEssays' | 'navAbout' }[] = [
   { id: 'first-pages', label: 'navFirst' },
   { id: 'globe', label: 'navGlobe' },
+  { id: 'essays', label: 'navEssays' },
   { id: 'notebook', label: 'navNotebook' },
   { id: 'about', label: 'navAbout' },
 ];
@@ -24,12 +25,19 @@ export function useQuickLoader() {
 export function PageHeader({ here, children }: { here?: PageId; children?: ReactNode }) {
   const { t, lang, setLang } = useI18n();
   const { card: mine } = useCard();
+  const navRef = useRef<HTMLElement>(null);
+  // Where the links scroll sideways (a phone), the page's own link is brought into view.
+  useEffect(() => {
+    const nav = navRef.current;
+    const current = nav?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (nav && current && nav.scrollWidth > nav.clientWidth) nav.scrollLeft += current.getBoundingClientRect().left - nav.getBoundingClientRect().left - 24;
+  }, [here]);
   return (
     <header className="page-head">
       <a className="page-wordmark" href={pageUrl('')}>
         {SITE_NAME}
       </a>
-      <nav className="page-nav">
+      <nav className="page-nav" ref={navRef}>
         {PAGE_LINKS.map((link) => (
           <a key={link.id} href={pageUrl(link.id)} aria-current={link.id === here ? 'page' : undefined}>
             {t(link.label)}

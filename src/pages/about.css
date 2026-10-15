@@ -153,3 +153,78 @@
     gap: 0.125rem;
   }
 }
+
+/* ── What moves ─────────────────────────────────────────────────────────────── */
+
+/* The rising first lines (incipits.ts) are kept faint where the page's own words are. */
+.incipits {
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(50% - 28rem), rgb(0 0 0 / 0.14) calc(50% - 20rem), rgb(0 0 0 / 0.14) calc(50% + 20rem), #000 calc(50% + 28rem));
+  mask-image: linear-gradient(90deg, #000 0, #000 calc(50% - 28rem), rgb(0 0 0 / 0.14) calc(50% - 20rem), rgb(0 0 0 / 0.14) calc(50% + 20rem), #000 calc(50% + 28rem));
+}
+
+/* On a narrow screen the words fill the page: the lines stay behind them, fainter. */
+@media (max-width: 860px) {
+  .incipits {
+    -webkit-mask-image: none;
+    mask-image: none;
+    opacity: 0.55;
+  }
+}
+
+/* The name comes in a letter at a time, out of a blur, as type coming up in a developing tray. */
+.about h1 span {
+  display: inline-block;
+  animation: about-letter 1.3s var(--ease-out) both;
+}
+
+@keyframes about-letter {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(0.25em);
+  }
+}
+
+/* Each part of the page comes up as it is scrolled to (About.tsx). */
+.about-body > section,
+.about-body > .about-foot {
+  transition:
+    opacity 1.1s var(--ease-out),
+    transform 1.1s var(--ease-out);
+}
+
+.about-body > section:not([data-shown]),
+.about-body > .about-foot:not([data-shown]) {
+  opacity: 0;
+  transform: translateY(22px);
+}
+
+.about-portrait {
+  transition: transform 1.2s var(--ease-out), box-shadow 1.2s ease;
+}
+
+.about-head:hover .about-portrait {
+  transform: rotate(-3deg) scale(1.03);
+  box-shadow: 0 20px 60px rgb(var(--glow-1) / 0.22);
+}
+
+.about-credits dl > div {
+  transition: padding-left 0.5s var(--ease-out), background-color 0.5s ease;
+}
+
+.about-credits dl > div:hover {
+  padding-left: 0.625rem;
+  background: linear-gradient(90deg, var(--faint), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about h1 span {
+    animation: none;
+  }
+
+  .about-body > section:not([data-shown]),
+  .about-body > .about-foot:not([data-shown]) {
+    opacity: 1;
+    transform: none;
+  }
+}

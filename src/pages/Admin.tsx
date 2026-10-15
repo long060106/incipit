@@ -30,6 +30,7 @@ import { fold } from '../lib/match';
 import { BookForm } from './BookForm';
 import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
 import { AccountsDesk } from './AccountsDesk';
+import { EssayDesk } from './EssayDesk';
 import { MoodReview } from './MoodReview';
 import { ProfileForm } from './ProfileForm';
 import './admin.css';
@@ -47,6 +48,7 @@ const TEXT = {
   profile: { en: 'Your profile and the About page', fr: 'Votre profil et la page À propos' },
   accounts: { en: 'Readers’ accounts', fr: 'Comptes des lecteurs' },
   moods: { en: 'Look the moods over', fr: 'Revoir les ambiances' },
+  essays: { en: 'Essays to read', fr: 'Essais à lire' },
   signIn: { en: 'Sign in as admin', fr: 'Connexion administrateur' },
   closed: {
     en: 'This page is for the keeper of the site. Enter the keeper’s card; its password is asked for next.',
@@ -251,6 +253,7 @@ export default function Admin() {
   const [profiling, setProfiling] = useState(false);
   const [accounting, setAccounting] = useState(false);
   const [reviewing, setReviewing] = useState(false);
+  const [reading, setReading] = useState(false);
   useEffect(() => {
     if (keeper) void deskState(keeper).then((state) => setDesk(state ?? 'unreachable'));
   }, [keeper]);
@@ -338,7 +341,15 @@ export default function Admin() {
           <button type="button" className="text-button" onClick={() => setReviewing(!reviewing)} aria-expanded={reviewing}>
             {tl(TEXT.moods)}
           </button>
+          <button type="button" className="text-button" onClick={() => setReading(!reading)} aria-expanded={reading}>
+            {tl(TEXT.essays)}
+          </button>
         </div>
+        {reading && (
+          <div className="admin-desk">
+            <EssayDesk onClose={() => setReading(false)} />
+          </div>
+        )}
         {reviewing && (
           <div className="admin-desk">
             <MoodReview code={keeper} onClose={() => setReviewing(false)} />

@@ -1,6 +1,8 @@
-/* Signing in (/signin): a quiet line about what an account keeps, beside the door itself. */
+/* Signing in (/signin): a quiet line about what an account keeps, beside the door itself,
+   with threads of gilt drifting behind both (threads.ts). */
 
 .signin {
+  position: relative;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -85,7 +87,10 @@
   padding: clamp(1.5rem, 3vw, 2.25rem);
   border: 1px solid var(--line);
   border-radius: 4px;
-  background: var(--raised);
+  /* Glass, so the threads are seen passing behind it. */
+  background: color-mix(in srgb, var(--raised) 80%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(16px) saturate(1.1);
   box-shadow: var(--dialog-shadow);
   animation: signin-in 1.2s 0.12s var(--ease-out) both;
 }
@@ -97,11 +102,25 @@
   }
 }
 
-/* Sign in | Create an account. */
+/* Sign in | Create an account. The rule under the chosen one slides to the other. */
 .signin-doors {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid var(--line);
+}
+
+.signin-doors::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 50%;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 12px rgb(var(--glow-1) / 0.6);
+  transform: translateX(calc(var(--at, 0) * 100%));
+  transition: transform 0.65s var(--ease-out);
 }
 
 .signin-doors button {
@@ -110,7 +129,7 @@
   color: var(--muted);
   font-family: var(--font-display);
   font-size: 1.25rem;
-  transition: color 0.3s ease;
+  transition: color 0.4s ease, transform 0.4s var(--ease-out);
 }
 
 .signin-doors button:hover,
@@ -118,20 +137,17 @@
   color: var(--text);
 }
 
-.signin-doors button::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 1px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transition: transform 0.5s var(--ease-out);
+.signin-doors button:hover:not([aria-selected='true']) {
+  transform: translateY(-2px);
 }
 
-.signin-doors button[aria-selected='true']::after {
-  transform: scaleX(1);
+.signin-doors button:active {
+  transform: scale(0.97);
+}
+
+/* A new form comes up gently in place of the other. */
+.signin-form {
+  animation: signin-in 0.6s var(--ease-out) both;
 }
 
 .signin-form {
@@ -210,26 +226,44 @@
   color: #d27466;
 }
 
-/* With a name | With an email. */
+/* With a name | With an email: one pill that slides between the two. */
 .signin-by {
+  position: relative;
   display: inline-grid;
-  grid-auto-flow: column;
+  grid-template-columns: 1fr 1fr;
   justify-self: start;
   padding: 3px;
   border: 1px solid var(--line);
   border-radius: 999px;
 }
 
+.signin-by::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  border-radius: 999px;
+  background: var(--text);
+  transform: translateX(calc(var(--at, 0) * 100%));
+  transition: transform 0.55s var(--ease-out);
+}
+
 .signin-by button {
+  position: relative;
   padding: 0.375rem 0.9375rem;
   border-radius: 999px;
   color: var(--muted);
   font-size: 0.8125rem;
-  transition: background-color 0.4s ease, color 0.3s ease;
+  transition: color 0.4s ease;
+}
+
+.signin-by button:hover {
+  color: var(--text);
 }
 
 .signin-by button[aria-checked='true'] {
-  background: var(--text);
   color: var(--bg);
 }
 
@@ -270,6 +304,13 @@
 
 .signin-account .signin-form {
   width: 100%;
+}
+
+.signin-more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 0.25rem 0 0.5rem;
 }
 
 /* The library card, folded away under the door. */

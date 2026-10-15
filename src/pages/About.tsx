@@ -1,7 +1,10 @@
+import { useEffect, useRef } from 'react';
 import { BOOKS } from '../data/books';
+import { OPENINGS } from '../data/openings';
 import type { L } from '../data/types';
 import { SITE_NAME, useI18n } from '../i18n';
 import { portraitUrl, useProfile } from '../lib/profile';
+import { installIncipits } from './incipits';
 import { PageHeader, useQuickLoader } from './PageHeader';
 import './about.css';
 
@@ -50,6 +53,25 @@ const TEXT = {
   },
 } satisfies Record<string, L>;
 
+/** The first sentence of each book's opening, for the page's backdrop, with the book it opens. */
+function incipits(): string[] {
+  const titles = new Map(BOOKS.map((book) => [book.id, book.title]));
+  const lines: string[] = [];
+  for (const [id, opening] of Object.entries(OPENINGS)) {
+    const first = opening.lines[0]?.replace(/\s+/g, ' ').trim();
+    if (!first || !titles.has(id)) continue;
+    const sentence = first.match(/^.{20,}?[.!?](?=\s|$)/)?.[0] ?? first;
+    const cut = sentence.length > 120 ? `${sentence.slice(0, sentence.lastIndexOf(' ', 118))}…` : sentence;
+    lines.push(`${cut}  — ${titles.get(id)}`);
+  }
+  // Shuffled, so that the page does not always open on the same books.
+  for (let at = lines.length - 1; at > 0; at--) {
+    const other = Math.floor(Math.random() * (at + 1));
+    [lines[at], lines[other]] = [lines[other], lines[at]];
+  }
+  return lines;
+}
+
 const paragraphs = (text: string) =>
   text
     .split(/\n\s*\n/)
@@ -67,6 +89,29 @@ export default function About() {
       .replace('{site}', SITE_NAME)
       .replace('{n}', String(BOOKS.length))
       .replace('{free}', String(BOOKS.filter((book) => book.free).length));
+  const pageRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLElement>(null);
+
+  // The first lines of the books, rising behind the page (./incipits.ts).
+  useEffect(() => installIncipits(pageRef.current!, bodyRef.current!, incipits()), []);
+
+  // Each part of the page comes up as it is scrolled to.
+  useEffect(() => {
+    const parts = [...bodyRef.current!.querySelectorAll<HTMLElement>(':scope > section, :scope > .about-foot')];
+    const seen = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          (entry.target as HTMLElement).dataset.shown = '';
+          seen.unobserve(entry.target);
+        }
+      },
+      { root: bodyRef.current, rootMargin: '0px 0px -8% 0px' },
+    );
+    for (const part of parts) seen.observe(part);
+    return () => seen.disconnect();
+  }, [why.length, about.length, profile.links.length]);
+
   const credits: [L, string][] = [
     [TEXT.made, profile.name],
     [TEXT.texts, tl(TEXT.textsBy)],
@@ -76,12 +121,18 @@ export default function About() {
   ];
 
   return (
-    <div className="about">
+    <div className="about has-backdrop" ref={pageRef}>
       <PageHeader here="about" />
-      <main className="about-body">
+      <main className="about-body" ref={bodyRef}>
         <header className="about-site">
           <p className="page-eyebrow">{tl(TEXT.eyebrow)}</p>
-          <h1>{SITE_NAME}</h1>
+          <h1 aria-label={SITE_NAME}>
+            {[...SITE_NAME].map((letter, at) => (
+              <span key={at} aria-hidden="true" style={{ animationDelay: `${0.15 + at * 0.07}s` }}>
+                {letter}
+              </span>
+            ))}
+          </h1>
           <p>{fill(tl(TEXT.what))}</p>
           <p>{fill(tl(TEXT.how))}</p>
           <p>{tl(TEXT.name)}</p>

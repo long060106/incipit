@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { L } from '../data/types';
 import { useI18n } from '../i18n';
 import { card, useCard } from '../lib/card';
+import { personUrl, writeUrl } from '../lib/people';
 import { CardPanel } from '../notes/CardPanel';
 import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { installThreads } from './threads';
 import '../notes/notes.css';
 import './signin.css';
 
@@ -45,6 +47,8 @@ const TEXT = {
   },
   as: { en: 'Signed in as', fr: 'Connecté en tant que' },
   notebook: { en: 'Open your notebook', fr: 'Ouvrir votre carnet' },
+  page: { en: 'Your page', fr: 'Votre page' },
+  write: { en: 'Write an essay', fr: 'Écrire un essai' },
   change: { en: 'Change the password', fr: 'Changer le mot de passe' },
   save: { en: 'Save', fr: 'Enregistrer' },
   cancel: { en: 'Cancel', fr: 'Annuler' },
@@ -93,9 +97,12 @@ export default function SignIn() {
   const { card: mine } = useCard();
   useQuickLoader();
   const claiming = location.hash.startsWith('#claim=');
+  const pageRef = useRef<HTMLDivElement>(null);
+  // Threads of gilt drifting behind it all (./threads.ts).
+  useEffect(() => installThreads(pageRef.current!), []);
 
   return (
-    <div className="signin">
+    <div className="signin has-backdrop" ref={pageRef}>
       <PageHeader here="signin" />
       <main className="signin-body">
         <section className="signin-aside">
@@ -164,7 +171,7 @@ function Doors({ holdsCard }: { holdsCard: boolean }) {
 
   return (
     <>
-      <div className="signin-doors" role="tablist">
+      <div className="signin-doors" role="tablist" style={{ '--at': door === 'in' ? 0 : 1 } as CSSProperties}>
         <button type="button" role="tab" aria-selected={door === 'in'} onClick={() => switchDoor('in')}>
           {tl(TEXT.signIn)}
         </button>
@@ -188,7 +195,7 @@ function Doors({ holdsCard }: { holdsCard: boolean }) {
           </label>
         ) : (
           <>
-            <div className="signin-by" role="radiogroup">
+            <div className="signin-by" role="radiogroup" style={{ '--at': by === 'name' ? 0 : 1 } as CSSProperties}>
               {(['name', 'email'] as const).map((choice) => (
                 <button key={choice} type="button" role="radio" aria-checked={by === choice} onClick={() => setBy(choice)}>
                   {tl(choice === 'name' ? TEXT.withName : TEXT.withEmail)}
@@ -257,7 +264,7 @@ function Doors({ holdsCard }: { holdsCard: boolean }) {
             <input type="password" value={again} onChange={(event) => setAgain(event.target.value)} autoComplete="new-password" maxLength={200} required />
           </label>
         )}
-        <button type="submit" className="button signin-submit" disabled={busy || (door === 'new' && (nameState === 'taken' || nameState === 'bad'))}>
+        <button type="submit" className="button signin-submit" aria-busy={busy || undefined} disabled={busy || (door === 'new' && (nameState === 'taken' || nameState === 'bad'))}>
           {tl(door === 'in' ? TEXT.signIn : TEXT.create)}
         </button>
         {problem && <p className="card-problem">{tl(TEXT[problem])}</p>}
@@ -326,8 +333,18 @@ function Account() {
       <p className="signin-name">{mine?.name}</p>
       {mine?.email && <p className="signin-email">{mine.email}</p>}
       <a className="button" href={nextPage() ?? pageUrl('notebook')}>
-        {tl(TEXT.notebook)} →
+        <span className="roll">
+          <span>{tl(TEXT.notebook)} →</span>
+        </span>
       </a>
+      <div className="signin-more">
+        <a className="text-link" href={personUrl(mine!.name!)}>
+          <span className="u">{tl(TEXT.page)}</span>
+        </a>
+        <a className="text-link" href={writeUrl()}>
+          <span className="u">{tl(TEXT.write)}</span>
+        </a>
+      </div>
       {changing ? (
         <form
           className="signin-form"
