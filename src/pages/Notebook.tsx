@@ -7,6 +7,7 @@ import { fold } from '../lib/match';
 import { addOwnBook, removeOwnBook, useOwnBooks } from '../lib/mybooks';
 import { useShelf, type Mark } from '../lib/shelf';
 import { fileIdOf, fileMarks, LOOSE, type Folder } from '../notes/folders';
+import { MarkStars } from '../notes/MarkStars';
 import { bookOf, markLine, markUrl, NOTE_TEXT, NoteEntry } from '../notes/notes';
 import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
 import './notebook.css';
@@ -36,7 +37,7 @@ const TEXT = {
   oneNote: { en: '1 note', fr: '1 note' },
   results: { en: '{n} notes found', fr: '{n} notes trouvées' },
   noResults: { en: 'No note has those words.', fr: 'Aucune note ne contient ces mots.' },
-  empty: { en: 'Nothing here yet', fr: 'Rien ici pour le moment' },
+  empty: { en: 'Your shelf is waiting', fr: 'Votre étagère attend' },
   emptyWhy: {
     en: 'Open a book and select any words to mark them. Each book you mark gets a folder here, and each day you write in it a file of its own.',
     fr: 'Ouvrez un livre et sélectionnez des mots pour les marquer. Chaque livre marqué reçoit ici un dossier, et chaque jour où vous y écrivez, un fichier à lui.',
@@ -56,6 +57,10 @@ const TEXT = {
   addFailed: { en: 'That file could not be opened. It may be damaged or protected.', fr: 'Ce fichier n’a pas pu être ouvert. Il est peut-être endommagé ou protégé.' },
   noOwn: { en: 'No file added yet.', fr: 'Aucun fichier ajouté.' },
   readBook: { en: 'Read the book', fr: 'Lire le livre' },
+  stars: {
+    en: 'Each star is a passage you marked, where it shines beside the page as you read.',
+    fr: 'Chaque étoile est un passage marqué, là où elle brille près de la page quand vous lisez.',
+  },
 } satisfies Record<string, L>;
 
 type Tab = 'notes' | 'reading' | 'own';
@@ -179,16 +184,30 @@ export default function Notebook() {
             <Results found={found} looseName={looseName} show={show} />
           ) : marks.length === 0 ? (
             <div className="notebook-empty">
-              <h1>{tl(TEXT.empty)}</h1>
+              <h1 className="ink-written">
+                <span>{tl(TEXT.empty)}</span>
+                <i className="ink-nib" aria-hidden="true" />
+              </h1>
               <p>{tl(TEXT.emptyWhy)}</p>
               <a className="button" href={pageUrl('first-pages')}>
                 {tl(TEXT.start)}
               </a>
+              <div className="shelf shelf-empty" aria-hidden="true">
+                {[12.5, 10.5, 13.5, 11.5].map((tall, at) => (
+                  <span key={at} className="spine-ghost" style={{ '--tall': `${tall}rem`, animationDelay: `${at * 0.9}s` } as React.CSSProperties} />
+                ))}
+              </div>
             </div>
           ) : folder ? (
             <div className="notebook-folder">
               <aside className="notebook-files">
                 <FolderHead folder={folder} looseName={looseName} />
+                {folder.id !== LOOSE && marks.some((mark) => mark.bookId === folder.id && mark.quote) && (
+                  <figure className="notebook-stars">
+                    <MarkStars marks={marks.filter((mark) => mark.bookId === folder.id)} width={300} height={130} lit={lit} onPick={show} />
+                    <figcaption>{tl(TEXT.stars)}</figcaption>
+                  </figure>
+                )}
                 <ul>
                   {folder.files.map((entry) => (
                     <li key={entry.id}>
@@ -233,29 +252,69 @@ export default function Notebook() {
               </section>
             </div>
           ) : (
-            <ul className="notebook-drawer">
-              {folders.map((entry) => (
+            <ul className="shelf">
+              {folders.map((entry, at) => (
                 <li key={entry.id}>
-                  <button type="button" className="folder-tile" onClick={() => openFolder(entry.id)}>
-                    <span className="folder-tile-back" aria-hidden="true" />
-                    <span className="folder-tile-front">
-                      {entry.cover ? <img src={entry.cover} alt="" loading="lazy" /> : <span className="folder-tile-mark" aria-hidden="true">{entry.id === LOOSE ? '✎' : '❧'}</span>}
-                      <span className="folder-tile-text">
-                        <strong>{entry.title ?? looseName}</strong>
-                        {entry.author && <small>{entry.author}</small>}
-                        <small>
-                          {entry.files.length === 1 ? tl(TEXT.oneFile) : count(tl(TEXT.files), { n: entry.files.length })} ·{' '}
-                          {entry.count === 1 ? tl(TEXT.oneNote) : count(tl(TEXT.fileCount), { n: entry.count })}
-                        </small>
-                      </span>
-                    </span>
-                  </button>
+                  <Spine folder={entry} looseName={looseName} marks={marks} order={at} onOpen={() => openFolder(entry.id)} />
                 </li>
               ))}
             </ul>
           ))}
       </div>
     </div>
+  );
+}
+
+/** Leather for the spines, each book its own. */
+const LEATHER = ['#5b2330', '#2f4a3a', '#283a52', '#5a3d22', '#4a2f4f', '#6b4a1f', '#2d4d4d', '#45291f'];
+const leatherOf = (id: string) => LEATHER[[...id].reduce((sum, letter) => (sum * 31 + letter.charCodeAt(0)) >>> 0, 7) % LEATHER.length];
+
+/**
+ * A folder as a book on the shelf: its spine, as tall as the book is long and as thick as the
+ * reader's notes in it, its title in gilt. Pointed at, it leans out of the row, and a slip
+ * above it shows the book and the constellation of its marks.
+ */
+const flip = (spine: HTMLElement) => {
+  if (spine.getBoundingClientRect().right + 260 > window.innerWidth) spine.dataset.flip = 'true';
+  else delete spine.dataset.flip;
+};
+
+function Spine({ folder, looseName, marks, order, onOpen }: { folder: Folder; looseName: string; marks: Mark[]; order: number; onOpen: () => void }) {
+  const { tl } = useI18n();
+  const book = BY_ID.get(folder.id);
+  const loose = folder.id === LOOSE;
+  const tall = loose ? 11 : 10.5 + Math.min(1, (book?.pages ?? 300) / 900) * 3.5;
+  const thick = 2.4 + Math.min(folder.count, 24) * 0.11;
+  const title = folder.title ?? looseName;
+  const counts = `${folder.files.length === 1 ? tl(TEXT.oneFile) : count(tl(TEXT.files), { n: folder.files.length })} · ${folder.count === 1 ? tl(TEXT.oneNote) : count(tl(TEXT.fileCount), { n: folder.count })}`;
+  const own = marks.filter((mark) => mark.bookId === folder.id);
+  return (
+    <button
+      type="button"
+      className="spine"
+      data-loose={loose || undefined}
+      onClick={onOpen}
+      // The slip opens on the side of the book that has room for it.
+      onPointerEnter={(event) => flip(event.currentTarget)}
+      onFocus={(event) => flip(event.currentTarget)}
+      aria-label={`${title}${folder.author ? `, ${folder.author}` : ''}. ${counts}`}
+      style={{ '--tall': `${tall}rem`, '--thick': `${thick}rem`, '--leather': loose ? '#d9cdb2' : leatherOf(folder.id), animationDelay: `${Math.min(order, 14) * 60}ms` } as React.CSSProperties}
+    >
+      <span className="spine-face" aria-hidden="true">
+        <span className="spine-title">{title}</span>
+        {folder.author && <span className="spine-author">{folder.author.split(' ').at(-1)}</span>}
+      </span>
+      <span className="spine-slip" aria-hidden="true">
+        <span className="spine-slip-head">
+          {folder.cover ? <img src={folder.cover} alt="" width={36} height={54} loading="lazy" /> : <span className="folder-tile-mark">✎</span>}
+          <span>
+            <strong>{title}</strong>
+            <small>{counts}</small>
+          </span>
+        </span>
+        {!loose && <MarkStars marks={own} width={188} height={64} />}
+      </span>
+    </button>
   );
 }
 

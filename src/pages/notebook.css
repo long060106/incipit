@@ -13,6 +13,7 @@
 
 .notebook-body {
   flex: 1;
+  overflow-x: clip;
   width: min(100%, 76rem);
   margin: 0 auto;
   padding: 1.75rem var(--gutter) 5rem;
@@ -138,62 +139,209 @@
   vertical-align: -0.125em;
 }
 
-/* The drawer: every folder, the most recently used first. */
-.notebook-drawer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
-  gap: 2.25rem 1.5rem;
+/* The shelf: every folder a book standing on it, the most recently used first. Each row of
+   books stands on a plank, drawn behind the list at the foot of every row. */
+.shelf {
+  --row: 15.5rem;
+  --gap: 2.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--gap) 0.3rem;
   margin: 0;
-  padding: 0;
+  /* Room below the last row for its plank. */
+  padding: 0 0.5rem 0.55rem;
   list-style: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 var(--row),
+    color-mix(in srgb, var(--accent) 34%, var(--bg)) var(--row) calc(var(--row) + 2px),
+    color-mix(in srgb, var(--accent) 12%, var(--bg)) calc(var(--row) + 2px) calc(var(--row) + 0.55rem),
+    transparent calc(var(--row) + 0.55rem) calc(var(--row) + var(--gap))
+  );
 }
 
-.folder-tile {
+.shelf > li {
+  display: flex;
+  align-items: flex-end;
+  height: var(--row);
+}
+
+.spine {
   position: relative;
-  display: block;
-  width: 100%;
-  padding-top: 0.875rem;
-  text-align: left;
+  width: var(--thick);
+  height: var(--tall);
+  padding: 0;
+  animation: spine-in 0.9s var(--ease-out) both;
+  transform-origin: bottom left;
+  transition: transform 0.6s var(--ease-out);
 }
 
-/* The folder's back, with its tab, shows above the front. */
-.folder-tile-back {
+@keyframes spine-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
+/* The spine itself: rounded leather, with gilt bands at head and foot. */
+.spine-face {
   position: absolute;
-  inset: 0 0 0.25rem;
-  border: 1px solid var(--line);
-  border-radius: 3px;
-  background: var(--surface);
-  clip-path: polygon(0 0, 42% 0, 48% 0.875rem, 100% 0.875rem, 100% 100%, 0 100%);
-  transition: border-color 0.4s ease;
-}
-
-.folder-tile-front {
-  position: relative;
-  display: grid;
-  grid-template-columns: 52px minmax(0, 1fr);
-  gap: 1rem;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  min-height: 7.5rem;
-  padding: 1.125rem 1.125rem 1.25rem;
-  border: 1px solid var(--line);
-  border-radius: 3px;
-  background: var(--raised);
-  transform-origin: bottom;
-  transition: transform 0.6s var(--ease-out), border-color 0.4s ease;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 1.25rem 0 0.875rem;
+  border-radius: 3px 3px 1px 1px;
+  background:
+    linear-gradient(to right, rgb(0 0 0 / 0.38), rgb(255 255 255 / 0.1) 32%, rgb(255 255 255 / 0.04) 55%, rgb(0 0 0 / 0.45)),
+    var(--leather);
+  box-shadow: 0 10px 18px -8px rgb(0 0 0 / 0.6);
+  color: #e8d3a0;
+  transition: box-shadow 0.6s var(--ease-out);
 }
 
-.folder-tile:hover .folder-tile-front,
-.folder-tile:focus-visible .folder-tile-front {
-  border-color: var(--line-strong);
-  transform: perspective(600px) rotateX(-9deg);
+.spine-face::before,
+.spine-face::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-top: 1px solid rgb(232 211 160 / 0.55);
+  border-bottom: 1px solid rgb(232 211 160 / 0.55);
 }
 
-.folder-tile-front img,
-.folder-tile-mark {
-  width: 52px;
-  height: 78px;
+.spine-face::before {
+  top: 0.5rem;
+}
+
+.spine-face::after {
+  bottom: 0.375rem;
+}
+
+.spine-title {
+  overflow: hidden;
+  max-height: calc(var(--tall) - 4.5rem);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+}
+
+.spine-author {
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  writing-mode: vertical-rl;
+}
+
+/* The loose thoughts: a cream notebook among the leather. */
+.spine[data-loose] .spine-face {
+  color: #4a3b22;
+}
+
+.spine[data-loose] .spine-face::before,
+.spine[data-loose] .spine-face::after {
+  border-color: rgb(74 59 34 / 0.4);
+}
+
+/* Pointed at, the book is drawn a little out of the row. */
+.spine:hover,
+.spine:focus-visible {
+  z-index: 2;
+  transform: translateY(-0.875rem) rotate(-3deg);
+}
+
+.spine:hover .spine-face,
+.spine:focus-visible .spine-face {
+  box-shadow:
+    0 22px 26px -10px rgb(0 0 0 / 0.7),
+    0 0 0 1px rgb(232 211 160 / 0.35);
+}
+
+/* The slip beside it: the book, its notes, and the constellation of its marks. */
+.spine-slip {
+  position: absolute;
+  left: calc(100% + 0.875rem);
+  bottom: 1.5rem;
+  z-index: 3;
+  display: grid;
+  gap: 0.625rem;
+  width: 13.5rem;
+  padding: 0.875rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--raised) 94%, transparent);
+  box-shadow: 0 18px 40px rgb(0 0 0 / 0.45);
+  text-align: left;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-0.5rem) rotate(2deg);
+  transform-origin: bottom left;
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s var(--ease-out);
+}
+
+.spine:hover .spine-slip,
+.spine:focus-visible .spine-slip {
+  opacity: 1;
+  transform: translateX(0) rotate(2deg);
+}
+
+/* Near the right edge, on the left of the book instead. */
+.spine[data-flip] .spine-slip {
+  left: auto;
+  right: calc(100% + 0.875rem);
+  transform: translateX(0.5rem) rotate(-2deg);
+  transform-origin: bottom right;
+}
+
+.spine[data-flip]:hover .spine-slip,
+.spine[data-flip]:focus-visible .spine-slip {
+  transform: translateX(0) rotate(-2deg);
+}
+
+.spine-slip-head {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.spine-slip-head img,
+.spine-slip-head .folder-tile-mark {
+  width: 36px;
+  height: 54px;
   object-fit: cover;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+
+.spine-slip-head span {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.spine-slip-head strong {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spine-slip-head small {
+  color: var(--muted);
+  font-size: 0.75rem;
 }
 
 .folder-tile-mark {
@@ -201,38 +349,197 @@
   place-items: center;
   border: 1px solid var(--line);
   color: var(--accent);
-  font-size: 1.5rem;
-  box-shadow: none;
+  font-size: 1.25rem;
 }
 
-.folder-tile-text {
+/* A book's constellation (src/notes/MarkStars.tsx). */
+.mark-stars {
+  display: block;
+  overflow: visible;
+  max-width: 100%;
+  height: auto;
+}
+
+.mark-stars-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-opacity: 0.4;
+  stroke-width: 0.8;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: stars-line 2.4s var(--ease-out) 0.3s forwards;
+}
+
+@keyframes stars-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.mark-star {
+  animation:
+    star-open 0.9s var(--ease-out) both,
+    star-twinkle 3.2s ease-in-out infinite;
+}
+
+.mark-star[role='button'] {
+  cursor: pointer;
+  outline: none;
+}
+
+@keyframes star-open {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes star-twinkle {
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.mark-star-glow {
+  fill: var(--accent);
+  opacity: 0.16;
+  transition: opacity 0.4s ease;
+}
+
+.mark-star-core {
+  fill: #fff6e2;
+}
+
+:root[data-theme='day'] .mark-star-core {
+  fill: var(--accent);
+}
+
+.mark-star[role='button']:hover .mark-star-glow,
+.mark-star[role='button']:focus-visible .mark-star-glow,
+.mark-star[data-lit] .mark-star-glow {
+  opacity: 0.45;
+}
+
+/* Beside an open folder, larger. */
+.notebook-stars {
   display: grid;
-  gap: 0.25rem;
-  min-width: 0;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.75rem 0.25rem 0;
+  border-top: 1px solid var(--faint);
 }
 
-.folder-tile-text strong {
-  display: -webkit-box;
-  overflow: hidden;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 1.1875rem;
-  line-height: 1.2;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  transition: color 0.3s ease;
-}
-
-.folder-tile:hover strong {
-  color: var(--accent);
-}
-
-.folder-tile-text small {
-  overflow: hidden;
+.notebook-stars figcaption {
   color: var(--muted);
-  font-size: 0.8125rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+/* The heading of an empty notebook, written out by a pen, left to right. */
+.ink-written {
+  position: relative;
+}
+
+.ink-written > span {
+  display: inline-block;
+  padding: 0.1em 0.05em 0.2em 0;
+  clip-path: inset(-0.2em 100% -0.3em 0);
+  animation: ink-write 2.8s cubic-bezier(0.55, 0.1, 0.45, 0.95) 0.3s forwards;
+}
+
+@keyframes ink-write {
+  to {
+    clip-path: inset(-0.2em -0.1em -0.3em 0);
+  }
+}
+
+/* The nib: a point of gilt that runs ahead of the ink, then lifts away. */
+.ink-nib {
+  position: absolute;
+  left: 0;
+  bottom: 0.18em;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 14px 3px color-mix(in srgb, var(--accent) 60%, transparent);
+  opacity: 0;
+  animation: ink-nib 2.8s cubic-bezier(0.55, 0.1, 0.45, 0.95) 0.3s forwards;
+}
+
+@keyframes ink-nib {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% - 0.2rem);
+    opacity: 0;
+    transform: translateY(-0.6rem);
+  }
+}
+
+.notebook-empty > p,
+.notebook-empty > .button {
+  animation: ink-after 1.2s ease 2.4s both;
+}
+
+@keyframes ink-after {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* An empty shelf: the outlines of books to come, breathing slowly. */
+.shelf-empty {
+  --row: 13.5rem;
+  box-sizing: border-box;
+  width: min(100%, 22rem);
+  height: calc(var(--row) + 0.55rem);
+  margin-top: 2.5rem;
+  padding: 0 1rem 0.55rem;
+  gap: 0.375rem;
+}
+
+.spine-ghost {
+  width: 2.6rem;
+  height: var(--tall);
+  border: 1px dashed var(--line-strong);
+  border-radius: 3px 3px 1px 1px;
+  animation: ghost-breathe 4.5s ease-in-out infinite;
+}
+
+.spine-ghost:nth-child(3) {
+  margin-left: 0.6rem;
+  transform: rotate(-6deg);
+  transform-origin: bottom left;
+}
+
+@keyframes ghost-breathe {
+  50% {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spine,
+  .mark-star,
+  .mark-stars-line,
+  .ink-written > span,
+  .ink-nib,
+  .notebook-empty > p,
+  .notebook-empty > .button,
+  .spine-ghost {
+    animation: none;
+    clip-path: none;
+    stroke-dashoffset: 0;
+  }
 }
 
 /* A folder open: its files beside the open file. */

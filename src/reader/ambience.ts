@@ -18,11 +18,16 @@
   The stars are fainter behind the column of text; that is done as they are drawn, not by a
   mask over the canvas, which would have to be made again at every frame.
 
+  A book with an air of its own (./scenes.ts: snow, rain, the sea, embers, fog, fireflies,
+  falling leaves or blossom) has that drawn instead of the sky, on the same canvas.
+
   The lamp is two layers that are only ever moved, never repainted: a pool of warm light,
   and a shade that dims the page a little away from it. The shade is there only while the
   mouse is in use. When the mouse has been still for a few seconds the reader is reading,
   and the whole page is lit evenly again.
 */
+
+import { makeScene, type Scene, type SceneId } from './scenes';
 
 const STILL_AFTER = 3500; // milliseconds without the mouse moving before the shade lifts
 const TURN = (Math.PI * 2) / (120 * 60 * 1000); // the far depth turns once in two hours: a star crosses a pixel or two in a second
@@ -84,7 +89,7 @@ interface Held {
   friends: { star: Star; x: number; y: number }[];
 }
 
-export function installAmbience(host: HTMLElement): () => void {
+export function installAmbience(host: HTMLElement, sceneId: SceneId = 'night'): () => void {
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const sky = document.createElement('canvas');
   sky.className = 'reader-sky';
@@ -105,6 +110,7 @@ export function installAmbience(host: HTMLElement): () => void {
   let pole = { x: 0, y: 0 };
   const mouse = { x: 0, y: 0, moved: -Infinity, here: false };
   let held: Held | null = null;
+  let scene: Scene | null = null;
   const tint = () => TINTS[Math.floor(Math.random() * TINTS.length)];
 
   const measure = () => {
@@ -115,6 +121,13 @@ export function installAmbience(host: HTMLElement): () => void {
     sky.height = Math.round(height * ratio);
     pen?.setTransform(ratio, 0, 0, ratio, 0, 0);
     pole = { x: width * 0.5, y: height * 1.9 };
+    held = null;
+    scene = makeScene(sceneId, width, height);
+    if (scene) {
+      faint = [];
+      bright = [];
+      return;
+    }
     // The screen is a window onto a ring of sky about that point; the whole ring is sown.
     const reach = Math.hypot(Math.max(pole.x, width - pole.x), pole.y);
     const inner = pole.y - height;
@@ -163,6 +176,23 @@ export function installAmbience(host: HTMLElement): () => void {
     const box = host.querySelector('.reader-text')?.getBoundingClientRect();
     column = box && box.width > 0 ? { left: box.left - 24, right: box.right + 24 } : null;
   };
+  /** How much of a scene stays behind the column of text, where it is all but wiped away after it is drawn. */
+  const VEIL = 0.2;
+  const whole = () => 1;
+  const veilColumn = () => {
+    if (!pen || !column) return;
+    const span = column.right - column.left + EDGE * 2;
+    const shade = pen.createLinearGradient(column.left - EDGE, 0, column.right + EDGE, 0);
+    const wipe = `rgba(0,0,0,${1 - VEIL})`;
+    shade.addColorStop(0, 'rgba(0,0,0,0)');
+    shade.addColorStop(EDGE / span, wipe);
+    shade.addColorStop(1 - EDGE / span, wipe);
+    shade.addColorStop(1, 'rgba(0,0,0,0)');
+    pen.globalCompositeOperation = 'destination-out';
+    pen.fillStyle = shade;
+    pen.fillRect(column.left - EDGE, 0, span, height);
+    pen.globalCompositeOperation = 'source-over';
+  };
   /** How much of a star's light is left at this place across the page. */
   const clear = (x: number) => {
     if (!column) return 1;
@@ -183,6 +213,11 @@ export function installAmbience(host: HTMLElement): () => void {
     // The column moves when the reader changes the page's width or the window's.
     if (frames++ % 30 === 0) findColumn();
     pen.clearRect(0, 0, width, height);
+    if (scene) {
+      scene.draw(pen, { now, dt: still ? 0 : elapsed / 1000, mouse, veil: whole });
+      veilColumn();
+      return;
+    }
     const answering = mouse.here && !still;
 
     // The far depth.
