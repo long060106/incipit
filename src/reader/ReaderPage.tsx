@@ -12,6 +12,8 @@ import type { Mark } from '../lib/shelf';
 import { bookUrl } from '../lib/links';
 import { pageUrl, useQuickLoader } from '../pages/PageHeader';
 import { installAmbience } from './ambience';
+import { installConstellation, type Constellation } from './constellation';
+import { sceneOf } from './scenes';
 import { blockOffsets, paintMarks, selectionIn } from './marks';
 import '../pages/pages.css';
 import './reader.css';
@@ -39,6 +41,11 @@ const TEXT = {
   narrower: { en: 'Narrower page', fr: 'Page plus étroite' },
   lamp: { en: 'Lamp', fr: 'Lampe' },
   lampHint: { en: 'A lamp that follows the mouse. On or off.', fr: 'Une lampe qui suit la souris. Allumer ou éteindre.' },
+  scene: { en: 'Weather', fr: 'Climat' },
+  sceneHint: {
+    en: 'The air the book is set in, behind the page: snow, rain, the sea, fog… On or off.',
+    fr: 'L’air où se passe le livre, derrière la page : neige, pluie, mer, brume… Activer ou non.',
+  },
   wider: { en: 'Wider page', fr: 'Page plus large' },
   mark: { en: 'Mark', fr: 'Marquer' },
   note: { en: 'Mark and note', fr: 'Marquer et noter' },
@@ -72,6 +79,7 @@ const SIZE_KEY = 'incipit:read-size';
 const WIDTHS = [32, 42, 54, 68, 86];
 const WIDTH_KEY = 'incipit:read-width';
 const LAMP_KEY = 'incipit:read-lamp';
+const SCENE_KEY = 'incipit:read-scene';
 
 const bookId = () => decodeURIComponent(location.pathname.split('/')[2] ?? '');
 /** The keeper's code, if this browser holds the keeper's card: a file closed to readers is read with it. */
@@ -129,9 +137,17 @@ export default function ReaderPage() {
       // The choice then lasts for this visit only.
     }
   }, [lamp]);
+  // The book's own weather behind the page (./scenes.ts), where it has one, unless the reader would rather the plain sky.
+  const scene = useMemo(() => sceneOf(BOOKS.find((entry) => entry.id === book?.id)), [book]);
+  const [weather, setWeather] = useState(() => localStorage.getItem(SCENE_KEY) !== 'off');
   useEffect(() => {
-    if (readerRef.current) return installAmbience(readerRef.current);
-  }, []);
+    try {
+      localStorage.setItem(SCENE_KEY, weather ? 'on' : 'off');
+    } catch {
+      // The choice then lasts for this visit only.
+    }
+    if (readerRef.current) return installAmbience(readerRef.current, weather ? scene : 'night');
+  }, [weather, scene]);
   const ownSections = useRef<OwnText['sections']>([]);
   const [index, setIndex] = useState<TextIndex | null>(null);
   const [failed, setFailed] = useState(false);
@@ -197,6 +213,22 @@ export default function ReaderPage() {
       stale = true;
     };
   }, [index, section, base]);
+
+  // Each passage marked is a star in the margins (./constellation.ts); a new one flies there from its words.
+  const bookMarks = book ? shelf.marks().filter((mark) => mark.bookId === book.id) : [];
+  const starMarks = useRef(bookMarks);
+  starMarks.current = bookMarks;
+  const stars = useRef<Constellation | null>(null);
+  const goRef = useRef<(mark: Mark) => void>(() => {});
+  useEffect(() => {
+    if (!readerRef.current || !book) return;
+    const installed = installConstellation(readerRef.current, () => starMarks.current, (mark) => goRef.current(mark));
+    stars.current = installed;
+    return () => {
+      installed.remove();
+      stars.current = null;
+    };
+  }, [book]);
 
   const marks = book ? shelf.marksIn(book.id, section) : [];
   const marksKey = marks.map((mark) => `${mark.id}:${mark.note ? 1 : 0}:${mark.links.length}`).join(',');
@@ -350,10 +382,15 @@ export default function ReaderPage() {
     }
   };
 
+  goRef.current = (mark) => go(mark.section ?? 0, mark.start ?? 0, true);
+
   const addMark = (withNote: boolean) => {
     if (!picked || !book) return;
+    const selection = window.getSelection();
+    const words = selection && selection.rangeCount > 0 ? selection.getRangeAt(0).getBoundingClientRect() : null;
     const mark = shelf.addMark({ bookId: book.id, section, start: picked.start, end: picked.end, quote: picked.quote });
-    window.getSelection()?.removeAllRanges();
+    if (words && words.width > 0) stars.current?.launch(mark.id, { x: words.left + words.width / 2, y: words.top + words.height / 2 });
+    selection?.removeAllRanges();
     setPicked(null);
     if (withNote) setOpen({ id: mark.id, x: picked.x, y: picked.y + 40 });
   };
@@ -395,7 +432,6 @@ export default function ReaderPage() {
 
   const here = index?.sections[section];
   const opened = open ? shelf.mark(open.id) : undefined;
-  const bookMarks = shelf.marks().filter((mark) => mark.bookId === book.id);
 
   return (
     <div className="reader" ref={readerRef} data-lamp={lamp ? 'lit' : 'out'} style={{ '--read-size': `${size}rem`, '--read-width': `${width}rem` } as React.CSSProperties}>
@@ -416,6 +452,11 @@ export default function ReaderPage() {
           <button type="button" className="reader-lamp" onClick={() => setLamp(!lamp)} aria-pressed={lamp} title={tl(TEXT.lampHint)}>
             {tl(TEXT.lamp)}
           </button>
+          {scene !== 'night' && (
+            <button type="button" className="reader-lamp" onClick={() => setWeather(!weather)} aria-pressed={weather} title={tl(TEXT.sceneHint)}>
+              {tl(TEXT.scene)}
+            </button>
+          )}
           <button type="button" className="reader-size reader-width" onClick={() => widen(-1)} aria-label={tl(TEXT.narrower)} title={tl(TEXT.narrower)} disabled={width === WIDTHS[0]}>
             →←
           </button>

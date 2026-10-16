@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Avatar } from '../components/Avatar';
 import { BOOKS } from '../data/books';
 import type { Book, L } from '../data/types';
@@ -56,7 +56,26 @@ export const ESSAY_TEXT = {
   },
   offline: { en: 'The server could not be reached. Try again in a moment.', fr: 'Le serveur est injoignable. Réessayez dans un instant.' },
   about: { en: 'About the books', fr: 'Les livres' },
+  readIt: { en: 'Read the essay', fr: 'Lire l’essai' },
+  latest: { en: 'Latest', fr: 'Le plus récent' },
+  deskSign: { en: 'Your essay could begin like this.', fr: 'Votre essai pourrait commencer ainsi.' },
 } satisfies Record<string, L>;
+
+/** First lines typed out on the empty desk, one after another, as examples of a way in. */
+const DESK_LINES = {
+  en: [
+    'The first time I read Jane Eyre, I was the same age she is in the red room…',
+    'Nobody warns you that Moby-Dick is funny.',
+    'I have read The Odyssey three times, and each time a different man came home.',
+    'What frightened me in Frankenstein was not the creature.',
+  ],
+  fr: [
+    'La première fois que j’ai lu Jane Eyre, j’avais l’âge qu’elle a dans la chambre rouge…',
+    'Personne ne vous prévient que Moby Dick est drôle.',
+    'J’ai lu L’Odyssée trois fois, et chaque fois un autre homme rentrait chez lui.',
+    'Ce qui m’a fait peur dans Frankenstein, ce n’était pas la créature.',
+  ],
+};
 
 const BY_ID = new Map(BOOKS.map((book) => [book.id, book]));
 export const booksOf = (ids: string[]) => ids.map((id) => BY_ID.get(id)).filter((book): book is Book => !!book);
@@ -107,7 +126,13 @@ function EssayList() {
     <>
       <header className="essays-head">
         <p className="page-eyebrow">{tl(ESSAY_TEXT.eyebrow)}</p>
-        <h1>{on ? tl(ESSAY_TEXT.on).replace('{title}', on.title) : tl(ESSAY_TEXT.title)}</h1>
+        <h1 className="essays-title">
+          {(on ? tl(ESSAY_TEXT.on).replace('{title}', on.title) : tl(ESSAY_TEXT.title)).split(' ').map((word, at) => (
+            <span key={at} style={{ animationDelay: `${0.1 + at * 0.12}s` }}>
+              {word}{' '}
+            </span>
+          ))}
+        </h1>
         <p className="essays-lead">{tl(ESSAY_TEXT.lead).replace('{site}', SITE_NAME)}</p>
         <div className="card-actions">
           <a className="button" href={writeHref}>
@@ -124,20 +149,116 @@ function EssayList() {
       </header>
 
       {failed && <p className="card-problem">{tl(ESSAY_TEXT.offline)}</p>}
-      {list?.length === 0 && <p className="people-quiet">{tl(ESSAY_TEXT.none)}</p>}
-      <ol className="essay-list">
-        {list?.map((essay, at) => (
-          <li key={essay.id} style={{ animationDelay: `${Math.min(at, 8) * 70}ms` }}>
-            <EssayCard essay={essay} lang={lang} />
-          </li>
-        ))}
-      </ol>
+      {list?.length === 0 && <WritingDesk />}
+      {list && list.length > 0 && <EssayFeature essay={list[0]} lang={lang} />}
+      {list && list.length > 1 && (
+        <ol className="essay-list">
+          {list.slice(1).map((essay, at) => (
+            <li key={essay.id} style={{ animationDelay: `${Math.min(at, 8) * 70}ms` }}>
+              <EssayCard essay={essay} lang={lang} />
+            </li>
+          ))}
+        </ol>
+      )}
       {more && list && (
         <button type="button" className="button button-quiet essays-more" onClick={() => void load(list[list.length - 1].at)}>
           {tl(ESSAY_TEXT.more)}
         </button>
       )}
     </>
+  );
+}
+
+/** The newest essay, set large at the head of the list as on the cover of a review. */
+function EssayFeature({ essay, lang }: { essay: EssaySummary; lang: string }) {
+  const { tl } = useI18n();
+  const books = booksOf(essay.books);
+  return (
+    <article className="essay-feature">
+      <a href={essayUrl(essay.id)}>
+        <span className="essay-feature-covers" aria-hidden="true" data-count={books.length}>
+          {books.length > 0 ? (
+            books.map((book) => <img key={book.id} src={coverUrl(book, 'md')} alt="" width={150} height={225} />)
+          ) : (
+            <span className="essay-feature-initial">{essay.title.trim()[0]}</span>
+          )}
+        </span>
+        <span className="essay-feature-text">
+          <span className="page-eyebrow">
+            {tl(ESSAY_TEXT.latest)}
+            {books.length > 0 && ` · ${books.map((book) => book.title).join(' · ')}`}
+          </span>
+          <strong>{essay.title}</strong>
+          <span className="essay-feature-excerpt">{essay.excerpt}</span>
+          <span className="essay-meta">
+            <Avatar name={essay.author} tone={essay.tone} size="sm" />
+            <span>{essay.author}</span>
+            <span aria-hidden="true">·</span>
+            <time dateTime={new Date(essay.at).toISOString()}>{day(essay.at, lang)}</time>
+            <span aria-hidden="true">·</span>
+            <span>{tl(ESSAY_TEXT.read).replace('{n}', String(minutes(essay.words)))}</span>
+          </span>
+          <span className="essay-feature-go">{tl(ESSAY_TEXT.readIt)} →</span>
+        </span>
+      </a>
+    </article>
+  );
+}
+
+const STILL = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/**
+ * No essay yet: a sheet of paper on the desk, on which first lines are typed out and taken
+ * back one after another, as ways an essay might begin.
+ */
+function WritingDesk() {
+  const { tl, lang } = useI18n();
+  const lines = DESK_LINES[lang === 'fr' ? 'fr' : 'en'];
+  const [typed, setTyped] = useState(() => (STILL() ? lines[0] : ''));
+  useEffect(() => {
+    if (STILL()) return setTyped(lines[0]);
+    let line = 0;
+    let shown = 0;
+    let back = false;
+    let timer = 0;
+    const step = () => {
+      const text = lines[line];
+      if (!back) {
+        shown += 1;
+        setTyped(text.slice(0, shown));
+        if (shown >= text.length) {
+          back = true;
+          timer = window.setTimeout(step, 3200);
+        } else {
+          // A little longer after a comma or a stop, as a hand would.
+          timer = window.setTimeout(step, /[,.…?]/.test(text[shown - 1]) ? 380 : 52 + Math.random() * 60);
+        }
+      } else {
+        shown -= 2;
+        setTyped(text.slice(0, Math.max(0, shown)));
+        if (shown <= 0) {
+          back = false;
+          shown = 0;
+          line = (line + 1) % lines.length;
+          timer = window.setTimeout(step, 700);
+        } else timer = window.setTimeout(step, 16);
+      }
+    };
+    setTyped('');
+    timer = window.setTimeout(step, 900);
+    return () => window.clearTimeout(timer);
+  }, [lines]);
+  return (
+    <div className="writing-desk">
+      <div className="writing-sheet">
+        <p className="writing-line">
+          <span>{typed}</span>
+          <i className="writing-caret" aria-hidden="true" />
+        </p>
+        <p className="writing-sign">{tl(ESSAY_TEXT.deskSign)}</p>
+      </div>
+      <p className="people-quiet">{tl(ESSAY_TEXT.none)}</p>
+    </div>
   );
 }
 
@@ -174,13 +295,59 @@ export function EssayCard({ essay, lang, children }: { essay: EssaySummary; lang
   );
 }
 
+/**
+ * A gilt thread down the side of the page that fills as the essay is read, and quotations
+ * that open as they come into view, their great quotation mark first.
+ */
+function useReadingThread(article: React.RefObject<HTMLElement | null>, ready: boolean) {
+  const [through, setThrough] = useState(0);
+  useEffect(() => {
+    const body = article.current;
+    if (!ready || !body) return;
+    let frame = 0;
+    const measure = () => {
+      const box = body.getBoundingClientRect();
+      const room = box.height - window.innerHeight * 0.6;
+      setThrough(room > 0 ? Math.min(1, Math.max(0, (window.innerHeight * 0.4 - box.top) / room)) : 1);
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    };
+    measure();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    const quotes = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries)
+          if (entry.isIntersecting) {
+            (entry.target as HTMLElement).dataset.shown = 'true';
+            quotes.unobserve(entry.target);
+          }
+      },
+      { rootMargin: '0px 0px -12% 0px' },
+    );
+    body.querySelectorAll('.essay-body blockquote').forEach((quote) => quotes.observe(quote));
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      quotes.disconnect();
+    };
+  }, [article, ready]);
+  return through;
+}
+
 function OneEssay({ id }: { id: string }) {
   const { tl, lang } = useI18n();
+  const articleRef = useRef<HTMLElement>(null);
   const { card: mine } = useCard();
   const [essay, setEssay] = useState<Essay | null | 'missing' | 'offline'>(null);
   const [asking, setAsking] = useState<'remove' | 'report' | null>(null);
   const [reported, setReported] = useState(false);
   const [problem, setProblem] = useState(false);
+
+  const through = useReadingThread(articleRef, typeof essay === 'object' && essay !== null);
 
   useEffect(() => {
     void essays.get(id).then((answer) => {
@@ -216,7 +383,11 @@ function OneEssay({ id }: { id: string }) {
   };
 
   return (
-    <article className="essay">
+    <article className="essay" ref={articleRef}>
+      <div className="essay-thread" aria-hidden="true">
+        <i style={{ transform: `scaleY(${through})` }} />
+        <b style={{ top: `${through * 100}%` }} />
+      </div>
       <a className="text-link essay-back" href={pageUrl('essays')}>
         ← <span className="u">{tl(ESSAY_TEXT.all)}</span>
       </a>

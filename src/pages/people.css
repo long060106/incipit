@@ -1157,3 +1157,350 @@
     animation: none;
   }
 }
+
+/* ── The essays page, like a printed review: the title, the newest essay large, the desk ── */
+
+/* The title comes in a word at a time. */
+.essays-title span {
+  display: inline-block;
+  white-space: pre;
+  animation: essays-word 1.1s var(--ease-out) both;
+}
+
+@keyframes essays-word {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(0.35em);
+  }
+}
+
+/* The newest essay, set large. */
+.essay-feature {
+  margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+  animation: people-rise 1s var(--ease-out) 0.35s both;
+}
+
+.essay-feature > a {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: center;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background:
+    radial-gradient(60% 90% at 12% 50%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    var(--raised);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.5s ease;
+}
+
+.essay-feature > a:hover,
+.essay-feature > a:focus-visible {
+  border-color: var(--line-strong);
+}
+
+/* Its books, fanned like cards in a hand; they open further when the essay is pointed at. */
+.essay-feature-covers {
+  display: grid;
+  grid-template-areas: 'stack';
+  place-items: center;
+  min-height: 14rem;
+  isolation: isolate;
+}
+
+.essay-feature-covers img {
+  grid-area: stack;
+  width: 9rem;
+  height: 13.5rem;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 22px 44px rgb(0 0 0 / 0.5);
+  transition: transform 0.9s var(--ease-out);
+}
+
+.essay-feature-covers[data-count='2'] img:nth-child(1) {
+  transform: translateX(-1.25rem) rotate(-5deg);
+}
+
+.essay-feature-covers[data-count='2'] img:nth-child(2) {
+  z-index: -1;
+  transform: translateX(1.25rem) rotate(5deg);
+}
+
+.essay-feature-covers[data-count='3'] img:nth-child(1) {
+  z-index: 1;
+}
+
+.essay-feature-covers[data-count='3'] img:nth-child(2) {
+  transform: translateX(-2rem) rotate(-8deg);
+}
+
+.essay-feature-covers[data-count='3'] img:nth-child(3) {
+  transform: translateX(2rem) rotate(8deg);
+}
+
+.essay-feature > a:hover .essay-feature-covers img:nth-child(1) {
+  transform: translateY(-0.5rem) rotate(-1deg);
+}
+
+.essay-feature > a:hover .essay-feature-covers[data-count='2'] img:nth-child(1) {
+  transform: translate(-2.25rem, -0.25rem) rotate(-9deg);
+}
+
+.essay-feature > a:hover .essay-feature-covers[data-count='2'] img:nth-child(2),
+.essay-feature > a:hover .essay-feature-covers[data-count='3'] img:nth-child(3) {
+  transform: translateX(3rem) rotate(12deg);
+}
+
+.essay-feature > a:hover .essay-feature-covers[data-count='3'] img:nth-child(2) {
+  transform: translateX(-3rem) rotate(-12deg);
+}
+
+/* No book: the essay's first letter, as an illuminated capital. */
+.essay-feature-initial {
+  color: var(--accent);
+  font-family: var(--font-hero);
+  font-size: 8rem;
+  line-height: 1;
+  text-shadow: 0 0 40px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.essay-feature-text {
+  display: grid;
+  gap: 0.875rem;
+  min-width: 0;
+}
+
+.essay-feature-text .page-eyebrow {
+  color: var(--accent);
+}
+
+.essay-feature-text strong {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: clamp(1.875rem, 3.8vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: var(--display-tracking);
+  text-wrap: balance;
+}
+
+.essay-feature-excerpt {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted);
+  font-family: var(--font-read);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+/* Its first letter large, as on the first page of a book. */
+.essay-feature-excerpt::first-letter {
+  float: left;
+  margin: 0.1em 0.14em 0 0;
+  color: var(--accent);
+  font-family: var(--font-hero);
+  font-size: 3.1em;
+  line-height: 0.82;
+}
+
+.essay-feature-go {
+  justify-self: start;
+  color: var(--accent);
+  font-size: 0.875rem;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.essay-feature > a:hover .essay-feature-go {
+  transform: translateX(0.375rem);
+}
+
+@media (max-width: 720px) {
+  .essay-feature > a {
+    grid-template-columns: 1fr;
+  }
+
+  .essay-feature-covers {
+    min-height: 11rem;
+  }
+
+  .essay-feature-covers img {
+    width: 7rem;
+    height: 10.5rem;
+  }
+}
+
+/* No essay yet: a sheet on the desk, with first lines being typed on it. */
+.writing-desk {
+  display: grid;
+  justify-items: start;
+  gap: 1.25rem;
+  animation: people-rise 1s var(--ease-out) 0.4s both;
+}
+
+.writing-sheet {
+  position: relative;
+  width: min(100%, 38rem);
+  min-height: 11rem;
+  padding: 2.25rem 2.25rem 1.5rem 3.25rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  /* Ruled, with a margin line, as a page of an exercise book. */
+  background:
+    linear-gradient(to right, transparent 2.25rem, color-mix(in srgb, var(--accent) 45%, transparent) 2.25rem 2.3125rem, transparent 2.3125rem),
+    repeating-linear-gradient(to bottom, transparent 0 calc(2rem - 1px), var(--faint) calc(2rem - 1px) 2rem),
+    var(--raised);
+  background-position: 0 0, 0 1.25rem, 0 0;
+  box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.6);
+  transform: rotate(-0.6deg);
+}
+
+.writing-line {
+  min-height: 4rem;
+  margin: 0;
+  font-family: var(--font-read);
+  font-size: 1.1875rem;
+  font-style: italic;
+  line-height: 2rem;
+}
+
+.writing-caret {
+  display: inline-block;
+  width: 1px;
+  height: 1.2em;
+  margin-left: 2px;
+  vertical-align: -0.2em;
+  background: var(--accent);
+  animation: caret-blink 1.1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.writing-sign {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  text-align: right;
+}
+
+/* ── Reading one essay: the thread down the side, and quotations opening ─────────── */
+
+.essay {
+  position: relative;
+}
+
+.essay-thread {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(-1 * clamp(1.25rem, 5vw, 4rem));
+  width: 1px;
+  background: var(--faint);
+}
+
+.essay-thread i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, var(--accent) 8%);
+  transform-origin: top;
+  transition: transform 0.25s linear;
+}
+
+/* The bead at the end of the thread. */
+.essay-thread b {
+  position: absolute;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px 2px color-mix(in srgb, var(--accent) 55%, transparent);
+  transition: top 0.25s linear;
+}
+
+@media (max-width: 760px) {
+  .essay-thread {
+    left: calc(-1 * var(--gutter) + 0.5rem);
+  }
+}
+
+/* A quotation in an essay opens as it comes into view: its rule drawn down, its mark set beside it. */
+.essay-body blockquote {
+  position: relative;
+  border-left-color: transparent;
+}
+
+.essay-body blockquote::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 1.1s var(--ease-out);
+}
+
+.essay-body blockquote::after {
+  content: '“';
+  position: absolute;
+  left: -0.15em;
+  top: -0.42em;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 4.25em;
+  font-style: normal;
+  line-height: 1;
+  opacity: 0;
+  transform: translateX(-0.35em) scale(0.8);
+  transition:
+    opacity 1.1s ease 0.2s,
+    transform 1.1s var(--ease-out) 0.2s;
+  pointer-events: none;
+}
+
+.essay-body blockquote > * {
+  opacity: 0.35;
+  transition: opacity 1.2s ease 0.3s;
+}
+
+.essay-body blockquote[data-shown]::before {
+  transform: scaleY(1);
+}
+
+.essay-body blockquote[data-shown]::after {
+  opacity: 0.3;
+  transform: translateX(-0.55em) scale(1);
+}
+
+.essay-body blockquote[data-shown] > * {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .essays-title span,
+  .essay-feature,
+  .writing-desk,
+  .writing-caret {
+    animation: none;
+  }
+
+  .essay-body blockquote::before,
+  .essay-body blockquote::after,
+  .essay-body blockquote > * {
+    transition: none;
+  }
+}
