@@ -305,3 +305,125 @@
 .note-entry-actions .note-entry-remove {
   color: var(--text);
 }
+
+/* The star that shows a passage on the reader's own page (src/lib/passages.ts). */
+.note-entry-actions .note-star {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.note-entry-actions .note-star[aria-pressed='true'] {
+  color: var(--accent);
+}
+
+.note-star-glyph {
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Lit, it turns once and gives off a ring of light. */
+.note-star-glyph[data-burst] {
+  animation: note-star-turn 0.9s var(--ease-out);
+}
+
+@keyframes note-star-turn {
+  0% {
+    transform: scale(0.6) rotate(-72deg);
+    text-shadow: 0 0 0 transparent;
+  }
+  55% {
+    transform: scale(1.35) rotate(8deg);
+    text-shadow: 0 0 14px var(--accent);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.note-entry-actions .note-star:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note-star-glyph[data-burst] {
+    animation: none;
+  }
+}
+
+/* A book's constellation (src/notes/MarkStars.tsx). */
+.mark-stars {
+  display: block;
+  overflow: visible;
+  max-width: 100%;
+  height: auto;
+}
+
+.mark-stars-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-opacity: 0.4;
+  stroke-width: 0.8;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: stars-line 2.4s var(--ease-out) 0.3s forwards;
+}
+
+@keyframes stars-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.mark-star {
+  animation:
+    star-open 0.9s var(--ease-out) both,
+    star-twinkle 3.2s ease-in-out infinite;
+}
+
+.mark-star[role='button'] {
+  cursor: pointer;
+  outline: none;
+}
+
+@keyframes star-open {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes star-twinkle {
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.mark-star-glow {
+  fill: var(--accent);
+  opacity: 0.16;
+  transition: opacity 0.4s ease;
+}
+
+.mark-star-core {
+  fill: #fff6e2;
+}
+
+:root[data-theme='day'] .mark-star-core {
+  fill: var(--accent);
+}
+
+.mark-star[role='button']:hover .mark-star-glow,
+.mark-star[role='button']:focus-visible .mark-star-glow,
+.mark-star[data-lit] .mark-star-glow {
+  opacity: 0.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark-star,
+  .mark-stars-line {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
