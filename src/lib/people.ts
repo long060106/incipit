@@ -24,12 +24,35 @@ export interface EssaySummary {
   status?: EssayStatus;
   reason?: string | null;
   reports?: number;
+  /** How many have answered it. */
+  comments?: number;
 }
 
 export interface Essay extends EssaySummary {
   body: string;
   mine?: boolean;
 }
+
+/** A passage a reader marked and chose to show on their page: the mark's id, its book and its words. */
+export interface Passage {
+  id: string;
+  book: string;
+  quote: string;
+}
+
+/** An answer to an essay. */
+export interface Comment {
+  id: string;
+  author: string;
+  tone: number;
+  body: string;
+  at: number;
+  /** Whether the reader asking may take it away: their own, one on their essay, or the keeper. */
+  removable: boolean;
+}
+
+export const MAX_COMMENT = 2_000;
+export const MAX_PASSAGES = 12;
 
 export interface Person {
   name: string;
@@ -40,6 +63,8 @@ export interface Person {
   /** The books they are reading, if they show them (or it is their own page). */
   reading: string[] | null;
   reviews: { book: string; stars: number | null; text: string | null; changed: number }[];
+  /** The passages they chose from their notebook to show. */
+  quotes: Passage[];
   essays: EssaySummary[];
   own: boolean;
 }
@@ -116,6 +141,7 @@ export const isProblem = (value: unknown): value is Problem => typeof value === 
 export const people = {
   get: (name: string) => ask<Person>(`/people/${encodeURIComponent(name)}`),
   save: (page: { bio: string; tone: number; reading: boolean }) => ask<Person>('/people', { method: 'PUT', body: JSON.stringify(page) }),
+  saveQuotes: (quotes: Passage[]) => ask<Person>('/people/quotes', { method: 'PUT', body: JSON.stringify({ quotes }) }),
 };
 
 export const essays = {
@@ -137,6 +163,12 @@ export const essays = {
   },
   drop: (id: string) => ask<{ ok: true }>(`/essays/${id}`, { method: 'DELETE' }),
   report: (id: string) => ask<{ ok: true }>(`/essays/${id}/report`, { method: 'POST' }),
+  comments: (id: string) => ask<{ comments: Comment[]; me: string | null }>(`/essays/${id}/comments`),
+  comment: async (id: string, body: string) => {
+    const answer = await ask<{ comment: Comment }>(`/essays/${id}/comments`, { method: 'POST', body: JSON.stringify({ body }) });
+    return isProblem(answer) ? answer : answer.comment;
+  },
+  dropComment: (id: string, comment: string) => ask<{ ok: true }>(`/essays/${id}/comments/${comment}`, { method: 'DELETE' }),
   /** For the keeper. */
   queue: () => ask<{ essays: Essay[] }>('/essays/queue'),
   decide: async (id: string, approve: boolean, reason = '') => {

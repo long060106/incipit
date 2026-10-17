@@ -543,6 +543,10 @@ async function writeReview(request: Request, env: Env, card: Card, book: string)
 //   POST   /api/essays/<id>/report     flag an approved essay for the keeper to look at again
 //   GET    /api/essays/queue           what waits for the keeper, and what was flagged (keeper only)
 //   POST   /api/essays/<id>/decide     { approve, reason? }                          (keeper only)
+//   GET    /api/essays/<id>/comments   the answers to an approved essay, oldest first
+//   POST   /api/essays/<id>/comments   answer it: { body }
+//   DELETE /api/essays/<id>/comments/<c> take an answer away (its writer, the essay's author, or the keeper)
+//   PUT    /api/people/quotes          the passages a reader shows on their page: { quotes: [{ id, book, quote }] }
 
 const TONES = 8;
 const MAX_BIO = 280;
@@ -559,6 +563,14 @@ const MAX_REASON = 400;
 const SHOWN_ESSAYS = 30;
 const ESSAY_ID = /^[a-z0-9]{12}$/;
 const ESSAY_LIST = 'id, author, title, excerpt, words, books, status, reason, reports, created, changed, decided';
+/** How many have answered an essay, for the lists and the essay's page. */
+const COMMENT_COUNT = '(SELECT COUNT(*) FROM essay_comments WHERE essay_comments.essay = essays.id) AS comments';
+const MAX_COMMENT = 2_000;
+const MAX_COMMENTS_PER_DAY = 40; // from one address
+const SHOWN_COMMENTS = 300;
+const MAX_PASSAGES = 12;
+const MAX_PASSAGE = 500;
+const MARK_ID = /^[a-z0-9]{4,24}$/;
 
 interface EssayRow {
   id: string;
@@ -575,6 +587,7 @@ interface EssayRow {
   decided: number | null;
   body?: string;
   tone?: number | null;
+  comments?: number;
 }
 
 /** An essay as it is sent: the books as a list, and what only its author or the keeper is told left out for others. */
@@ -589,6 +602,7 @@ function essayOut(row: EssayRow, full: boolean) {
     books: row.books.split(',').filter(Boolean),
     at: row.decided ?? row.changed,
     ...(row.body !== undefined ? { body: row.body } : {}),
+    ...(row.comments !== undefined ? { comments: row.comments } : {}),
     ...(full ? { status: row.status, reason: row.reason, reports: row.reports, created: row.created, changed: row.changed } : {}),
   };
 }
@@ -635,11 +649,11 @@ const newEssayId = () => [...crypto.getRandomValues(new Uint8Array(12))].map((by
 /** A reader's page: what they say of themselves, their reviews and their essays. Their own page shows them every essay, approved or not. */
 async function personPage(env: Env, name: string, card: Card | null): Promise<Response> {
   const person = await env.DB.prepare(
-    `SELECT accounts.name AS name, accounts.created AS joined, accounts.card AS card, people.bio AS bio, people.tone AS tone, people.reading AS reading
+    `SELECT accounts.name AS name, accounts.created AS joined, accounts.card AS card, people.bio AS bio, people.tone AS tone, people.reading AS reading, people.quotes AS quotes
      FROM accounts LEFT JOIN people ON people.name = accounts.name WHERE accounts.name = ?1`,
   )
     .bind(name)
-    .first<{ name: string; joined: number; card: string; bio: string | null; tone: number | null; reading: number | null }>();
+    .first<{ name: string; joined: number; card: string; bio: string | null; tone: number | null; reading: number | null; quotes: string | null }>();
   if (!person) return refuse(404, 'no-such-reader');
   const own = !!card && card.id === person.card;
   const [reviews, essays, places] = await env.DB.batch<Record<string, unknown>>([
@@ -662,6 +676,7 @@ async function personPage(env: Env, name: string, card: Card | null): Promise<Re
     showsReading,
     reading,
     reviews: reviews.results,
+    quotes: passagesOf(person.quotes),
     essays: essays.results.map((row) => essayOut({ ...(row as unknown as EssayRow), tone: person.tone }, own)),
     own,
   });
@@ -686,6 +701,49 @@ async function writePerson(request: Request, env: Env, card: Card): Promise<Resp
   return personPage(env, account.name, card);
 }
 
+interface Passage {
+  id: string;
+  book: string;
+  quote: string;
+}
+
+const passagesOf = (text: string | null): Passage[] => {
+  try {
+    const list = JSON.parse(text ?? '[]');
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+};
+
+/**
+ * The passages a reader chose from their notebook to show on their page, each the words of a
+ * mark and its book. Only books out of copyright: their words may be shown to everyone.
+ */
+async function writePassages(request: Request, env: Env, card: Card): Promise<Response> {
+  const account = await accountOf(env, card);
+  if (!account) return refuse(403, 'needs-account');
+  const body = await bodyOf(request, MAX_PASSAGES * (MAX_PASSAGE + 200) * 2);
+  const list = Array.isArray(body?.quotes) ? (body.quotes as unknown[]) : null;
+  if (!list || list.length > MAX_PASSAGES) return refuse(400, 'bad-quotes');
+  const quotes: Passage[] = [];
+  for (const item of list) {
+    const { id, book, quote } = (item ?? {}) as Record<string, unknown>;
+    if (typeof id !== 'string' || !MARK_ID.test(id) || typeof book !== 'string' || typeof quote !== 'string') return refuse(400, 'bad-quotes');
+    if (!BY_ID.get(book)?.free) return refuse(400, 'bad-quotes');
+    const words = quote.replace(/\s+/g, ' ').trim();
+    if (!words || words.length > MAX_PASSAGE) return refuse(400, 'bad-quotes');
+    if (!quotes.some((kept) => kept.id === id)) quotes.push({ id, book, quote: words });
+  }
+  await env.DB.prepare(
+    `INSERT INTO people (name, quotes, changed) VALUES (?1, ?2, ?3)
+     ON CONFLICT (name) DO UPDATE SET quotes = excluded.quotes, changed = excluded.changed`,
+  )
+    .bind(account.name, JSON.stringify(quotes), Date.now())
+    .run();
+  return personPage(env, account.name, card);
+}
+
 /** The approved essays, newest first: all of them, or those on one book. */
 async function essayList(request: Request, env: Env): Promise<Response> {
   const asked = new URL(request.url).searchParams;
@@ -695,7 +753,7 @@ async function essayList(request: Request, env: Env): Promise<Response> {
   const { results } = await env.DB.prepare(
     `SELECT ${ESSAY_LIST.split(', ')
       .map((column) => `essays.${column}`)
-      .join(', ')}, people.tone AS tone
+      .join(', ')}, people.tone AS tone, ${COMMENT_COUNT}
      FROM essays LEFT JOIN people ON people.name = essays.author
      WHERE essays.status = 'approved' AND essays.decided < ?1 ${book ? 'AND essays.books LIKE ?2' : ''}
      ORDER BY essays.decided DESC LIMIT ${SHOWN_ESSAYS}`,
@@ -709,7 +767,7 @@ async function essayRow(env: Env, id: string): Promise<EssayRow | null> {
   return env.DB.prepare(
     `SELECT ${ESSAY_LIST.split(', ')
       .map((column) => `essays.${column}`)
-      .join(', ')}, essays.body AS body, people.tone AS tone
+      .join(', ')}, essays.body AS body, people.tone AS tone, ${COMMENT_COUNT}
      FROM essays LEFT JOIN people ON people.name = essays.author WHERE essays.id = ?1`,
   )
     .bind(id)
@@ -772,7 +830,11 @@ async function dropEssay(request: Request, env: Env, card: Card, id: string): Pr
     const shut = await keeperGate(request, env, card);
     if (shut) return shut;
   }
-  await env.DB.batch([env.DB.prepare('DELETE FROM essay_reports WHERE essay = ?1').bind(id), env.DB.prepare('DELETE FROM essays WHERE id = ?1').bind(id)]);
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM essay_reports WHERE essay = ?1').bind(id),
+    env.DB.prepare('DELETE FROM essay_comments WHERE essay = ?1').bind(id),
+    env.DB.prepare('DELETE FROM essays WHERE id = ?1').bind(id),
+  ]);
   return json({ ok: true });
 }
 
@@ -783,6 +845,77 @@ async function reportEssay(request: Request, env: Env, card: Card, id: string): 
   if (!(await within(env, request, 'report', MAX_REPORTS_PER_DAY))) return refuse(429, 'too-many');
   const added = await env.DB.prepare('INSERT OR IGNORE INTO essay_reports (essay, card, created) VALUES (?1, ?2, ?3) RETURNING essay').bind(id, card.id, Date.now()).first();
   if (added) await env.DB.prepare('UPDATE essays SET reports = reports + 1 WHERE id = ?1').bind(id).run();
+  return json({ ok: true });
+}
+
+interface CommentRow {
+  id: string;
+  author: string;
+  body: string;
+  created: number;
+  tone: number | null;
+}
+
+/** An answer as it is sent, saying whether the reader asking may take it away. */
+const commentOut = (row: CommentRow, me: string | null, essayAuthor: string, keeper: boolean) => ({
+  id: row.id,
+  author: row.author,
+  tone: row.tone ?? -1,
+  body: row.body,
+  at: row.created,
+  removable: keeper || (!!me && (me === row.author || me === essayAuthor)),
+});
+
+const approvedAuthor = (env: Env, id: string) => env.DB.prepare("SELECT author FROM essays WHERE id = ?1 AND status = 'approved'").bind(id).first<{ author: string }>();
+
+/** The answers to an approved essay, oldest first. */
+async function commentsOf(request: Request, env: Env, id: string): Promise<Response> {
+  const essay = await approvedAuthor(env, id);
+  if (!essay) return refuse(404, 'no-such-essay');
+  const { results } = await env.DB.prepare(
+    `SELECT essay_comments.id AS id, essay_comments.author AS author, essay_comments.body AS body, essay_comments.created AS created, people.tone AS tone
+     FROM essay_comments LEFT JOIN people ON people.name = essay_comments.author
+     WHERE essay_comments.essay = ?1 ORDER BY essay_comments.created LIMIT ${SHOWN_COMMENTS}`,
+  )
+    .bind(id)
+    .all<CommentRow>();
+  const card = await cardOf(request, env);
+  const me = card ? ((await accountOf(env, card))?.name ?? null) : null;
+  const keeper = !!card && card.role === 'admin' && (await deskOpen(request, env, card));
+  return json({ comments: results.map((row) => commentOut(row, me, essay.author, keeper)), me });
+}
+
+/** A reader with an account answers an approved essay. */
+async function writeComment(request: Request, env: Env, card: Card, id: string): Promise<Response> {
+  const account = await accountOf(env, card);
+  if (!account) return refuse(403, 'needs-account');
+  const essay = await approvedAuthor(env, id);
+  if (!essay) return refuse(404, 'no-such-essay');
+  const body = await bodyOf(request, MAX_COMMENT * 2 + 400);
+  const text = typeof body?.body === 'string' ? body.body.replace(/\r\n?/g, '\n').replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n').trim() : '';
+  if (text.length < 2) return refuse(400, 'too-short');
+  if (text.length > MAX_COMMENT) return refuse(400, 'too-long');
+  if (!(await within(env, request, 'comment', MAX_COMMENTS_PER_DAY))) return refuse(429, 'too-many');
+  const row = { id: newEssayId(), author: account.name, body: text, created: Date.now() };
+  await env.DB.prepare('INSERT INTO essay_comments (id, essay, author, body, created) VALUES (?1, ?2, ?3, ?4, ?5)').bind(row.id, id, row.author, row.body, row.created).run();
+  const tone = (await env.DB.prepare('SELECT tone FROM people WHERE name = ?1').bind(account.name).first<{ tone: number }>())?.tone ?? null;
+  return json({ comment: commentOut({ ...row, tone }, account.name, essay.author, false) }, 201);
+}
+
+/** Takes an answer away: its writer may, the essay's author may, and the keeper at the open desk. */
+async function dropComment(request: Request, env: Env, card: Card, id: string, comment: string): Promise<Response> {
+  const row = await env.DB.prepare(
+    'SELECT essay_comments.author AS author, essays.author AS essayAuthor FROM essay_comments JOIN essays ON essays.id = essay_comments.essay WHERE essay_comments.id = ?1 AND essay_comments.essay = ?2',
+  )
+    .bind(comment, id)
+    .first<{ author: string; essayAuthor: string }>();
+  if (!row) return refuse(404, 'no-such-comment');
+  const me = (await accountOf(env, card))?.name;
+  if (me !== row.author && me !== row.essayAuthor) {
+    const shut = await keeperGate(request, env, card);
+    if (shut) return shut;
+  }
+  await env.DB.prepare('DELETE FROM essay_comments WHERE id = ?1').bind(comment).run();
   return json({ ok: true });
 }
 
@@ -812,10 +945,11 @@ async function decideEssay(request: Request, env: Env, id: string): Promise<Resp
 }
 
 /** Everything under /api/essays. */
-async function essays(request: Request, env: Env, id: string | undefined, rest: string | undefined): Promise<Response> {
+async function essays(request: Request, env: Env, id: string | undefined, rest: string | undefined, more: string | undefined): Promise<Response> {
   const method = request.method;
   if (id === undefined && method === 'GET') return essayList(request, env);
   if (id !== undefined && ESSAY_ID.test(id) && rest === undefined && method === 'GET') return essayOne(request, env, id);
+  if (id !== undefined && ESSAY_ID.test(id) && rest === 'comments' && more === undefined && method === 'GET') return commentsOf(request, env, id);
   const card = await cardOf(request, env);
   if (!card) return refuse(401, 'no-such-card');
   if (id === undefined && method === 'POST') return writeEssay(request, env, card, null);
@@ -827,6 +961,8 @@ async function essays(request: Request, env: Env, id: string | undefined, rest: 
   if (rest === undefined && method === 'PUT') return writeEssay(request, env, card, id);
   if (rest === undefined && method === 'DELETE') return dropEssay(request, env, card, id);
   if (rest === 'report' && method === 'POST') return reportEssay(request, env, card, id);
+  if (rest === 'comments' && more === undefined && method === 'POST') return writeComment(request, env, card, id);
+  if (rest === 'comments' && more !== undefined && ESSAY_ID.test(more) && method === 'DELETE') return dropComment(request, env, card, id, more);
   if (rest === 'decide' && method === 'POST') {
     const shut = await keeperGate(request, env, card);
     return shut ?? decideEssay(request, env, id);
@@ -1409,8 +1545,8 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
   if (path === '/api/profile' && request.method === 'GET') return profile(env);
   if (path === '/api/portrait' && request.method === 'GET') return portrait(env);
 
-  const [, , section, book, rest] = path.split('/');
-  if (section === 'essays') return essays(request, env, book, rest);
+  const [, , section, book, rest, more] = path.split('/');
+  if (section === 'essays') return essays(request, env, book, rest, more);
   if (section === 'people' && request.method === 'GET' && NAME.test(book ?? '') && rest === undefined) return personPage(env, book, await cardOf(request, env));
   // What readers say of a book is for everyone to read; whose own it is, only the card can tell.
   if (section === 'reviews' && request.method === 'GET' && BOOK.test(book ?? '') && rest === undefined) return reviewsOf(env, book, await cardOf(request, env));
@@ -1480,6 +1616,7 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
     return refuse(404, 'not-found');
   }
   if (path === '/api/people' && request.method === 'PUT') return writePerson(request, env, card);
+  if (path === '/api/people/quotes' && request.method === 'PUT') return writePassages(request, env, card);
   if (path === '/api/account' && request.method === 'POST') return makeAccount(request, env, card);
   if (path === '/api/account' && request.method === 'PUT') return changeAccount(request, env, card);
 
@@ -1504,6 +1641,7 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
     if (account) {
       await env.DB.batch([
         env.DB.prepare('DELETE FROM essay_reports WHERE essay IN (SELECT id FROM essays WHERE author = ?1)').bind(account.name),
+        env.DB.prepare('DELETE FROM essay_comments WHERE author = ?1 OR essay IN (SELECT id FROM essays WHERE author = ?1)').bind(account.name),
         env.DB.prepare('DELETE FROM essays WHERE author = ?1').bind(account.name),
         env.DB.prepare('DELETE FROM people WHERE name = ?1').bind(account.name),
       ]);

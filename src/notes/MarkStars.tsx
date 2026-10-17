@@ -1,5 +1,6 @@
 import type { Mark } from '../lib/shelf';
 import { starsIn } from '../reader/constellation';
+import './notes.css';
 
 /**
  * A book's constellation, small: each passage marked in it is a star, placed where it stands

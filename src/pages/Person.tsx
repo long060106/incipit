@@ -1,11 +1,14 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Avatar } from '../components/Avatar';
 import { BOOKS } from '../data/books';
 import type { L } from '../data/types';
 import { SITE_NAME, useI18n } from '../i18n';
 import { useCard } from '../lib/card';
 import { bookUrl, coverUrl } from '../lib/links';
-import { isProblem, MAX_BIO, people, TONES, toneOf, writeUrl, type EssayStatus, type Person as PersonData } from '../lib/people';
+import { usePassages } from '../lib/passages';
+import { isProblem, MAX_BIO, people, TONES, toneOf, writeUrl, type EssayStatus, type Passage, type Person as PersonData } from '../lib/people';
+import type { Mark } from '../lib/shelf';
+import { MarkStars } from '../notes/MarkStars';
 import { EssayCard } from './Essays';
 import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
 import '../notes/notes.css';
@@ -44,6 +47,14 @@ const TEXT = {
   offline: { en: 'The server could not be reached. Try again in a moment.', fr: 'Le serveur est injoignable. Réessayez dans un instant.' },
   'too-long': { en: 'That is longer than 280 characters.', fr: 'C’est plus long que 280 caractères.' },
   stars: { en: '{n} of 5 stars', fr: '{n} étoiles sur 5' },
+  passages: { en: 'Passages', fr: 'Passages' },
+  passagesNone: {
+    en: 'No passage chosen yet. Mark words as you read, then press the star beside a note in your notebook to show it here.',
+    fr: 'Aucun passage choisi. Marquez des mots en lisant, puis appuyez sur l’étoile d’une note de votre carnet pour la montrer ici.',
+  },
+  passagesSky: { en: 'Each star is one of these passages. Press one to find it.', fr: 'Chaque étoile est l’un de ces passages. Appuyez sur l’une pour le retrouver.' },
+  toNotebook: { en: 'Open your notebook', fr: 'Ouvrir votre carnet' },
+  takeAway: { en: 'Stop showing this passage', fr: 'Ne plus montrer ce passage' },
 } satisfies Record<string, L>;
 
 const BY_ID = new Map(BOOKS.map((book) => [book.id, book]));
@@ -125,6 +136,8 @@ function Page({ person, onChange }: { person: PersonData; onChange: (person: Per
           }}
         />
       )}
+
+      {(person.quotes.length > 0 || person.own) && <Passages person={person} onChange={onChange} />}
 
       <section className="person-section">
         <h2 className="page-eyebrow">
@@ -209,6 +222,99 @@ function Page({ person, onChange }: { person: PersonData; onChange: (person: Per
         )}
       </section>
     </div>
+  );
+}
+
+/**
+ * The passages a reader chose to show, each a card with its book, and above them their sky:
+ * one star for each, placed as in the margins of the reader. Pressing a star finds its card.
+ */
+function Passages({ person, onChange }: { person: PersonData; onChange: (person: PersonData) => void }) {
+  const { tl } = useI18n();
+  const passages = usePassages();
+  const [lit, setLit] = useState<string | null>(null);
+  const list = useRef<HTMLUListElement>(null);
+  const stars: Mark[] = person.quotes.map((passage, at) => ({ id: passage.id, bookId: passage.book, quote: passage.quote, note: '', links: [], created: at }));
+
+  // The cards come up one after another as they come into view.
+  useEffect(() => {
+    const cards = list.current?.querySelectorAll<HTMLElement>('.passage');
+    if (!cards) return;
+    const seen = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries)
+          if (entry.isIntersecting) {
+            (entry.target as HTMLElement).dataset.shown = 'true';
+            seen.unobserve(entry.target);
+          }
+      },
+      { rootMargin: '0px 0px -8% 0px' },
+    );
+    cards.forEach((card) => seen.observe(card));
+    return () => seen.disconnect();
+  }, [person.quotes.length]);
+
+  const find = (mark: Mark) => {
+    setLit(mark.id);
+    document.getElementById(`passage-${mark.id}`)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    window.setTimeout(() => setLit((now) => (now === mark.id ? null : now)), 2600);
+  };
+
+  const takeAway = async (passage: Passage) => {
+    const next = person.quotes.filter((other) => other.id !== passage.id);
+    onChange({ ...person, quotes: next });
+    const answer = await people.saveQuotes(next);
+    if (isProblem(answer)) onChange(person);
+    else passages.set(answer.quotes);
+  };
+
+  return (
+    <section className="person-section person-passages">
+      <h2 className="page-eyebrow">
+        {tl(TEXT.passages)} <span>{person.quotes.length || ''}</span>
+      </h2>
+      {person.quotes.length === 0 ? (
+        <p className="people-quiet">
+          {tl(TEXT.passagesNone)}{' '}
+          <a className="text-link" href={pageUrl('notebook')}>
+            <span className="u">{tl(TEXT.toNotebook)}</span> →
+          </a>
+        </p>
+      ) : (
+        <>
+          {person.quotes.length > 1 && (
+            <figure className="passages-sky">
+              <MarkStars marks={stars} width={640} height={120} lit={lit} onPick={find} />
+              <figcaption>{tl(TEXT.passagesSky)}</figcaption>
+            </figure>
+          )}
+          <ul className="passages" ref={list}>
+            {person.quotes.map((passage, at) => {
+              const book = BY_ID.get(passage.book);
+              return (
+                <li key={passage.id} id={`passage-${passage.id}`} className="passage" data-lit={lit === passage.id || undefined} style={{ transitionDelay: `${(at % 4) * 90}ms` }}>
+                  <blockquote>{passage.quote}</blockquote>
+                  {book && (
+                    <a className="passage-book" href={bookUrl(book.id)}>
+                      <img src={coverUrl(book, 'sm')} alt="" width={28} height={42} loading="lazy" />
+                      <span>
+                        <strong>{book.title}</strong>
+                        <small>{book.author}</small>
+                      </span>
+                    </a>
+                  )}
+                  {person.own && (
+                    <button type="button" className="passage-remove" onClick={() => void takeAway(passage)} aria-label={tl(TEXT.takeAway)} title={tl(TEXT.takeAway)}>
+                      ×
+                    </button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+    </section>
   );
 }
 

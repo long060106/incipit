@@ -352,73 +352,6 @@
   font-size: 1.25rem;
 }
 
-/* A book's constellation (src/notes/MarkStars.tsx). */
-.mark-stars {
-  display: block;
-  overflow: visible;
-  max-width: 100%;
-  height: auto;
-}
-
-.mark-stars-line {
-  fill: none;
-  stroke: var(--accent);
-  stroke-opacity: 0.4;
-  stroke-width: 0.8;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: stars-line 2.4s var(--ease-out) 0.3s forwards;
-}
-
-@keyframes stars-line {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.mark-star {
-  animation:
-    star-open 0.9s var(--ease-out) both,
-    star-twinkle 3.2s ease-in-out infinite;
-}
-
-.mark-star[role='button'] {
-  cursor: pointer;
-  outline: none;
-}
-
-@keyframes star-open {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes star-twinkle {
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.mark-star-glow {
-  fill: var(--accent);
-  opacity: 0.16;
-  transition: opacity 0.4s ease;
-}
-
-.mark-star-core {
-  fill: #fff6e2;
-}
-
-:root[data-theme='day'] .mark-star-core {
-  fill: var(--accent);
-}
-
-.mark-star[role='button']:hover .mark-star-glow,
-.mark-star[role='button']:focus-visible .mark-star-glow,
-.mark-star[data-lit] .mark-star-glow {
-  opacity: 0.45;
-}
-
 /* Beside an open folder, larger. */
 .notebook-stars {
   display: grid;
@@ -529,8 +462,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .spine,
-  .mark-star,
-  .mark-stars-line,
   .ink-written > span,
   .ink-nib,
   .notebook-empty > p,

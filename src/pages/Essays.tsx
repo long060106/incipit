@@ -5,7 +5,7 @@ import type { Book, L } from '../data/types';
 import { SITE_NAME, useI18n } from '../i18n';
 import { useCard } from '../lib/card';
 import { bookUrl, coverUrl } from '../lib/links';
-import { essays, essayUrl, isProblem, minutes, personUrl, writeUrl, type Essay, type EssaySummary } from '../lib/people';
+import { essays, essayUrl, isProblem, MAX_COMMENT, minutes, personUrl, writeUrl, type Comment, type Essay, type EssaySummary } from '../lib/people';
 import { Prose } from '../lib/prose';
 import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
 import './people.css';
@@ -59,6 +59,24 @@ export const ESSAY_TEXT = {
   readIt: { en: 'Read the essay', fr: 'Lire l’essai' },
   latest: { en: 'Latest', fr: 'Le plus récent' },
   deskSign: { en: 'Your essay could begin like this.', fr: 'Votre essai pourrait commencer ainsi.' },
+  comments: { en: '{n} replies', fr: '{n} réponses' },
+  oneComment: { en: '1 reply', fr: '1 réponse' },
+} satisfies Record<string, L>;
+
+const COMMENT_TEXT = {
+  title: { en: 'Replies', fr: 'Réponses' },
+  none: { en: 'No reply yet. Say what it made you think.', fr: 'Pas encore de réponse. Dites ce qu’il vous a fait penser.' },
+  write: { en: 'Your reply…', fr: 'Votre réponse…' },
+  send: { en: 'Reply', fr: 'Répondre' },
+  signIn: { en: 'Sign in to reply', fr: 'Se connecter pour répondre' },
+  remove: { en: 'Remove', fr: 'Retirer' },
+  removeSure: { en: 'Yes, remove it', fr: 'Oui, la retirer' },
+  cancel: { en: 'Cancel', fr: 'Annuler' },
+  author: { en: 'Author', fr: 'Auteur' },
+  'too-short': { en: 'Write a little more.', fr: 'Écrivez un peu plus.' },
+  'too-long': { en: 'That is longer than 2,000 characters.', fr: 'C’est plus long que 2 000 caractères.' },
+  'too-many': { en: 'That is a great many replies for one day. Try again tomorrow.', fr: 'Cela fait beaucoup de réponses pour un jour. Réessayez demain.' },
+  failed: { en: 'That could not be sent. Try again in a moment.', fr: 'Cela n’a pas pu être envoyé. Réessayez dans un instant.' },
 } satisfies Record<string, L>;
 
 /** First lines typed out on the empty desk, one after another, as examples of a way in. */
@@ -197,6 +215,12 @@ function EssayFeature({ essay, lang }: { essay: EssaySummary; lang: string }) {
             <time dateTime={new Date(essay.at).toISOString()}>{day(essay.at, lang)}</time>
             <span aria-hidden="true">·</span>
             <span>{tl(ESSAY_TEXT.read).replace('{n}', String(minutes(essay.words)))}</span>
+            {!!essay.comments && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>{essay.comments === 1 ? tl(ESSAY_TEXT.oneComment) : tl(ESSAY_TEXT.comments).replace('{n}', String(essay.comments))}</span>
+              </>
+            )}
           </span>
           <span className="essay-feature-go">{tl(ESSAY_TEXT.readIt)} →</span>
         </span>
@@ -287,6 +311,12 @@ export function EssayCard({ essay, lang, children }: { essay: EssaySummary; lang
             <time dateTime={new Date(essay.at).toISOString()}>{day(essay.at, lang)}</time>
             <span aria-hidden="true">·</span>
             <span>{tl(ESSAY_TEXT.read).replace('{n}', String(minutes(essay.words)))}</span>
+            {!!essay.comments && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>{essay.comments === 1 ? tl(ESSAY_TEXT.oneComment) : tl(ESSAY_TEXT.comments).replace('{n}', String(essay.comments))}</span>
+              </>
+            )}
           </span>
         </span>
       </a>
@@ -336,6 +366,133 @@ function useReadingThread(article: React.RefObject<HTMLElement | null>, ready: b
     };
   }, [article, ready]);
   return through;
+}
+
+/**
+ * The replies under an essay, oldest first, and a place to write one for a reader with an
+ * account. A reply can be taken away by whoever wrote it, by the essay's author, and by the
+ * keeper at the open desk. A new reply comes in at the foot with a light along its edge.
+ */
+function Comments({ essay }: { essay: Essay }) {
+  const { tl, lang } = useI18n();
+  const { card: mine } = useCard();
+  const [list, setList] = useState<Comment[] | null>(null);
+  const [text, setText] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [problem, setProblem] = useState<keyof typeof COMMENT_TEXT | null>(null);
+  const [asking, setAsking] = useState<string | null>(null);
+  const [fresh, setFresh] = useState<string | null>(null);
+
+  useEffect(() => {
+    void essays.comments(essay.id).then((answer) => setList(isProblem(answer) ? [] : answer.comments));
+  }, [essay.id, mine?.code]);
+
+  const send = async () => {
+    if (busy) return;
+    setBusy(true);
+    setProblem(null);
+    const answer = await essays.comment(essay.id, text);
+    setBusy(false);
+    if (isProblem(answer)) return setProblem(answer === 'too-short' || answer === 'too-long' || answer === 'too-many' ? answer : 'failed');
+    setList((before) => [...(before ?? []), answer]);
+    setFresh(answer.id);
+    setText('');
+  };
+
+  const remove = async (comment: Comment) => {
+    setAsking(null);
+    const answer = await essays.dropComment(essay.id, comment.id);
+    if (!isProblem(answer)) setList((before) => before?.filter((other) => other.id !== comment.id) ?? null);
+  };
+
+  const signIn = `${pageUrl('signin')}?next=${encodeURIComponent(essayUrl(essay.id))}`;
+
+  return (
+    <section className="comments" aria-labelledby="comments-title">
+      <h2 id="comments-title" className="page-eyebrow">
+        {tl(COMMENT_TEXT.title)} <span>{list?.length || ''}</span>
+      </h2>
+      {list?.length === 0 && <p className="people-quiet">{tl(COMMENT_TEXT.none)}</p>}
+      {list && list.length > 0 && (
+        <ol className="comment-list">
+          {list.map((comment) => (
+            <li key={comment.id} className="comment" data-fresh={comment.id === fresh || undefined}>
+              <a href={personUrl(comment.author)} className="comment-who" tabIndex={-1} aria-hidden="true">
+                <Avatar name={comment.author} tone={comment.tone} size="sm" />
+              </a>
+              <div className="comment-main">
+                <p className="comment-head">
+                  <a href={personUrl(comment.author)}>{comment.author}</a>
+                  {comment.author === essay.author && <span className="comment-badge">{tl(COMMENT_TEXT.author)}</span>}
+                  <time dateTime={new Date(comment.at).toISOString()}>{new Date(comment.at).toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' })}</time>
+                </p>
+                {comment.body.split(/\n\s*\n/).map((paragraph, at) => (
+                  <p key={at} className="comment-body">
+                    {paragraph}
+                  </p>
+                ))}
+                {comment.removable &&
+                  (asking === comment.id ? (
+                    <p className="comment-actions">
+                      <button type="button" className="text-button" onClick={() => void remove(comment)}>
+                        <span className="u">{tl(COMMENT_TEXT.removeSure)}</span>
+                      </button>
+                      <button type="button" className="text-button" onClick={() => setAsking(null)}>
+                        {tl(COMMENT_TEXT.cancel)}
+                      </button>
+                    </p>
+                  ) : (
+                    <p className="comment-actions">
+                      <button type="button" className="text-button" onClick={() => setAsking(comment.id)}>
+                        {tl(COMMENT_TEXT.remove)}
+                      </button>
+                    </p>
+                  ))}
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
+      {mine?.name ? (
+        <form
+          className="comment-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void send();
+          }}
+        >
+          <Avatar name={mine.name} size="sm" />
+          <div className="comment-main">
+            <textarea
+              value={text}
+              onChange={(event) => {
+                setText(event.target.value.slice(0, MAX_COMMENT));
+                setProblem(null);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) void send();
+              }}
+              placeholder={tl(COMMENT_TEXT.write)}
+              aria-label={tl(COMMENT_TEXT.write)}
+              rows={2}
+              maxLength={MAX_COMMENT}
+            />
+            <div className="comment-form-row">
+              {text.length > MAX_COMMENT * 0.8 && <small>{MAX_COMMENT - text.length}</small>}
+              {problem && <span className="card-problem">{tl(COMMENT_TEXT[problem])}</span>}
+              <button type="submit" className="button" disabled={text.trim().length < 2 || busy} aria-busy={busy || undefined}>
+                {tl(COMMENT_TEXT.send)}
+              </button>
+            </div>
+          </div>
+        </form>
+      ) : (
+        <a className="button button-quiet comment-sign-in" href={signIn}>
+          {tl(COMMENT_TEXT.signIn)}
+        </a>
+      )}
+    </section>
+  );
 }
 
 function OneEssay({ id }: { id: string }) {
@@ -444,6 +601,8 @@ function OneEssay({ id }: { id: string }) {
           </ul>
         </section>
       )}
+
+      {(essay.status === undefined || essay.status === 'approved') && <Comments essay={essay} />}
 
       <footer className="essay-foot card-actions card-quiet">
         {essay.mine ? (

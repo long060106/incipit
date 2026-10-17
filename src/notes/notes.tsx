@@ -4,6 +4,7 @@ import type { L } from '../data/types';
 import { useI18n } from '../i18n';
 import { fold } from '../lib/match';
 import { ownBook } from '../lib/mybooks';
+import { showable, usePassages } from '../lib/passages';
 import { useShelf, type Mark } from '../lib/shelf';
 import './notes.css';
 
@@ -24,7 +25,44 @@ export const NOTE_TEXT = {
   thoughts: { en: 'Thoughts', fr: 'Pensées' },
   removeSure: { en: 'Yes, remove it', fr: 'Oui, le retirer' },
   keep: { en: 'Keep it', fr: 'Le garder' },
+  show: { en: 'Show on my page', fr: 'Montrer sur ma page' },
+  shown: { en: 'On your page', fr: 'Sur votre page' },
+  full: { en: 'Your page shows twelve already', fr: 'Votre page en montre déjà douze' },
+  notSaved: { en: 'Not saved. Try again.', fr: 'Non enregistré. Réessayez.' },
 } satisfies Record<string, L>;
+
+/**
+ * The star that shows a marked passage on the reader's own page, for a reader with an account,
+ * and only for the words of a book out of copyright. Lit, it is on their page.
+ */
+function ShowStar({ mark }: { mark: Mark }) {
+  const { tl } = useI18n();
+  const passages = usePassages();
+  const [failed, setFailed] = useState(false);
+  const [burst, setBurst] = useState(0);
+  if (!passages.ready || !showable(mark)) return null;
+  const on = passages.has(mark.id);
+  const blocked = !on && passages.full;
+  return (
+    <button
+      type="button"
+      className="text-button note-star"
+      aria-pressed={on}
+      disabled={blocked}
+      title={blocked ? tl(NOTE_TEXT.full) : undefined}
+      onClick={async () => {
+        setFailed(false);
+        if (!on) setBurst((count) => count + 1);
+        setFailed(!!(await passages.toggle(mark)));
+      }}
+    >
+      <span className="note-star-glyph" aria-hidden="true" key={burst} data-burst={burst > 0 || undefined}>
+        {on ? '★' : '☆'}
+      </span>
+      {failed ? tl(NOTE_TEXT.notSaved) : tl(on ? NOTE_TEXT.shown : blocked ? NOTE_TEXT.full : NOTE_TEXT.show)}
+    </button>
+  );
+}
 
 /** The book a mark was made in: one of the catalogue's, or one of the reader's own. */
 export const bookOf = (mark: Mark): { title: string; author: string } | undefined =>
@@ -142,6 +180,7 @@ export function NoteEntry({ mark, follow, place, lit }: { mark: Mark; follow: (o
           <button type="button" className="text-button" onClick={() => setTying(true)}>
             + {tl(NOTE_TEXT.tie)}
           </button>
+          <ShowStar mark={mark} />
           {sure ? (
             <>
               <button type="button" className="text-button note-entry-remove" onClick={() => shelf.removeMark(mark.id)}>
