@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && tsc --noEmit -p worker && vite build",
     "preview": "vite preview",
+    "test": "node tests/run.mjs",
+    "test:api": "node tests/run.mjs --api-only",
     "catalog": "node scripts/fetch-catalog.mjs",
     "covers": "node scripts/fetch-covers.mjs",
     "books": "node scripts/fetch-books.mjs",

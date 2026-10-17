@@ -277,6 +277,24 @@
   margin: 0;
 }
 
+/* A forgotten password: a quiet line under the form, opening into a small form of its own. */
+.signin-forgot {
+  margin: 1.125rem 0 0;
+}
+
+form.signin-forgot {
+  padding-top: 1.125rem;
+  border-top: 1px solid var(--line);
+}
+
+form.signin-forgot .button {
+  justify-self: start;
+}
+
+.signin-reset .page-eyebrow {
+  margin: 0;
+}
+
 /* Signed in. */
 .signin-account {
   display: grid;

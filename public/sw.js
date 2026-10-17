@@ -14,6 +14,8 @@
 const VERSION = 'incipit-1';
 const KEPT = ['/assets/', '/covers/', '/cursors/', '/hero/', '/geo/', '/icons/', '/texts/'];
 const FONTS = ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'];
+/** The two small scripts every page runs before its code (public/boot): they may change under the same name. */
+const BOOT = ['/boot/theme.js', '/boot/loader.js'];
 /** The built code and styles of every page. The build writes the list in (vite.config.ts). */
 const BUILT = /*BUILT*/ [];
 /** The covers of the catalogue, written in the same way. */
@@ -27,6 +29,7 @@ self.addEventListener('install', (event) => {
       .open(VERSION)
       .then(async (cache) => {
         await cache.add(new Request('/', { cache: 'reload' }));
+        await Promise.all(BOOT.map((path) => cache.add(new Request(path, { cache: 'reload' })).catch(() => {})));
         // Every page's code, so a page not yet visited opens with no network too. One that
         // fails to arrive is fetched when it is wanted.
         await Promise.all(BUILT.map(async (path) => (await cache.match(path, SAME)) ?? cache.add(path).catch(() => {})));
@@ -101,5 +104,6 @@ self.addEventListener('fetch', (event) => {
   if (FONTS.includes(url.origin)) return event.respondWith(keptWhileFresher(request));
   if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
   if (request.mode === 'navigate') return event.respondWith(networkFirst(request));
+  if (BOOT.includes(url.pathname)) return event.respondWith(keptWhileFresher(request));
   if (KEPT.some((prefix) => url.pathname.startsWith(prefix))) return event.respondWith(keptFirst(request));
 });

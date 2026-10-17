@@ -1,0 +1,23 @@
+# The site's tests (tests/run.mjs), on every push and pull request: a red cross on GitHub
+# when something is broken. They run on a server of their own here, never against the site.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+        env:
+          BROWSER_CHANNEL: chrome

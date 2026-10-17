@@ -64,6 +64,15 @@
     POST   /api/unlock    open the desk: { password }                      -> { key }
     DELETE /api/unlock    close it again
 
+  A reader who has forgotten their password, and gave an email with their account, can be sent
+  a link that sets a new one. The site sends it through a mail service (Brevo or Resend) whose
+  key the owner of the site keeps as a secret of the worker; without one, these answer 503 and
+  the keeper sets the password again by hand (POST /api/accounts/<name>/reset).
+
+    GET    /api/account/forgot   can a link be sent at all                  -> { mail }
+    POST   /api/account/forgot   send one: { who, lang }                    -> { ok }
+    POST   /api/account/reset    use it: { token, password }                -> as /api/account/enter
+
   Records are the flat rows of src/lib/shelf.ts: a key, a JSON value (absent once deleted)
   and the time the reader last changed it. Between two devices the later change wins.
 */
@@ -75,6 +84,13 @@ import { AXES, GENRES, KEYWORDS, LANGUAGES } from '../src/data/vocab';
 export interface Env {
   DB: D1Database;
   ASSETS: Fetcher;
+  /** The mail service's key, kept as a secret (`wrangler secret put`): Brevo's, or Resend's. */
+  BREVO_API_KEY?: string;
+  RESEND_API_KEY?: string;
+  /** Who the letters are from: "Incipit <address>", an address the mail service has verified. */
+  MAIL_FROM?: string;
+  /** '1' on a development server only: a letter is handed back in the answer instead of sent. */
+  MAIL_DEV?: string;
 }
 
 interface Card {
@@ -113,6 +129,10 @@ const NAME = /^[a-z0-9][a-z0-9._-]{2,23}$/;
 /** An email address a reader may sign in with; it is never shown to anyone. */
 const EMAIL = /^[^\s@]{1,64}@[^\s@.]+(\.[^\s@.]+)+$/;
 const MAX_NAME_LOOKUPS_PER_DAY = 400; // asking whether a name is free, from one address
+const MAX_FORGOT_PER_DAY = 10; // links asked for, from one address
+const MAX_LETTERS_PER_ACCOUNT = 3; // links sent to one account in a day
+const RESET_FOR = 30 * 60 * 1000; // milliseconds a link works
+const DAY = 24 * 60 * 60 * 1000;
 const STRETCH = 100_000; // rounds of PBKDF2
 const MAX_COVER = 400_000; // bytes
 const MAX_ADDED = 500; // books
@@ -423,11 +443,23 @@ async function changeAccount(request: Request, env: Env, card: Card): Promise<Re
  * code too; devices still holding the old one must sign in again.
  */
 async function resetAccount(env: Env, name: string): Promise<Response> {
-  const row = await env.DB.prepare('SELECT card FROM accounts WHERE name = ?1').bind(name).first<{ card: string }>();
-  if (!row) return refuse(404, 'no-account');
+  const password = [...crypto.getRandomValues(new Uint8Array(12))].map((byte) => ALPHABET[byte & 31]).join('').toLowerCase();
+  if (!(await rekey(env, name, password))) return refuse(404, 'no-account');
+  return json({ name, password });
+}
+
+/**
+ * Puts a new password in front of an account. The code of its card cannot be read back without
+ * the old one, so the card is given a new code and everything kept under the old one moves to
+ * it; devices still holding the old code must sign in again.
+ */
+async function rekey(env: Env, name: string, password: string): Promise<{ code: string; role: string } | null> {
+  const row = await env.DB.prepare('SELECT accounts.card, cards.role FROM accounts JOIN cards ON cards.id = accounts.card WHERE accounts.name = ?1')
+    .bind(name)
+    .first<{ card: string; role: string }>();
+  if (!row) return null;
   const code = newCode();
   const id = await sha256(code);
-  const password = [...crypto.getRandomValues(new Uint8Array(12))].map((byte) => ALPHABET[byte & 31]).join('').toLowerCase();
   const kept = await sealUnder(password, code);
   await env.DB.batch([
     env.DB.prepare('INSERT INTO cards (id, created, seen, role) SELECT ?1, created, seen, role FROM cards WHERE id = ?2').bind(id, row.card),
@@ -437,8 +469,123 @@ async function resetAccount(env: Env, name: string): Promise<Response> {
     env.DB.prepare('UPDATE accounts SET card = ?1, salt = ?2, hash = ?3, iv = ?4, sealed = ?5 WHERE name = ?6').bind(id, kept.salt, kept.hash, kept.iv, kept.sealed, name),
     env.DB.prepare('DELETE FROM keeper_sessions WHERE card = ?1').bind(row.card),
     env.DB.prepare('DELETE FROM cards WHERE id = ?1').bind(row.card),
+    env.DB.prepare('DELETE FROM resets WHERE name = ?1').bind(name),
   ]);
-  return json({ name, password });
+  return { code, role: row.role };
+}
+
+// ── Forgotten passwords ─────────────────────────────────────────────────────
+
+const mailReady = (env: Env) => !!env.MAIL_FROM && !!(env.BREVO_API_KEY || env.RESEND_API_KEY);
+/** A development server asked to hand letters back: never the site itself, whatever it is told. */
+const mailDev = (request: Request, env: Env) => env.MAIL_DEV === '1' && ['localhost', '127.0.0.1', '[::1]'].includes(new URL(request.url).hostname);
+
+interface Letter {
+  to: string;
+  subject: string;
+  text: string;
+  html: string;
+}
+
+/** Sends a letter through the mail service whose key the worker holds. */
+async function send(env: Env, letter: Letter): Promise<void> {
+  const from = /^(.*)<([^>]+)>\s*$/.exec(env.MAIL_FROM ?? '');
+  const sender = from ? { name: from[1].trim() || 'Incipit', email: from[2].trim() } : { name: 'Incipit', email: (env.MAIL_FROM ?? '').trim() };
+  try {
+    const response = env.RESEND_API_KEY
+      ? await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
+          body: JSON.stringify({ from: `${sender.name} <${sender.email}>`, to: [letter.to], subject: letter.subject, text: letter.text, html: letter.html }),
+        })
+      : await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: { 'api-key': env.BREVO_API_KEY ?? '', 'content-type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify({ sender, to: [{ email: letter.to }], subject: letter.subject, textContent: letter.text, htmlContent: letter.html }),
+        });
+    if (!response.ok) console.error('mail refused', response.status, await response.text().catch(() => ''));
+  } catch (error) {
+    console.error('mail failed', error);
+  }
+}
+
+function resetLetter(link: string, name: string, lang: 'en' | 'fr'): Omit<Letter, 'to'> {
+  const words =
+    lang === 'fr'
+      ? {
+          subject: 'Un nouveau mot de passe pour Incipit',
+          hello: `Bonjour ${name},`,
+          why: 'Quelqu’un, vous sans doute, a demandé un nouveau mot de passe pour votre compte Incipit. Ouvrez ce lien pour le choisir. Il fonctionne une fois, pendant 30 minutes :',
+          button: 'Choisir un nouveau mot de passe',
+          ignore: 'Si vous n’avez rien demandé, ignorez ce message : votre mot de passe reste le même.',
+        }
+      : {
+          subject: 'A new password for Incipit',
+          hello: `Hello ${name},`,
+          why: 'Someone, we hope you, asked for a new password for your Incipit account. Open this link to choose one. It works once, for 30 minutes:',
+          button: 'Choose a new password',
+          ignore: 'If you did not ask, ignore this email: your password stays as it is.',
+        };
+  const text = `${words.hello}\n\n${words.why}\n\n${link}\n\n${words.ignore}\n\nIncipit`;
+  const html = `<div style="font-family:Georgia,serif;font-size:16px;line-height:1.6;color:#1b1a17;max-width:520px">
+<p>${inText(words.hello)}</p><p>${inText(words.why)}</p>
+<p><a href="${inAttribute(link)}" style="display:inline-block;padding:10px 18px;background:#7a1f2b;color:#f4f0e8;text-decoration:none;border-radius:4px">${inText(words.button)}</a></p>
+<p style="font-size:13px;color:#5c574d;word-break:break-all">${inText(link)}</p>
+<p style="font-size:13px;color:#5c574d">${inText(words.ignore)}</p><p>Incipit</p></div>`;
+  return { subject: words.subject, text, html };
+}
+
+/**
+ * Sends a link that sets a new password to the email of the account named, or of the account
+ * with that email. The answer is the same whether or not there is such an account, and the letter
+ * goes out after it, so that neither the answer nor the wait says whether an email is known.
+ */
+async function forgot(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  const dev = mailDev(request, env);
+  if (!mailReady(env) && !dev) return refuse(503, 'no-mail');
+  if (!(await within(env, request, 'forgot', MAX_FORGOT_PER_DAY))) return refuse(429, 'too-many');
+  const body = await bodyOf(request);
+  const who = typeof body?.who === 'string' ? body.who.trim().toLowerCase() : '';
+  const lang = body?.lang === 'fr' ? 'fr' : 'en';
+  const row = NAME.test(who)
+    ? await env.DB.prepare('SELECT name, email FROM accounts WHERE name = ?1').bind(who).first<{ name: string; email: string | null }>()
+    : EMAIL.test(who)
+      ? await env.DB.prepare('SELECT name, email FROM accounts WHERE email = ?1').bind(who).first<{ name: string; email: string | null }>()
+      : null;
+  if (!row?.email) return json({ ok: true });
+  const now = Date.now();
+  const recent = await env.DB.prepare('SELECT COUNT(*) AS n FROM resets WHERE name = ?1 AND created > ?2').bind(row.name, now - DAY).first<{ n: number }>();
+  if ((recent?.n ?? 0) >= MAX_LETTERS_PER_ACCOUNT) return json({ ok: true });
+  const token = hex(crypto.getRandomValues(new Uint8Array(32)));
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM resets WHERE created < ?1').bind(now - 2 * DAY),
+    env.DB.prepare('INSERT INTO resets (id, name, created, expires) VALUES (?1, ?2, ?3, ?4)').bind(await sha256(token), row.name, now, now + RESET_FOR),
+  ]);
+  // In the fragment, so the token is never sent to a server, nor in a Referer.
+  const link = `${new URL(request.url).origin}/signin#reset=${token}`;
+  if (dev) return json({ ok: true, letter: { to: row.email, link } });
+  ctx.waitUntil(send(env, { to: row.email, ...resetLetter(link, row.name, lang) }));
+  return json({ ok: true });
+}
+
+/** A link from a letter, and the new password: the account is opened, as with a name and a password. */
+async function resetByLetter(request: Request, env: Env): Promise<Response> {
+  if (!(await within(env, request, 'enter', MAX_ENTERS_PER_DAY))) return refuse(429, 'too-many');
+  const body = await bodyOf(request);
+  const token = typeof body?.token === 'string' ? body.token : '';
+  const password = body?.password;
+  if (!/^[0-9a-f]{64}$/.test(token)) return refuse(400, 'bad-link');
+  if (!goodPassword(password)) return refuse(400, 'bad-password');
+  // Marking the link used and checking that it was still good are one statement, so it works once.
+  const now = Date.now();
+  const taken = await env.DB.prepare('UPDATE resets SET used = ?2 WHERE id = ?1 AND used IS NULL AND expires > ?2 RETURNING name')
+    .bind(await sha256(token), now)
+    .first<{ name: string }>();
+  if (!taken) return refuse(400, 'bad-link');
+  const opened = await rekey(env, taken.name, password);
+  if (!opened) return refuse(400, 'bad-link');
+  const account = await env.DB.prepare('SELECT name, email FROM accounts WHERE name = ?1').bind(taken.name).first<{ name: string; email: string | null }>();
+  return json({ code: opened.code, role: opened.role, name: account?.name ?? taken.name, email: account?.email ?? null });
 }
 
 async function accounts(env: Env): Promise<Response> {
@@ -973,6 +1120,7 @@ async function essays(request: Request, env: Env, id: string | undefined, rest: 
 // ── A page of its own for each book ─────────────────────────────────────────
 
 const BY_ID = new Map(BOOKS.map((book) => [book.id, book]));
+const inText = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const inAttribute = (text: string) => text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const shortened = (text: string, most: number) => (text.length <= most ? text : `${text.slice(0, text.lastIndexOf(' ', most - 1))}…`);
 
@@ -1537,10 +1685,13 @@ async function claim(request: Request, env: Env, card: Card): Promise<Response> 
   return json({ role: 'admin' });
 }
 
-async function api(request: Request, env: Env, path: string): Promise<Response> {
+async function api(request: Request, env: Env, path: string, ctx: ExecutionContext): Promise<Response> {
   if (path === '/api/card' && request.method === 'POST') return makeCard(request, env);
   if (path === '/api/account/enter' && request.method === 'POST') return enterAccount(request, env);
   if (path === '/api/account/free' && request.method === 'GET') return nameFree(request, env);
+  if (path === '/api/account/forgot' && request.method === 'GET') return json({ mail: mailReady(env) || mailDev(request, env) });
+  if (path === '/api/account/forgot' && request.method === 'POST') return forgot(request, env, ctx);
+  if (path === '/api/account/reset' && request.method === 'POST') return resetByLetter(request, env);
   if (path === '/api/books' && request.method === 'GET') return overrides(env);
   if (path === '/api/profile' && request.method === 'GET') return profile(env);
   if (path === '/api/portrait' && request.method === 'GET') return portrait(env);
@@ -1644,6 +1795,7 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
         env.DB.prepare('DELETE FROM essay_comments WHERE author = ?1 OR essay IN (SELECT id FROM essays WHERE author = ?1)').bind(account.name),
         env.DB.prepare('DELETE FROM essays WHERE author = ?1').bind(account.name),
         env.DB.prepare('DELETE FROM people WHERE name = ?1').bind(account.name),
+        env.DB.prepare('DELETE FROM resets WHERE name = ?1').bind(account.name),
       ]);
     }
     await env.DB.batch([
@@ -1658,23 +1810,48 @@ async function api(request: Request, env: Env, path: string): Promise<Response> 
   return refuse(404, 'not-found');
 }
 
+/**
+ * The rules every answer carries, the same as public/_headers gives the built site: a page
+ * written here (a book's, an essay's) runs only the site's own scripts and is never framed.
+ */
+const SECURITY: Record<string, string> = {
+  'content-security-policy':
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+  'x-content-type-options': 'nosniff',
+  'x-frame-options': 'DENY',
+  'referrer-policy': 'strict-origin-when-cross-origin',
+  'strict-transport-security': 'max-age=31536000',
+  'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+  'cross-origin-opener-policy': 'same-origin',
+};
+
+function guarded(response: Response): Response {
+  const answer = new Response(response.body, response);
+  for (const [name, value] of Object.entries(SECURITY)) if (!answer.headers.has(name)) answer.headers.set(name, value);
+  return answer;
+}
+
+async function answer(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  const { pathname } = new URL(request.url);
+  try {
+    if (pathname.startsWith('/book/')) return await bookPage(request, env, decodeURIComponent(pathname.slice('/book/'.length)).replace(/\/$/, ''));
+    if (pathname === '/sitemap.xml') return await sitemap(request, env);
+    if (pathname.startsWith('/essays/')) return await essayPage(request, env, pathname.slice('/essays/'.length).replace(/\/$/, ''));
+  } catch (error) {
+    console.error(error);
+    return env.ASSETS.fetch(new Request(new URL('/', request.url)));
+  }
+  if (!pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
+  try {
+    return await api(request, env, pathname, ctx);
+  } catch (error) {
+    console.error(error);
+    return refuse(500, 'server-error');
+  }
+}
+
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const { pathname } = new URL(request.url);
-    try {
-      if (pathname.startsWith('/book/')) return await bookPage(request, env, decodeURIComponent(pathname.slice('/book/'.length)).replace(/\/$/, ''));
-      if (pathname === '/sitemap.xml') return await sitemap(request, env);
-      if (pathname.startsWith('/essays/')) return await essayPage(request, env, pathname.slice('/essays/'.length).replace(/\/$/, ''));
-    } catch (error) {
-      console.error(error);
-      return env.ASSETS.fetch(new Request(new URL('/', request.url)));
-    }
-    if (!pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
-    try {
-      return await api(request, env, pathname);
-    } catch (error) {
-      console.error(error);
-      return refuse(500, 'server-error');
-    }
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    return guarded(await answer(request, env, ctx));
   },
 } satisfies ExportedHandler<Env>;

@@ -1,0 +1,15 @@
+# Rules sent with every file of the built site (Cloudflare reads this file; see wrangler.jsonc).
+# The pages the server writes itself (/book/<id>, /essays/<id>, /api/*) are given the same
+# rules in worker/index.ts (SECURITY), so a change here is a change there too.
+#
+# Content-Security-Policy: scripts only from this site (no script written into a page), the
+# fonts from Google, nothing else fetched from anywhere else, and the site never shown inside
+# another site's frame.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin

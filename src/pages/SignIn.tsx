@@ -17,6 +17,10 @@ import './signin.css';
   in. Signed in, the page shows the account, and the library card behind it.
 
   "?next=/book/…" sends the reader back where they came from once they are in.
+
+  A reader who has forgotten their password asks here for a link, sent to the email of their
+  account. The link comes back to this page ("#reset=<token>", in the fragment so that it never
+  reaches a server log), where they choose a new one and are signed in.
 */
 
 const TEXT = {
@@ -45,6 +49,19 @@ const TEXT = {
     en: 'Forgot your password? Write to the address on the About page: it can be set again for you.',
     fr: 'Mot de passe oublié ? Écrivez à l’adresse de la page À propos : il peut être redéfini pour vous.',
   },
+  forgotAsk: { en: 'Forgot your password?', fr: 'Mot de passe oublié ?' },
+  forgotLead: {
+    en: 'Type your name or your email. If your account has an email, a link to choose a new password is sent to it.',
+    fr: 'Saisissez votre nom ou votre e-mail. Si votre compte a un e-mail, un lien pour choisir un nouveau mot de passe y est envoyé.',
+  },
+  forgotSend: { en: 'Send me a link', fr: 'M’envoyer un lien' },
+  forgotSent: {
+    en: 'If an account with that name or email has an email address, a link is on its way. It works for 30 minutes. Look in your spam folder too. No email on your account? Write to the address on the About page.',
+    fr: 'Si un compte avec ce nom ou cet e-mail a une adresse e-mail, un lien est en route. Il fonctionne 30 minutes. Regardez aussi dans vos indésirables. Pas d’e-mail sur votre compte ? Écrivez à l’adresse de la page À propos.',
+  },
+  resetTitle: { en: 'Choose a new password', fr: 'Choisissez un nouveau mot de passe' },
+  resetSave: { en: 'Save and sign in', fr: 'Enregistrer et se connecter' },
+  'bad-link': { en: 'This link has expired or was already used. Ask for a new one.', fr: 'Ce lien a expiré ou a déjà servi. Demandez-en un nouveau.' },
   as: { en: 'Signed in as', fr: 'Connecté en tant que' },
   notebook: { en: 'Open your notebook', fr: 'Ouvrir votre carnet' },
   page: { en: 'Your page', fr: 'Votre page' },
@@ -72,7 +89,7 @@ const TEXT = {
   offline: { en: 'The server could not be reached. Try again in a moment.', fr: 'Le serveur est injoignable. Réessayez dans un instant.' },
 } satisfies Record<string, L>;
 
-type Problem = 'taken' | 'email-taken' | 'bad-name' | 'bad-email' | 'bad-password' | 'differ' | 'wrong' | 'too-many' | 'offline';
+type Problem = 'taken' | 'email-taken' | 'bad-name' | 'bad-email' | 'bad-password' | 'differ' | 'wrong' | 'too-many' | 'offline' | 'bad-link';
 type NameState = 'idle' | 'checking' | 'free' | 'taken' | 'bad';
 
 const NAME = /^[a-z0-9][a-z0-9._-]{2,23}$/;
@@ -97,6 +114,8 @@ export default function SignIn() {
   const { card: mine } = useCard();
   useQuickLoader();
   const claiming = location.hash.startsWith('#claim=');
+  const [resetToken, setResetToken] = useState(() => /^#reset=([0-9a-f]{64})$/.exec(location.hash)?.[1] ?? null);
+  const [justReset, setJustReset] = useState(false);
   const pageRef = useRef<HTMLDivElement>(null);
   // Threads of gilt drifting behind it all (./threads.ts).
   useEffect(() => installThreads(pageRef.current!), []);
@@ -117,7 +136,20 @@ export default function SignIn() {
           </ul>
         </section>
         <section className="signin-card">
-          {mine?.name ? <Account /> : <Doors holdsCard={!!mine} />}
+          {resetToken ? (
+            <Reset
+              token={resetToken}
+              onDone={() => {
+                history.replaceState(history.state, '', location.pathname + location.search);
+                setResetToken(null);
+                setJustReset(true);
+              }}
+            />
+          ) : mine?.name ? (
+            <Account fresh={justReset} />
+          ) : (
+            <Doors holdsCard={!!mine} />
+          )}
           <details className="signin-library" open={claiming || (!!mine && !mine.name) || undefined}>
             <summary>{tl(mine?.name ? TEXT.cardMine : TEXT.cardWhy)}</summary>
             <CardPanel />
@@ -268,9 +300,114 @@ function Doors({ holdsCard }: { holdsCard: boolean }) {
           {tl(door === 'in' ? TEXT.signIn : TEXT.create)}
         </button>
         {problem && <p className="card-problem">{tl(TEXT[problem])}</p>}
-        <p className="card-note">{tl(TEXT.forgot)}</p>
       </form>
+      {door === 'in' && <Forgot who={who} />}
     </>
+  );
+}
+
+/** Asking for a link that sets a new password; or, while the site cannot send one, who to write to. */
+function Forgot({ who }: { who: string }) {
+  const { tl, lang } = useI18n();
+  const [open, setOpen] = useState(false);
+  const [mail, setMail] = useState<boolean | null>(null);
+  const [typed, setTyped] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [state, setState] = useState<'sent' | 'too-many' | 'offline' | null>(null);
+
+  const begin = async () => {
+    setOpen(true);
+    setTyped(who.trim());
+    setMail(await card.canMail());
+  };
+
+  const send = async () => {
+    setBusy(true);
+    const answer = await card.forgot(typed, lang);
+    setBusy(false);
+    if (answer === 'no-mail') return setMail(false);
+    setState(answer);
+  };
+
+  if (!open)
+    return (
+      <p className="card-note signin-forgot">
+        <button type="button" className="text-button" onClick={() => void begin()}>
+          <span className="u">{tl(TEXT.forgotAsk)}</span>
+        </button>
+      </p>
+    );
+  if (mail === false) return <p className="card-note signin-forgot">{tl(TEXT.forgot)}</p>;
+  if (state === 'sent') return <p className="card-note signin-forgot" role="status">{tl(TEXT.forgotSent)}</p>;
+  return (
+    <form
+      className="signin-form signin-forgot"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void send();
+      }}
+    >
+      <p className="card-note">{tl(TEXT.forgotLead)}</p>
+      <label>
+        <span>{tl(TEXT.who)}</span>
+        <input value={typed} onChange={(event) => setTyped(event.target.value)} name="forgot" autoComplete="username" autoCapitalize="none" spellCheck={false} maxLength={254} required autoFocus />
+      </label>
+      <button type="submit" className="button button-quiet" aria-busy={busy || undefined} disabled={busy || mail === null || !typed.trim()}>
+        {tl(TEXT.forgotSend)}
+      </button>
+      {state && <p className="card-problem">{tl(TEXT[state])}</p>}
+    </form>
+  );
+}
+
+/** A link from that letter: a new password, twice, and the reader is in. */
+function Reset({ token, onDone }: { token: string; onDone: () => void }) {
+  const { tl } = useI18n();
+  const [password, setPassword] = useState('');
+  const [again, setAgain] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [problem, setProblem] = useState<Problem | null>(null);
+
+  const save = async () => {
+    setProblem(null);
+    if (password !== again) return setProblem('differ');
+    setBusy(true);
+    const answer = await card.reset(token, password);
+    setBusy(false);
+    if (answer !== 'ok') return setProblem(answer);
+    onDone();
+  };
+
+  return (
+    <form
+      className="signin-form signin-reset"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void save();
+      }}
+    >
+      <h2 className="page-eyebrow">{tl(TEXT.resetTitle)}</h2>
+      <label>
+        <span>{tl(TEXT.fresh)}</span>
+        <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" minLength={8} maxLength={200} required autoFocus />
+        <small>{tl(TEXT.passwordRule)}</small>
+      </label>
+      <label>
+        <span>{tl(TEXT.again)}</span>
+        <input type="password" value={again} onChange={(event) => setAgain(event.target.value)} autoComplete="new-password" maxLength={200} required />
+      </label>
+      <button type="submit" className="button signin-submit" aria-busy={busy || undefined} disabled={busy}>
+        {tl(TEXT.resetSave)}
+      </button>
+      {problem && <p className="card-problem">{tl(TEXT[problem])}</p>}
+      {problem === 'bad-link' && (
+        <p className="card-note">
+          <a className="text-link" href={pageUrl('signin')}>
+            <span className="u">{tl(TEXT.forgotAsk)}</span> →
+          </a>
+        </p>
+      )}
+    </form>
   );
 }
 
@@ -302,7 +439,7 @@ function NameBadge({ state }: { state: NameState }) {
 }
 
 /** Signed in: who, how to change the password, and the way out. */
-function Account() {
+function Account({ fresh = false }: { fresh?: boolean }) {
   const { tl } = useI18n();
   const { card: mine } = useCard();
   const [changing, setChanging] = useState(false);
@@ -311,7 +448,7 @@ function Account() {
   const [again, setAgain] = useState('');
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<Problem | null>(null);
-  const [changed, setChanged] = useState(false);
+  const [changed, setChanged] = useState(fresh);
 
   const save = async () => {
     if (password !== again) return setProblem('differ');

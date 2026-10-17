@@ -197,6 +197,51 @@ export const card = {
     }
   },
 
+  /** Whether the site can send a link that sets a new password: `null` when the server cannot say. */
+  async canMail(): Promise<boolean | null> {
+    try {
+      const response = await call('/account/forgot', null);
+      return response.ok ? ((await response.json()) as { mail: boolean }).mail : null;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Asks for a link that sets a new password, sent to the email of the account with this name or
+   * email. 'sent' says only that it was asked for: whether there is such an account is not told.
+   */
+  async forgot(who: string, lang: string): Promise<'sent' | 'no-mail' | 'too-many' | 'offline'> {
+    try {
+      const response = await call('/account/forgot', null, { method: 'POST', body: JSON.stringify({ who, lang }) });
+      if (response.ok) return 'sent';
+      if (response.status === 503) return 'no-mail';
+      if (response.status === 429) return 'too-many';
+      return 'offline';
+    } catch {
+      return 'offline';
+    }
+  },
+
+  /** Uses a link from that letter: the new password is set, and the account opened on this device. */
+  async reset(token: string, password: string): Promise<'ok' | 'bad-link' | 'bad-password' | 'too-many' | 'offline'> {
+    try {
+      const response = await call('/account/reset', null, { method: 'POST', body: JSON.stringify({ token, password }) });
+      if (response.status === 429) return 'too-many';
+      if (response.status === 400) {
+        const { error } = (await response.json().catch(() => ({}))) as { error?: string };
+        return error === 'bad-password' ? 'bad-password' : 'bad-link';
+      }
+      if (!response.ok) return 'offline';
+      const answer = (await response.json()) as { code: string; role: string; name: string; email?: string | null };
+      set({ code: answer.code, cursor: 0, pushed: 0, role: answer.role, name: answer.name, email: answer.email ?? null }, 'idle');
+      await sync();
+      return 'ok';
+    } catch {
+      return 'offline';
+    }
+  },
+
   /** A new password for the account on this device, given the one it has. */
   async changePassword(current: string, password: string): Promise<'ok' | 'wrong' | 'bad-password' | 'too-many' | 'offline'> {
     if (!kept) return 'offline';

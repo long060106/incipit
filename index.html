@@ -87,43 +87,14 @@
         background: #7a1f2b;
       }
     </style>
-    <script>
-      // Set theme and language before first paint so the page never flashes the wrong one.
-      (function () {
-        var root = document.documentElement;
-        try {
-          var theme = localStorage.getItem('incipit:theme');
-          if (theme === 'day' || theme === 'night') root.dataset.theme = theme;
-          var lang = localStorage.getItem('incipit:lang');
-          if (!lang) lang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
-          root.lang = lang === 'fr' ? 'fr' : 'en';
-        } catch (e) {}
-      })();
-    </script>
+    <script src="/boot/theme.js"></script>
   </head>
   <body>
     <div id="loader" role="status" aria-label="Loading">
       <span class="loader-figure" aria-hidden="true"><span class="loader-count">0</span><span class="loader-unit">%</span></span>
       <span class="loader-bar" aria-hidden="true"></span>
     </div>
-    <script>
-      // The bar creeps forward by itself until the page's code arrives and takes it over (src/lib/loader.ts).
-      (function () {
-        var el = document.getElementById('loader');
-        var count = el.querySelector('.loader-count');
-        var state = { shown: 0, stop: function () { cancelAnimationFrame(frame); } };
-        var frame = 0;
-        function tick() {
-          frame = requestAnimationFrame(tick);
-          state.shown += (0.3 - state.shown) * 0.012;
-          el.style.setProperty('--loaded', state.shown.toFixed(4));
-          count.textContent = String(Math.round(state.shown * 100));
-        }
-        document.documentElement.classList.add('is-loading');
-        window.__loader = state;
-        tick();
-      })();
-    </script>
+    <script src="/boot/loader.js"></script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
