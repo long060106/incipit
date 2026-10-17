@@ -14,6 +14,11 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*", "/book/*", "/essays/*", "/sitemap.xml"]
   },
+  // "Sign in with Google": the id of the site's client at Google (it is public). Empty, and the button
+  // is not shown. The secret that goes with it, ACCOUNT_SEAL_KEY, is set with `wrangler secret put`.
+  "vars": {
+    "GOOGLE_CLIENT_ID": ""
+  },
   // Library cards and readers' notebooks. Tables: worker/migrations.
   "d1_databases": [
     {

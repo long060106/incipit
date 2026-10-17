@@ -22,6 +22,9 @@ interface Kept {
   name?: string | null;
   /** The email the account can also be opened with; seen only by its owner. */
   email?: string | null;
+  /** Whether a Google person is tied to the account, and whether it has a password. */
+  google?: boolean;
+  password?: boolean;
   /** When the notebook was last exchanged with the server. */
   syncedAt?: number;
 }
@@ -126,8 +129,8 @@ export const card = {
       const response = await call('/me', code);
       if (response.status === 401) return 'unknown';
       if (!response.ok) return 'offline';
-      const { role, name, email } = (await response.json()) as { role: string; name?: string | null; email?: string | null };
-      set({ code, cursor: 0, pushed: 0, role, name, email }, 'idle');
+      const { role, name, email, google, password } = (await response.json()) as { role: string; name?: string | null; email?: string | null; google?: boolean; password?: boolean };
+      set({ code, cursor: 0, pushed: 0, role, name, email, google, password }, 'idle');
       await sync();
       return 'ok';
     } catch {
@@ -141,8 +144,8 @@ export const card = {
     try {
       const response = await call('/me', kept.code);
       if (!response.ok) return;
-      const { role, name = null, email = null } = (await response.json()) as { role: string; name?: string | null; email?: string | null };
-      if (kept && (kept.role !== role || (kept.name ?? null) !== name || (kept.email ?? null) !== email)) set({ ...kept, role, name, email });
+      const { role, name = null, email = null, google, password } = (await response.json()) as { role: string; name?: string | null; email?: string | null; google?: boolean; password?: boolean };
+      if (kept && (kept.role !== role || (kept.name ?? null) !== name || (kept.email ?? null) !== email || kept.google !== google || kept.password !== password)) set({ ...kept, role, name, email, google, password });
     } catch {
       // Stays as it was.
     }
@@ -153,13 +156,13 @@ export const card = {
    * there is none. From then on the name (or the email, if one is given) and the password open
    * it anywhere.
    */
-  async register(name: string, password: string, email: string | null = null): Promise<'ok' | 'taken' | 'email-taken' | 'bad-name' | 'bad-email' | 'bad-password' | 'too-many' | 'offline'> {
+  async register(name: string, password: string, email: string): Promise<'ok' | 'taken' | 'email-taken' | 'bad-name' | 'bad-email' | 'bad-password' | 'too-many' | 'offline'> {
     try {
       if (!kept && !(await card.take())) return 'offline';
       const response = await call('/account', kept!.code, { method: 'POST', body: JSON.stringify({ name, password, email }) });
       if (response.ok) {
         const answer = (await response.json()) as { name: string; email: string | null };
-        if (kept) set({ ...kept, name: answer.name, email: answer.email });
+        if (kept) set({ ...kept, name: answer.name, email: answer.email, google: false, password: true });
         return 'ok';
       }
       const { error } = (await response.json().catch(() => ({}))) as { error?: string };
@@ -188,10 +191,61 @@ export const card = {
       if (response.status === 401) return 'wrong';
       if (response.status === 429) return 'too-many';
       if (!response.ok) return 'offline';
-      const answer = (await response.json()) as { code: string; role: string; name: string; email?: string | null };
-      set({ code: answer.code, cursor: 0, pushed: 0, role: answer.role, name: answer.name, email: answer.email ?? null }, 'idle');
+      const answer = (await response.json()) as { code: string; role: string; name: string; email?: string | null; google?: boolean; password?: boolean };
+      set({ code: answer.code, cursor: 0, pushed: 0, role: answer.role, name: answer.name, email: answer.email ?? null, google: answer.google, password: answer.password }, 'idle');
       await sync();
       return 'ok';
+    } catch {
+      return 'offline';
+    }
+  },
+
+  /** The id of the site's client at Google, or null when signing in with Google is not on. */
+  async googleClient(): Promise<string | null> {
+    try {
+      const response = await call('/account/google', null);
+      return response.ok ? ((await response.json()) as { client: string | null }).client : null;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Signs in with the token Google gave the page. A person with no account here yet comes back as
+   * `{ email }`: the page asks them for a name, and sends the token again with it, which makes
+   * the account. What is in this browser is added to the card, as with a password.
+   */
+  async google(credential: string, name?: string): Promise<'ok' | 'wrong' | 'has-account' | 'taken' | 'bad-name' | 'too-many' | 'offline' | { email: string }> {
+    try {
+      const response = await call('/account/google', null, { method: 'POST', body: JSON.stringify({ credential, name }) });
+      if (response.status === 404) return { email: ((await response.json()) as { email: string }).email };
+      if (response.status === 401) return 'wrong';
+      if (response.status === 429) return 'too-many';
+      if (response.status === 400) return 'bad-name';
+      if (response.status === 409) return ((await response.json().catch(() => ({}))) as { error?: string }).error === 'taken' ? 'taken' : 'has-account';
+      if (!response.ok) return 'offline';
+      const answer = (await response.json()) as { code: string; role: string; name: string; email?: string | null; google?: boolean; password?: boolean };
+      set({ code: answer.code, cursor: 0, pushed: 0, role: answer.role, name: answer.name, email: answer.email ?? null, google: true, password: answer.password }, 'idle');
+      await sync();
+      return 'ok';
+    } catch {
+      return 'offline';
+    }
+  },
+
+  /** Ties the Google person of this token to the account on this device, when its email is the account's own. */
+  async linkGoogle(credential: string): Promise<'ok' | 'wrong' | 'email-differs' | 'google-taken' | 'too-many' | 'offline'> {
+    if (!kept) return 'offline';
+    try {
+      const response = await call('/account/link', kept.code, { method: 'POST', body: JSON.stringify({ credential }) });
+      if (response.ok) {
+        if (kept) set({ ...kept, google: true });
+        return 'ok';
+      }
+      if (response.status === 401) return 'wrong';
+      if (response.status === 429) return 'too-many';
+      const { error } = (await response.json().catch(() => ({}))) as { error?: string };
+      return error === 'email-differs' || error === 'google-taken' ? error : 'offline';
     } catch {
       return 'offline';
     }
@@ -233,8 +287,8 @@ export const card = {
         return error === 'bad-password' ? 'bad-password' : 'bad-link';
       }
       if (!response.ok) return 'offline';
-      const answer = (await response.json()) as { code: string; role: string; name: string; email?: string | null };
-      set({ code: answer.code, cursor: 0, pushed: 0, role: answer.role, name: answer.name, email: answer.email ?? null }, 'idle');
+      const answer = (await response.json()) as { code: string; role: string; name: string; email?: string | null; google?: boolean; password?: boolean };
+      set({ code: answer.code, cursor: 0, pushed: 0, role: answer.role, name: answer.name, email: answer.email ?? null, google: answer.google, password: answer.password }, 'idle');
       await sync();
       return 'ok';
     } catch {

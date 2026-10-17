@@ -73,6 +73,17 @@
     POST   /api/account/forgot   send one: { who, lang }                    -> { ok }
     POST   /api/account/reset    use it: { token, password }                -> as /api/account/enter
 
+  An account always has an email. A reader may also sign in with Google (the button of Google
+  Identity Services, whose signed token is checked here). It needs the site's client id (the
+  variable GOOGLE_CLIENT_ID, in wrangler.jsonc) and a secret that seals the cards of those accounts
+  (ACCOUNT_SEAL_KEY); without them these answer 503 and the page shows no button.
+
+    GET    /api/account/google   the client id, or null if Google is not on -> { client }
+    POST   /api/account/google   { credential, name? }: sign in; 404 `new` if the person has no
+                                 account yet, and then with a name it makes one -> as /api/account/enter
+    POST   /api/account/link     tie the Google person of { credential } to the account of the
+                                 card presented, when its email is the account's own
+
   Records are the flat rows of src/lib/shelf.ts: a key, a JSON value (absent once deleted)
   and the time the reader last changed it. Between two devices the later change wins.
 */
@@ -91,6 +102,11 @@ export interface Env {
   MAIL_FROM?: string;
   /** '1' on a development server only: a letter is handed back in the answer instead of sent. */
   MAIL_DEV?: string;
+  /** The id of the site's client at Google, which is public (wrangler.jsonc), and the secret that seals a card's code for the accounts opened with Google. */
+  GOOGLE_CLIENT_ID?: string;
+  ACCOUNT_SEAL_KEY?: string;
+  /** A development server only: the keys Google's tokens are checked against instead of Google's own (base64 of a JWKS). */
+  GOOGLE_DEV_KEYS?: string;
 }
 
 interface Card {
@@ -187,7 +203,8 @@ async function within(env: Env, request: Request, what: string, most: number): P
   )
     .bind(bucket, day)
     .first<{ count: number }>();
-  return (row?.count ?? 1) <= most;
+  // A development server (the tests) makes many accounts from one address.
+  return (row?.count ?? 1) <= (mailDev(request, env) ? most * 100 : most);
 }
 
 async function makeCard(request: Request, env: Env): Promise<Response> {
@@ -327,6 +344,7 @@ async function keeperGate(request: Request, env: Env, card: Card): Promise<Respo
 interface Account {
   name: string;
   email: string | null;
+  google?: string | null;
   card: string;
   salt: string;
   hash: string;
@@ -370,11 +388,11 @@ const codeIn = (request: Request) => tidy((request.headers.get('authorization') 
 async function makeAccount(request: Request, env: Env, card: Card): Promise<Response> {
   const body = await bodyOf(request);
   const name = typeof body?.name === 'string' ? body.name.trim().toLowerCase() : '';
-  // The email is optional: with one, the reader may sign in with it instead of the name.
+  // Everyone gives an email: a forgotten password is set again by it, and it opens the account instead of the name.
   const email = typeof body?.email === 'string' && body.email.trim() ? body.email.trim().toLowerCase() : null;
   const password = body?.password;
   if (!NAME.test(name)) return refuse(400, 'bad-name');
-  if (email !== null && (email.length > 254 || !EMAIL.test(email))) return refuse(400, 'bad-email');
+  if (email === null || email.length > 254 || !EMAIL.test(email)) return refuse(400, 'bad-email');
   if (!goodPassword(password)) return refuse(400, 'bad-password');
   if (await env.DB.prepare('SELECT 1 FROM accounts WHERE card = ?1').bind(card.id).first()) return refuse(409, 'has-account');
   if (await env.DB.prepare('SELECT 1 FROM accounts WHERE name = ?1').bind(name).first()) return refuse(409, 'taken');
@@ -409,9 +427,9 @@ async function enterAccount(request: Request, env: Env): Promise<Response> {
   const name = typeof body?.name === 'string' ? body.name.trim().toLowerCase() : '';
   const password = typeof body?.password === 'string' && body.password.length <= 200 ? body.password : '';
   const row = NAME.test(name)
-    ? await env.DB.prepare('SELECT name, email, card, salt, hash, iv, sealed FROM accounts WHERE name = ?1').bind(name).first<Account>()
+    ? await env.DB.prepare('SELECT name, email, google, card, salt, hash, iv, sealed FROM accounts WHERE name = ?1').bind(name).first<Account>()
     : EMAIL.test(name)
-      ? await env.DB.prepare('SELECT name, email, card, salt, hash, iv, sealed FROM accounts WHERE email = ?1').bind(name).first<Account>()
+      ? await env.DB.prepare('SELECT name, email, google, card, salt, hash, iv, sealed FROM accounts WHERE email = ?1').bind(name).first<Account>()
       : null;
   // The same work whether or not there is such a name, so that the wait tells nothing.
   const { proof, seal } = await keysOf(password, row ? unhex(row.salt) : new Uint8Array(16));
@@ -419,7 +437,7 @@ async function enterAccount(request: Request, env: Env): Promise<Response> {
   const code = new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unhex(row.iv) }, seal, unhex(row.sealed)));
   const card = await env.DB.prepare('SELECT role FROM cards WHERE id = ?1').bind(row.card).first<{ role: string }>();
   if (!card) return refuse(401, 'wrong');
-  return json({ code, role: card.role, name: row.name, email: row.email });
+  return json({ code, role: card.role, name: row.name, email: row.email, google: !!row.google, password: true });
 }
 
 /** A new password for the account of the card that asks, given the one it has. */
@@ -429,6 +447,7 @@ async function changeAccount(request: Request, env: Env, card: Card): Promise<Re
   const password = body?.password;
   const row = await env.DB.prepare('SELECT name, email, card, salt, hash, iv, sealed FROM accounts WHERE card = ?1').bind(card.id).first<Account>();
   if (!row) return refuse(404, 'no-account');
+  if (!row.hash) return refuse(400, 'no-password');
   const current = typeof body?.current === 'string' && body.current.length <= 200 ? body.current : '';
   if (!same((await keysOf(current, unhex(row.salt))).proof, row.hash)) return refuse(401, 'wrong');
   if (!goodPassword(password)) return refuse(400, 'bad-password');
@@ -454,19 +473,21 @@ async function resetAccount(env: Env, name: string): Promise<Response> {
  * it; devices still holding the old code must sign in again.
  */
 async function rekey(env: Env, name: string, password: string): Promise<{ code: string; role: string } | null> {
-  const row = await env.DB.prepare('SELECT accounts.card, cards.role FROM accounts JOIN cards ON cards.id = accounts.card WHERE accounts.name = ?1')
+  const row = await env.DB.prepare('SELECT accounts.card, accounts.gseal, cards.role FROM accounts JOIN cards ON cards.id = accounts.card WHERE accounts.name = ?1')
     .bind(name)
-    .first<{ card: string; role: string }>();
+    .first<{ card: string; gseal: string | null; role: string }>();
   if (!row) return null;
   const code = newCode();
   const id = await sha256(code);
   const kept = await sealUnder(password, code);
+  // An account tied to Google keeps its card's new code sealed for Google too.
+  const gseal = row.gseal && googleReady(env) ? await sealToServer(env, code) : null;
   await env.DB.batch([
     env.DB.prepare('INSERT INTO cards (id, created, seen, role) SELECT ?1, created, seen, role FROM cards WHERE id = ?2').bind(id, row.card),
     env.DB.prepare('UPDATE rows SET card = ?1 WHERE card = ?2').bind(id, row.card),
     env.DB.prepare('UPDATE reviews SET card = ?1 WHERE card = ?2').bind(id, row.card),
     env.DB.prepare('UPDATE essay_reports SET card = ?1 WHERE card = ?2').bind(id, row.card),
-    env.DB.prepare('UPDATE accounts SET card = ?1, salt = ?2, hash = ?3, iv = ?4, sealed = ?5 WHERE name = ?6').bind(id, kept.salt, kept.hash, kept.iv, kept.sealed, name),
+    env.DB.prepare('UPDATE accounts SET card = ?1, salt = ?2, hash = ?3, iv = ?4, sealed = ?5, gseal = ?6 WHERE name = ?7').bind(id, kept.salt, kept.hash, kept.iv, kept.sealed, gseal, name),
     env.DB.prepare('DELETE FROM keeper_sessions WHERE card = ?1').bind(row.card),
     env.DB.prepare('DELETE FROM cards WHERE id = ?1').bind(row.card),
     env.DB.prepare('DELETE FROM resets WHERE name = ?1').bind(name),
@@ -584,8 +605,146 @@ async function resetByLetter(request: Request, env: Env): Promise<Response> {
   if (!taken) return refuse(400, 'bad-link');
   const opened = await rekey(env, taken.name, password);
   if (!opened) return refuse(400, 'bad-link');
-  const account = await env.DB.prepare('SELECT name, email FROM accounts WHERE name = ?1').bind(taken.name).first<{ name: string; email: string | null }>();
-  return json({ code: opened.code, role: opened.role, name: account?.name ?? taken.name, email: account?.email ?? null });
+  const account = await env.DB.prepare('SELECT name, email, google FROM accounts WHERE name = ?1').bind(taken.name).first<{ name: string; email: string | null; google: string | null }>();
+  return json({ code: opened.code, role: opened.role, name: account?.name ?? taken.name, email: account?.email ?? null, google: !!account?.google, password: true });
+}
+
+// ── Signing in with Google ──────────────────────────────────────────────────
+
+/*
+  The page shows Google's own button (Google Identity Services); Google hands the page a signed
+  token that says who the reader is, and the page sends it here. The token is checked as Google
+  signs it: its signature against Google's public keys, its audience (this site's client id), its
+  expiry, and that Google has confirmed the email. Nothing else of Google's is asked or kept:
+  only the person's id, and the email, which the account must have anyway.
+*/
+
+const GOOGLE_KEYS = 'https://www.googleapis.com/oauth2/v3/certs';
+const googleReady = (env: Env) => !!env.GOOGLE_CLIENT_ID && !!env.ACCOUNT_SEAL_KEY;
+
+const unb64 = (text: string) => Uint8Array.from(atob(text.replace(/-/g, '+').replace(/_/g, '/')), (char) => char.charCodeAt(0));
+
+type GoogleKey = JsonWebKey & { kid?: string };
+let googleKeys: { at: number; keys: GoogleKey[] } | null = null;
+
+/** The keys Google signs with, kept an hour. A development server may bring its own. */
+async function keysOfGoogle(request: Request, env: Env): Promise<GoogleKey[]> {
+  if (env.GOOGLE_DEV_KEYS && mailDev(request, env)) return (JSON.parse(new TextDecoder().decode(unb64(env.GOOGLE_DEV_KEYS))) as { keys: GoogleKey[] }).keys;
+  if (googleKeys && Date.now() - googleKeys.at < 60 * 60 * 1000) return googleKeys.keys;
+  const response = await fetch(GOOGLE_KEYS, { cf: { cacheTtl: 3600 } });
+  if (!response.ok) throw new Error(`Google's keys: ${response.status}`);
+  googleKeys = { at: Date.now(), keys: ((await response.json()) as { keys: GoogleKey[] }).keys };
+  return googleKeys.keys;
+}
+
+/** Who a token from Google says the reader is, or null if it cannot be trusted. */
+async function googleWho(request: Request, env: Env, credential: unknown): Promise<{ sub: string; email: string } | null> {
+  if (typeof credential !== 'string' || credential.length > 4000) return null;
+  const parts = credential.split('.');
+  if (parts.length !== 3) return null;
+  try {
+    const header = JSON.parse(new TextDecoder().decode(unb64(parts[0]))) as { alg?: string; kid?: string };
+    const claims = JSON.parse(new TextDecoder().decode(unb64(parts[1]))) as Record<string, unknown>;
+    if (header.alg !== 'RS256') return null;
+    const jwk = (await keysOfGoogle(request, env)).find((key) => key.kid === header.kid);
+    if (!jwk) return null;
+    const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
+    if (!(await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, unb64(parts[2]), new TextEncoder().encode(`${parts[0]}.${parts[1]}`)))) return null;
+    if (claims.aud !== env.GOOGLE_CLIENT_ID) return null;
+    if (claims.iss !== 'https://accounts.google.com' && claims.iss !== 'accounts.google.com') return null;
+    if (typeof claims.exp !== 'number' || claims.exp < Date.now() / 1000 - 60) return null;
+    if (typeof claims.sub !== 'string' || !claims.sub || typeof claims.email !== 'string') return null;
+    if (claims.email_verified !== true && claims.email_verified !== 'true') return null;
+    const email = claims.email.trim().toLowerCase();
+    return email.length <= 254 && EMAIL.test(email) ? { sub: claims.sub, email } : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The key that seals the code of a card for an account opened with Google. */
+async function serverSeal(env: Env): Promise<CryptoKey> {
+  const raw = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`account-seal:${env.ACCOUNT_SEAL_KEY}`));
+  return crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt', 'decrypt']);
+}
+
+async function sealToServer(env: Env, code: string): Promise<string> {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const sealed = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await serverSeal(env), new TextEncoder().encode(code)));
+  return `${hex(iv)}.${hex(sealed)}`;
+}
+
+async function openFromServer(env: Env, kept: string): Promise<string | null> {
+  const [iv, sealed] = kept.split('.');
+  try {
+    return new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unhex(iv ?? '') }, await serverSeal(env), unhex(sealed ?? '')));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * A token from Google, for the account tied to that person. If there is none yet, and the email is
+ * not one an account already has, it answers 404 `new` with the email: the page then asks for a
+ * name, and sends the token again with it, which makes the account.
+ */
+async function googleEnter(request: Request, env: Env): Promise<Response> {
+  if (!googleReady(env)) return refuse(503, 'no-google');
+  if (!(await within(env, request, 'enter', MAX_ENTERS_PER_DAY))) return refuse(429, 'too-many');
+  const body = await bodyOf(request, 6000);
+  const who = await googleWho(request, env, body?.credential);
+  if (!who) return refuse(401, 'wrong');
+  const found = await env.DB.prepare('SELECT name, email, card, hash, gseal FROM accounts WHERE google = ?1')
+    .bind(who.sub)
+    .first<{ name: string; email: string | null; card: string; hash: string; gseal: string | null }>();
+  if (found) {
+    const code = found.gseal ? await openFromServer(env, found.gseal) : null;
+    const card = await env.DB.prepare('SELECT role FROM cards WHERE id = ?1').bind(found.card).first<{ role: string }>();
+    if (!code || !card) return refuse(401, 'wrong');
+    return json({ code, role: card.role, name: found.name, email: found.email, google: true, password: found.hash !== '' });
+  }
+  // An account already has this email: Google's word is not enough to open it. Its owner signs in
+  // as before (or sets a password again by email), then ties Google to it from the account page.
+  if (await env.DB.prepare('SELECT 1 FROM accounts WHERE email = ?1').bind(who.email).first()) return refuse(409, 'has-account');
+  const name = typeof body?.name === 'string' ? body.name.trim().toLowerCase() : '';
+  if (!name) return json({ error: 'new', email: who.email }, 404);
+  if (!NAME.test(name)) return refuse(400, 'bad-name');
+  if (await env.DB.prepare('SELECT 1 FROM accounts WHERE name = ?1').bind(name).first()) return refuse(409, 'taken');
+  if (!(await within(env, request, 'account', MAX_ACCOUNTS_PER_DAY))) return refuse(429, 'too-many');
+  const code = newCode();
+  const id = await sha256(code);
+  const now = Date.now();
+  try {
+    await env.DB.batch([
+      env.DB.prepare("INSERT INTO cards (id, created, seen, role) VALUES (?1, ?2, ?2, 'reader')").bind(id, now),
+      env.DB.prepare("INSERT INTO accounts (name, email, card, salt, hash, iv, sealed, created, google, gseal) VALUES (?1, ?2, ?3, '', '', '', '', ?4, ?5, ?6)").bind(
+        name,
+        who.email,
+        id,
+        now,
+        who.sub,
+        await sealToServer(env, code),
+      ),
+    ]);
+  } catch {
+    // Someone took the name, or this person, in the same moment.
+    return refuse(409, 'taken');
+  }
+  return json({ code, role: 'reader', name, email: who.email, google: true, password: false }, 201);
+}
+
+/** Ties a Google person to the account of the card that asks, if it is the account's own email. */
+async function googleLink(request: Request, env: Env, card: Card): Promise<Response> {
+  if (!googleReady(env)) return refuse(503, 'no-google');
+  if (!(await within(env, request, 'enter', MAX_ENTERS_PER_DAY))) return refuse(429, 'too-many');
+  const who = await googleWho(request, env, (await bodyOf(request, 6000))?.credential);
+  if (!who) return refuse(401, 'wrong');
+  const row = await env.DB.prepare('SELECT name, email FROM accounts WHERE card = ?1').bind(card.id).first<{ name: string; email: string | null }>();
+  if (!row) return refuse(404, 'no-account');
+  if (row.email !== who.email) return refuse(409, 'email-differs');
+  if (await env.DB.prepare('SELECT 1 FROM accounts WHERE google = ?1 AND card != ?2').bind(who.sub, card.id).first()) return refuse(409, 'google-taken');
+  await env.DB.prepare('UPDATE accounts SET google = ?1, gseal = ?2 WHERE card = ?3').bind(who.sub, await sealToServer(env, codeIn(request)), card.id).run();
+  return json({ ok: true });
 }
 
 async function accounts(env: Env): Promise<Response> {
@@ -1692,6 +1851,8 @@ async function api(request: Request, env: Env, path: string, ctx: ExecutionConte
   if (path === '/api/account/forgot' && request.method === 'GET') return json({ mail: mailReady(env) || mailDev(request, env) });
   if (path === '/api/account/forgot' && request.method === 'POST') return forgot(request, env, ctx);
   if (path === '/api/account/reset' && request.method === 'POST') return resetByLetter(request, env);
+  if (path === '/api/account/google' && request.method === 'GET') return json({ client: googleReady(env) ? env.GOOGLE_CLIENT_ID : null });
+  if (path === '/api/account/google' && request.method === 'POST') return googleEnter(request, env);
   if (path === '/api/books' && request.method === 'GET') return overrides(env);
   if (path === '/api/profile' && request.method === 'GET') return profile(env);
   if (path === '/api/portrait' && request.method === 'GET') return portrait(env);
@@ -1770,6 +1931,7 @@ async function api(request: Request, env: Env, path: string, ctx: ExecutionConte
   if (path === '/api/people/quotes' && request.method === 'PUT') return writePassages(request, env, card);
   if (path === '/api/account' && request.method === 'POST') return makeAccount(request, env, card);
   if (path === '/api/account' && request.method === 'PUT') return changeAccount(request, env, card);
+  if (path === '/api/account/link' && request.method === 'POST') return googleLink(request, env, card);
 
   if (path === '/api/claim' && request.method === 'POST') return claim(request, env, card);
   if (path.startsWith('/api/books/') && request.method === 'PUT') {
@@ -1782,8 +1944,8 @@ async function api(request: Request, env: Env, path: string, ctx: ExecutionConte
 
   if (path === '/api/me' && request.method === 'GET') {
     const held = await env.DB.prepare('SELECT COUNT(*) AS n FROM rows WHERE card = ?1 AND value IS NOT NULL').bind(card.id).first<{ n: number }>();
-    const account = await env.DB.prepare('SELECT name, email FROM accounts WHERE card = ?1').bind(card.id).first<{ name: string; email: string | null }>();
-    return json({ role: card.role, rows: held?.n ?? 0, created: card.created, name: account?.name ?? null, email: account?.email ?? null });
+    const account = await env.DB.prepare('SELECT name, email, google, hash FROM accounts WHERE card = ?1').bind(card.id).first<{ name: string; email: string | null; google: string | null; hash: string }>();
+    return json({ role: card.role, rows: held?.n ?? 0, created: card.created, name: account?.name ?? null, email: account?.email ?? null, google: !!account?.google, password: !!account && account.hash !== '' });
   }
   if (path === '/api/sync' && request.method === 'POST') return sync(request, env, card);
   if (path === '/api/card' && request.method === 'DELETE') {
@@ -1816,13 +1978,13 @@ async function api(request: Request, env: Env, path: string, ctx: ExecutionConte
  */
 const SECURITY: Record<string, string> = {
   'content-security-policy':
-    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+    "default-src 'self'; script-src 'self' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://accounts.google.com/gsi/; frame-src https://accounts.google.com/gsi/; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
   'x-content-type-options': 'nosniff',
   'x-frame-options': 'DENY',
   'referrer-policy': 'strict-origin-when-cross-origin',
   'strict-transport-security': 'max-age=31536000',
   'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
-  'cross-origin-opener-policy': 'same-origin',
+  'cross-origin-opener-policy': 'same-origin-allow-popups',
 };
 
 function guarded(response: Response): Response {

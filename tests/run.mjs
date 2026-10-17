@@ -9,6 +9,7 @@
 //   --no-build   test the build already in ./dist
 //
 // The pages are opened in Microsoft Edge (BROWSER_CHANNEL=chrome for Chrome).
+import { generateKeyPairSync } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { rmSync } from 'node:fs';
 import { join } from 'node:path';
@@ -39,9 +40,17 @@ try {
 step('A new database', `npx wrangler d1 migrations apply incipit --local --persist-to ${STATE}`);
 step('Its essays', `npx wrangler d1 execute incipit --local --persist-to ${STATE} --file tests/seed.sql`);
 
+// Google is stood in for: the server is told to trust a pair of keys made here, and the tests sign
+// the tokens "from Google" with the other half (worker/index.ts, keysOfGoogle). These keys sign
+// nothing outside this run.
+const { publicKey, privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
+const keys = Buffer.from(JSON.stringify({ keys: [{ ...publicKey.export({ format: 'jwk' }), kid: 'test-key', alg: 'RS256', use: 'sig' }] })).toString('base64url');
+process.env.TEST_GOOGLE_KEY = Buffer.from(privateKey.export({ type: 'pkcs8', format: 'pem' })).toString('base64');
+
 console.log(`\n── A server at ${BASE}`);
 // MAIL_DEV: a letter is handed back in the answer instead of sent (worker/index.ts, mailDev).
-const server = spawn(`npx wrangler dev --ip 127.0.0.1 --port ${PORT} --persist-to ${STATE} --var MAIL_DEV:1 --show-interactive-dev-session=false`, {
+const vars = `--var MAIL_DEV:1 --var GOOGLE_CLIENT_ID:test-client.apps.googleusercontent.com --var ACCOUNT_SEAL_KEY:a-seal-key-for-this-run-only --var GOOGLE_DEV_KEYS:${keys}`;
+const server = spawn(`npx wrangler dev --ip 127.0.0.1 --port ${PORT} --persist-to ${STATE} ${vars} --show-interactive-dev-session=false`, {
   shell: true,
   stdio: ['ignore', 'pipe', 'pipe'],
   detached: !windows,

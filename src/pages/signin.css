@@ -277,6 +277,47 @@
   margin: 0;
 }
 
+/* Google's button, under a quiet "or". Google draws the button itself, in a frame of its own. */
+.signin-or {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin: 1.25rem 0 1rem;
+  font-size: 0.8125rem;
+  opacity: 0.7;
+}
+
+.signin-or::before,
+.signin-or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.signin-google {
+  display: grid;
+  justify-items: center;
+  min-height: 44px;
+}
+
+.signin-link-google {
+  display: grid;
+  gap: 0.625rem;
+  justify-items: start;
+  width: 100%;
+}
+
+.signin-link-google .signin-google {
+  justify-items: start;
+}
+
+.signin-forgot-address {
+  margin: 0;
+  font-size: 1.0625rem;
+  word-break: break-all;
+}
+
 /* A forgotten password: a quiet line under the form, opening into a small form of its own. */
 .signin-forgot {
   margin: 1.125rem 0 0;

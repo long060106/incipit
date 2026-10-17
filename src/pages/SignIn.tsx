@@ -18,8 +18,12 @@ import './signin.css';
 
   "?next=/book/…" sends the reader back where they came from once they are in.
 
-  A reader who has forgotten their password asks here for a link, sent to the email of their
-  account. The link comes back to this page ("#reset=<token>", in the fragment so that it never
+  An account always has an email. A reader may also sign in with Google (Google's own button; the
+  token it gives the page is checked by the server). One Google has not met here yet is asked for
+  a name, since the name is what others see.
+
+  A reader who has forgotten their password gives the email of their account, confirms it, and a
+  link is sent there. The link comes back to this page ("#reset=<token>", in the fragment so that it never
   reaches a server log), where they choose a new one and are signed in.
 */
 
@@ -30,14 +34,29 @@ const TEXT = {
   point3: { en: 'Rate books and say what you thought.', fr: 'Notez les livres et dites ce que vous en pensez.' },
   signIn: { en: 'Sign in', fr: 'Se connecter' },
   create: { en: 'Create an account', fr: 'Créer un compte' },
-  withName: { en: 'With a name', fr: 'Avec un nom' },
-  withEmail: { en: 'With an email', fr: 'Avec un e-mail' },
   who: { en: 'Name or email', fr: 'Nom ou e-mail' },
   name: { en: 'Name', fr: 'Nom' },
   shownName: { en: 'Name others will see', fr: 'Nom que les autres verront' },
   nameRule: { en: '3 to 24 letters, digits, dots or dashes', fr: '3 à 24 lettres, chiffres, points ou tirets' },
   email: { en: 'Email', fr: 'E-mail' },
-  emailRule: { en: 'Never shown to anyone. You can sign in with it or with your name.', fr: 'Jamais montré à personne. Vous pouvez vous connecter avec lui ou avec votre nom.' },
+  emailRule: {
+    en: 'Never shown to anyone. A forgotten password is set again by it, and you can sign in with it or with your name.',
+    fr: 'Jamais montré à personne. Un mot de passe oublié se redéfinit par lui, et vous pouvez vous connecter avec lui ou avec votre nom.',
+  },
+  or: { en: 'or', fr: 'ou' },
+  googleLead: {
+    en: 'Google knows you as {email}. Choose the name others will see beside your reviews and essays.',
+    fr: 'Google vous connaît sous {email}. Choisissez le nom que les autres verront près de vos avis et essais.',
+  },
+  googleLink: { en: 'Open this account with Google too. It must be the same email.', fr: 'Ouvrez aussi ce compte avec Google. Ce doit être le même e-mail.' },
+  googleLinked: { en: 'This account can be opened with Google.', fr: 'Ce compte peut être ouvert avec Google.' },
+  googleWrong: { en: 'Google could not confirm who you are. Try again.', fr: 'Google n’a pas pu confirmer qui vous êtes. Réessayez.' },
+  'has-account': {
+    en: 'An account already uses that email. Sign in to it with its password (or ask for a new one: “Forgot your password?”), then open Google from your account page.',
+    fr: 'Un compte utilise déjà cet e-mail. Connectez-vous avec son mot de passe (ou demandez-en un nouveau : « Mot de passe oublié ? »), puis ouvrez Google depuis votre page de compte.',
+  },
+  'email-differs': { en: 'That Google account has another email than this account.', fr: 'Ce compte Google a un autre e-mail que ce compte.' },
+  'google-taken': { en: 'That Google account is already tied to another account.', fr: 'Ce compte Google est déjà lié à un autre compte.' },
   password: { en: 'Password', fr: 'Mot de passe' },
   passwordRule: { en: 'At least 8 characters', fr: 'Au moins 8 caractères' },
   again: { en: 'Password again', fr: 'Encore le mot de passe' },
@@ -50,14 +69,14 @@ const TEXT = {
     fr: 'Mot de passe oublié ? Écrivez à l’adresse de la page À propos : il peut être redéfini pour vous.',
   },
   forgotAsk: { en: 'Forgot your password?', fr: 'Mot de passe oublié ?' },
-  forgotLead: {
-    en: 'Type your name or your email. If your account has an email, a link to choose a new password is sent to it.',
-    fr: 'Saisissez votre nom ou votre e-mail. Si votre compte a un e-mail, un lien pour choisir un nouveau mot de passe y est envoyé.',
-  },
-  forgotSend: { en: 'Send me a link', fr: 'M’envoyer un lien' },
+  forgotLead: { en: 'Type the email of your account.', fr: 'Saisissez l’e-mail de votre compte.' },
+  forgotNext: { en: 'Continue', fr: 'Continuer' },
+  forgotConfirm: { en: 'Is this the right address? A letter with a link to choose a new password will be sent to it.', fr: 'Cette adresse est-elle la bonne ? Une lettre avec un lien pour choisir un nouveau mot de passe y sera envoyée.' },
+  forgotSend: { en: 'Send the letter', fr: 'Envoyer la lettre' },
+  forgotChange: { en: 'Change the address', fr: 'Changer l’adresse' },
   forgotSent: {
-    en: 'If an account with that name or email has an email address, a link is on its way. It works for 30 minutes. Look in your spam folder too. No email on your account? Write to the address on the About page.',
-    fr: 'Si un compte avec ce nom ou cet e-mail a une adresse e-mail, un lien est en route. Il fonctionne 30 minutes. Regardez aussi dans vos indésirables. Pas d’e-mail sur votre compte ? Écrivez à l’adresse de la page À propos.',
+    en: 'If an account uses that email, a letter is on its way. The link works for 30 minutes. Look in your spam folder too.',
+    fr: 'Si un compte utilise cet e-mail, une lettre est en route. Le lien fonctionne 30 minutes. Regardez aussi dans vos indésirables.',
   },
   resetTitle: { en: 'Choose a new password', fr: 'Choisissez un nouveau mot de passe' },
   resetSave: { en: 'Save and sign in', fr: 'Enregistrer et se connecter' },
@@ -89,10 +108,11 @@ const TEXT = {
   offline: { en: 'The server could not be reached. Try again in a moment.', fr: 'Le serveur est injoignable. Réessayez dans un instant.' },
 } satisfies Record<string, L>;
 
-type Problem = 'taken' | 'email-taken' | 'bad-name' | 'bad-email' | 'bad-password' | 'differ' | 'wrong' | 'too-many' | 'offline' | 'bad-link';
+type Problem = 'taken' | 'email-taken' | 'bad-name' | 'bad-email' | 'bad-password' | 'differ' | 'wrong' | 'too-many' | 'offline' | 'bad-link' | 'has-account' | 'email-differs' | 'google-taken' | 'googleWrong';
 type NameState = 'idle' | 'checking' | 'free' | 'taken' | 'bad';
 
 const NAME = /^[a-z0-9][a-z0-9._-]{2,23}$/;
+const EMAIL = /^[^\s@]{1,64}@[^\s@.]+(\.[^\s@.]+)+$/;
 
 /** Where to go once signed in: only a page of this site. */
 const nextPage = () => {
@@ -116,6 +136,11 @@ export default function SignIn() {
   const claiming = location.hash.startsWith('#claim=');
   const [resetToken, setResetToken] = useState(() => /^#reset=([0-9a-f]{64})$/.exec(location.hash)?.[1] ?? null);
   const [justReset, setJustReset] = useState(false);
+  // The id of the site's client at Google; null while Google is not on, and the button is not shown.
+  const [google, setGoogle] = useState<string | null>(null);
+  useEffect(() => {
+    void card.googleClient().then(setGoogle);
+  }, []);
   const pageRef = useRef<HTMLDivElement>(null);
   // Threads of gilt drifting behind it all (./threads.ts).
   useEffect(() => installThreads(pageRef.current!), []);
@@ -146,9 +171,9 @@ export default function SignIn() {
               }}
             />
           ) : mine?.name ? (
-            <Account fresh={justReset} />
+            <Account fresh={justReset} google={google} />
           ) : (
-            <Doors holdsCard={!!mine} />
+            <Doors holdsCard={!!mine} google={google} />
           )}
           <details className="signin-library" open={claiming || (!!mine && !mine.name) || undefined}>
             <summary>{tl(mine?.name ? TEXT.cardMine : TEXT.cardWhy)}</summary>
@@ -160,11 +185,80 @@ export default function SignIn() {
   );
 }
 
+/**
+ * Google's own button. Google draws it (in a frame of its own: the page never sees the reader's Google
+ * password) and hands the page a signed token once they choose an account; the server checks it.
+ */
+interface GoogleId {
+  initialize(options: object): void;
+  renderButton(element: HTMLElement, options: object): void;
+}
+declare global {
+  interface Window {
+    google?: { accounts: { id: GoogleId } };
+  }
+}
+
+let googleScript: Promise<boolean> | null = null;
+const loadGoogle = () =>
+  (googleScript ??= new Promise<boolean>((resolve) => {
+    if (window.google?.accounts?.id) return resolve(true);
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => {
+      googleScript = null;
+      resolve(false);
+    };
+    document.head.append(script);
+  }));
+
+/** Who is to be told of the token: the button that is on the page now. */
+let tokenTo: ((credential: string) => void) | null = null;
+let askedBy = '';
+
+function GoogleButton({ client, onCredential }: { client: string; onCredential: (credential: string) => void }) {
+  const { lang } = useI18n();
+  const box = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(true);
+  const latest = useRef(onCredential);
+  latest.current = onCredential;
+
+  useEffect(() => {
+    let live = true;
+    void loadGoogle().then((loaded) => {
+      const id = window.google?.accounts.id;
+      if (!live || !box.current) return;
+      if (!loaded || !id) return setShown(false);
+      tokenTo = (credential) => latest.current(credential);
+      if (askedBy !== client) {
+        id.initialize({ client_id: client, callback: (answer: { credential: string }) => tokenTo?.(answer.credential), auto_select: false });
+        askedBy = client;
+      }
+      id.renderButton(box.current, {
+        type: 'standard',
+        theme: document.documentElement.dataset.theme === 'day' ? 'outline' : 'filled_black',
+        size: 'large',
+        shape: 'pill',
+        text: 'continue_with',
+        logo_alignment: 'left',
+        width: Math.min(400, Math.max(200, box.current.clientWidth)),
+        locale: lang,
+      });
+    });
+    return () => {
+      live = false;
+    };
+  }, [client, lang]);
+
+  return shown ? <div className="signin-google" ref={box} /> : null;
+}
+
 /** Signing in, or creating an account. */
-function Doors({ holdsCard }: { holdsCard: boolean }) {
+function Doors({ holdsCard, google }: { holdsCard: boolean; google: string | null }) {
   const { tl } = useI18n();
   const [door, setDoor] = useState<'in' | 'new'>(holdsCard ? 'new' : 'in');
-  const [by, setBy] = useState<'name' | 'email'>('name');
   const [who, setWho] = useState('');
   const [name, setName] = useState('');
   const [nameTouched, setNameTouched] = useState(false);
@@ -173,7 +267,9 @@ function Doors({ holdsCard }: { holdsCard: boolean }) {
   const [again, setAgain] = useState('');
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<Problem | null>(null);
-  const nameState = useNameCheck(door === 'new' ? name : '');
+  // Google knows this reader and the account does not exist yet: they choose a name.
+  const [pending, setPending] = useState<{ credential: string; email: string } | null>(null);
+  const nameState = useNameCheck(door === 'new' || pending ? name : '');
 
   const switchDoor = (next: 'in' | 'new') => {
     setDoor(next);
@@ -195,11 +291,69 @@ function Doors({ holdsCard }: { holdsCard: boolean }) {
       if (nameState === 'bad') return setProblem('bad-name');
     }
     setBusy(true);
-    const answer = door === 'in' ? await card.signIn(who, password) : await card.register(name, password, by === 'email' ? email : null);
+    const answer = door === 'in' ? await card.signIn(who, password) : await card.register(name, password, email);
     setBusy(false);
     if (answer !== 'ok') return setProblem(answer);
     done();
   };
+
+  const viaGoogle = async (credential: string, chosen?: string) => {
+    setProblem(null);
+    setBusy(true);
+    const answer = await card.google(credential, chosen);
+    setBusy(false);
+    if (answer === 'ok') return done();
+    if (typeof answer === 'object') {
+      setPending({ credential, email: answer.email });
+      if (!nameTouched) setName(nameFromEmail(answer.email));
+      return;
+    }
+    if (answer === 'wrong') setPending(null);
+    setProblem(answer === 'wrong' ? 'googleWrong' : answer);
+  };
+
+  if (pending)
+    return (
+      <form
+        key="google-name"
+        className="signin-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void viaGoogle(pending.credential, name);
+        }}
+      >
+        <p className="card-note">{tl(TEXT.googleLead).replace('{email}', pending.email)}</p>
+        <label>
+          <span>{tl(TEXT.shownName)}</span>
+          <span className="signin-field">
+            <input
+              value={name}
+              onChange={(event) => {
+                setName(event.target.value.toLowerCase());
+                setNameTouched(true);
+              }}
+              name="username"
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
+              maxLength={24}
+              required
+              autoFocus
+              aria-invalid={nameState === 'taken' || nameState === 'bad' || undefined}
+            />
+            <NameBadge state={nameState} />
+          </span>
+          <small data-problem={nameState === 'taken' || undefined}>{tl(nameState === 'taken' ? TEXT.taken : TEXT.nameRule)}</small>
+        </label>
+        <button type="submit" className="button signin-submit" aria-busy={busy || undefined} disabled={busy || nameState === 'taken' || nameState === 'bad' || !name.trim()}>
+          {tl(TEXT.create)}
+        </button>
+        {problem && <p className="card-problem">{tl(TEXT[problem])}</p>}
+        <button type="button" className="text-button" onClick={() => (setPending(null), setProblem(null))}>
+          {tl(TEXT.cancel)}
+        </button>
+      </form>
+    );
 
   return (
     <>
@@ -227,34 +381,25 @@ function Doors({ holdsCard }: { holdsCard: boolean }) {
           </label>
         ) : (
           <>
-            <div className="signin-by" role="radiogroup" style={{ '--at': by === 'name' ? 0 : 1 } as CSSProperties}>
-              {(['name', 'email'] as const).map((choice) => (
-                <button key={choice} type="button" role="radio" aria-checked={by === choice} onClick={() => setBy(choice)}>
-                  {tl(choice === 'name' ? TEXT.withName : TEXT.withEmail)}
-                </button>
-              ))}
-            </div>
-            {by === 'email' && (
-              <label>
-                <span>{tl(TEXT.email)}</span>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                    if (!nameTouched) setName(nameFromEmail(event.target.value));
-                  }}
-                  name="email"
-                  autoComplete="email"
-                  maxLength={254}
-                  required
-                  autoFocus
-                />
-                <small>{tl(TEXT.emailRule)}</small>
-              </label>
-            )}
             <label>
-              <span>{tl(by === 'email' ? TEXT.shownName : TEXT.name)}</span>
+              <span>{tl(TEXT.email)}</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  if (!nameTouched) setName(nameFromEmail(event.target.value));
+                }}
+                name="email"
+                autoComplete="email"
+                maxLength={254}
+                required
+                autoFocus
+              />
+              <small>{tl(TEXT.emailRule)}</small>
+            </label>
+            <label>
+              <span>{tl(TEXT.shownName)}</span>
               <span className="signin-field">
                 <input
                   value={name}
@@ -268,7 +413,6 @@ function Doors({ holdsCard }: { holdsCard: boolean }) {
                   spellCheck={false}
                   maxLength={24}
                   required
-                  autoFocus={by === 'name'}
                   aria-invalid={nameState === 'taken' || nameState === 'bad' || undefined}
                 />
                 <NameBadge state={nameState} />
@@ -301,35 +445,45 @@ function Doors({ holdsCard }: { holdsCard: boolean }) {
         </button>
         {problem && <p className="card-problem">{tl(TEXT[problem])}</p>}
       </form>
+      {google && (
+        <>
+          <p className="signin-or" aria-hidden="true">
+            <span>{tl(TEXT.or)}</span>
+          </p>
+          <GoogleButton client={google} onCredential={(credential) => void viaGoogle(credential)} />
+        </>
+      )}
       {door === 'in' && <Forgot who={who} />}
     </>
   );
 }
 
-/** Asking for a link that sets a new password; or, while the site cannot send one, who to write to. */
+/** A forgotten password: the email of the account, confirmed, and a letter sent there. */
 function Forgot({ who }: { who: string }) {
   const { tl, lang } = useI18n();
-  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<'closed' | 'ask' | 'confirm' | 'sent'>('closed');
   const [mail, setMail] = useState<boolean | null>(null);
   const [typed, setTyped] = useState('');
   const [busy, setBusy] = useState(false);
-  const [state, setState] = useState<'sent' | 'too-many' | 'offline' | null>(null);
+  const [problem, setProblem] = useState<'bad-email' | 'too-many' | 'offline' | null>(null);
 
   const begin = async () => {
-    setOpen(true);
-    setTyped(who.trim());
+    setStep('ask');
+    setTyped(who.includes('@') ? who.trim() : '');
     setMail(await card.canMail());
   };
 
   const send = async () => {
     setBusy(true);
-    const answer = await card.forgot(typed, lang);
+    setProblem(null);
+    const answer = await card.forgot(typed.trim(), lang);
     setBusy(false);
     if (answer === 'no-mail') return setMail(false);
-    setState(answer);
+    if (answer === 'sent') return setStep('sent');
+    setProblem(answer);
   };
 
-  if (!open)
+  if (step === 'closed')
     return (
       <p className="card-note signin-forgot">
         <button type="button" className="text-button" onClick={() => void begin()}>
@@ -338,24 +492,47 @@ function Forgot({ who }: { who: string }) {
       </p>
     );
   if (mail === false) return <p className="card-note signin-forgot">{tl(TEXT.forgot)}</p>;
-  if (state === 'sent') return <p className="card-note signin-forgot" role="status">{tl(TEXT.forgotSent)}</p>;
+  if (step === 'sent')
+    return (
+      <p className="card-note signin-forgot" role="status">
+        {tl(TEXT.forgotSent)}
+      </p>
+    );
+  if (step === 'confirm')
+    return (
+      <div className="signin-form signin-forgot">
+        <p className="card-note">{tl(TEXT.forgotConfirm)}</p>
+        <p className="signin-forgot-address">{typed.trim()}</p>
+        <div className="card-actions">
+          <button type="button" className="button button-quiet" aria-busy={busy || undefined} disabled={busy} onClick={() => void send()}>
+            {tl(TEXT.forgotSend)}
+          </button>
+          <button type="button" className="text-button" onClick={() => (setStep('ask'), setProblem(null))}>
+            {tl(TEXT.forgotChange)}
+          </button>
+        </div>
+        {problem && <p className="card-problem">{tl(TEXT[problem])}</p>}
+      </div>
+    );
   return (
     <form
       className="signin-form signin-forgot"
       onSubmit={(event) => {
         event.preventDefault();
-        void send();
+        if (!EMAIL.test(typed.trim())) return setProblem('bad-email');
+        setProblem(null);
+        setStep('confirm');
       }}
     >
       <p className="card-note">{tl(TEXT.forgotLead)}</p>
       <label>
-        <span>{tl(TEXT.who)}</span>
-        <input value={typed} onChange={(event) => setTyped(event.target.value)} name="forgot" autoComplete="username" autoCapitalize="none" spellCheck={false} maxLength={254} required autoFocus />
+        <span>{tl(TEXT.email)}</span>
+        <input type="email" value={typed} onChange={(event) => setTyped(event.target.value)} name="forgot" autoComplete="email" autoCapitalize="none" spellCheck={false} maxLength={254} required autoFocus />
       </label>
-      <button type="submit" className="button button-quiet" aria-busy={busy || undefined} disabled={busy || mail === null || !typed.trim()}>
-        {tl(TEXT.forgotSend)}
+      <button type="submit" className="button button-quiet" disabled={mail === null || !typed.trim()}>
+        {tl(TEXT.forgotNext)}
       </button>
-      {state && <p className="card-problem">{tl(TEXT[state])}</p>}
+      {problem && <p className="card-problem">{tl(TEXT[problem])}</p>}
     </form>
   );
 }
@@ -439,7 +616,7 @@ function NameBadge({ state }: { state: NameState }) {
 }
 
 /** Signed in: who, how to change the password, and the way out. */
-function Account({ fresh = false }: { fresh?: boolean }) {
+function Account({ fresh = false, google }: { fresh?: boolean; google: string | null }) {
   const { tl } = useI18n();
   const { card: mine } = useCard();
   const [changing, setChanging] = useState(false);
@@ -464,6 +641,12 @@ function Account({ fresh = false }: { fresh?: boolean }) {
     setAgain('');
   };
 
+  const link = async (credential: string) => {
+    setProblem(null);
+    const answer = await card.linkGoogle(credential);
+    if (answer !== 'ok') setProblem(answer === 'wrong' ? 'googleWrong' : answer);
+  };
+
   return (
     <div className="signin-account">
       <p className="page-eyebrow">{tl(TEXT.as)}</p>
@@ -482,6 +665,15 @@ function Account({ fresh = false }: { fresh?: boolean }) {
           <span className="u">{tl(TEXT.write)}</span>
         </a>
       </div>
+      {google &&
+        (mine?.google ? (
+          <p className="card-note">{tl(TEXT.googleLinked)}</p>
+        ) : (
+          <div className="signin-link-google">
+            <p className="card-note">{tl(TEXT.googleLink)}</p>
+            <GoogleButton client={google} onCredential={(credential) => void link(credential)} />
+          </div>
+        ))}
       {changing ? (
         <form
           className="signin-form"
@@ -514,9 +706,11 @@ function Account({ fresh = false }: { fresh?: boolean }) {
         </form>
       ) : (
         <div className="card-actions card-quiet">
-          <button type="button" className="text-button" onClick={() => (setChanging(true), setChanged(false))}>
-            {tl(TEXT.change)}
-          </button>
+          {mine?.password !== false && (
+            <button type="button" className="text-button" onClick={() => (setChanging(true), setChanged(false))}>
+              {tl(TEXT.change)}
+            </button>
+          )}
           <button type="button" className="text-button" onClick={() => card.leave()}>
             {tl(TEXT.signOut)}
           </button>
