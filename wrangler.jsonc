@@ -17,7 +17,7 @@
   // "Sign in with Google": the id of the site's client at Google (it is public). Empty, and the button
   // is not shown. The secret that goes with it, ACCOUNT_SEAL_KEY, is set with `wrangler secret put`.
   "vars": {
-    "GOOGLE_CLIENT_ID": ""
+    "GOOGLE_CLIENT_ID": "759869963592-d4ga37o2hil65uvnegmj0j43ogoi5qov.apps.googleusercontent.com"
   },
   // Library cards and readers' notebooks. Tables: worker/migrations.
   "d1_databases": [
