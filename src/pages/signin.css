@@ -299,6 +299,9 @@
   display: grid;
   justify-items: center;
   min-height: 44px;
+  /* Google's frame is a page of its own, with a light colour scheme: when ours is dark the browser
+     paints the frame a solid white behind the button. Saying light here lets it stay clear. */
+  color-scheme: light;
 }
 
 .signin-link-google {
