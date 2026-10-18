@@ -10,6 +10,7 @@ import './styles/stage.css';
 import './styles/panel.css';
 import './styles/sheet.css';
 import './styles/touch.css';
+import './styles/type.css';
 
 installInkOrigin();
 keepInStep();
@@ -29,7 +30,10 @@ const PAGES = {
   privacy: lazy(() => import('./pages/Legal').then((module) => ({ default: module.Privacy }))),
   terms: lazy(() => import('./pages/Legal').then((module) => ({ default: module.Terms }))),
 };
-const Page = PAGES[location.pathname.split('/')[1] as keyof typeof PAGES];
+const route = location.pathname.split('/')[1];
+const Page = PAGES[route as keyof typeof PAGES];
+// The text pages share one type (styles/type.css). The globe and the reader keep their own.
+if (route in PAGES && route !== 'globe' && route !== 'read') document.documentElement.dataset.type = 'plate';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

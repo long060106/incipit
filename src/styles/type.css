@@ -1,0 +1,108 @@
+/*
+  The type of the text pages and of a book's sheet. The home page (the wall, the two hands, the name)
+  keeps its own faces and is not touched here.
+
+  Three voices: a narrow, high-contrast serif (Instrument Serif) for titles, set in capitals when it is
+  the title of a page; a monospace (Geist Mono) in capitals for what labels or points; and Brygada
+  1918 for everything that is read, which is not changed.
+
+  This is one switch. To go back to the old type, remove the import of this file in start.tsx.
+
+  The pages mark themselves with data-type="plate" on <html> (start.tsx). A book's sheet carries
+  the same voices without it, since it opens over the home page.
+*/
+
+:root[data-type='plate'],
+.sheet {
+  --font-display: 'Instrument Serif', 'Brygada 1918', Georgia, 'Times New Roman', serif;
+  /* The old face is wide and this one narrow: the sizes written for it grow to match. */
+  --display-scale: 1.22;
+  --display-tracking: 0;
+  --font-label: 'Geist Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+/* ── What labels and points: mono, in capitals ────────────────────────────── */
+
+:root[data-type='plate'] .page-nav > a,
+:root[data-type='plate'] .page-nav > button,
+:root[data-type='plate'] .signin-doors button,
+:root[data-type='plate'] .page-eyebrow,
+:root[data-type='plate'] .about h2,
+:root[data-type='plate'] .spine-author,
+:root[data-type='plate'] .essay-card-books,
+.sheet .stats dt,
+.sheet .verdict h2,
+.sheet .sheet-reference h3,
+.sheet .facts dt,
+.sheet .advice dt,
+.sheet .around-kind,
+.sheet .sheet-author {
+  font-family: var(--font-label);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+:root[data-type='plate'] .page-nav > a,
+:root[data-type='plate'] .page-nav > button {
+  font-size: 0.75rem;
+}
+
+:root[data-type='plate'] .signin-doors button {
+  font-size: 0.8125rem;
+}
+
+:root[data-type='plate'] .page-eyebrow,
+:root[data-type='plate'] .about h2 {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.sheet .stats dt,
+.sheet .verdict h2,
+.sheet .sheet-reference h3,
+.sheet .facts dt,
+.sheet .advice dt,
+.sheet .around-kind,
+.sheet .sheet-author {
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.sheet .stats dt {
+  letter-spacing: 0.04em;
+}
+
+/* Sentences are read, not looked at: the book face, at the size it had. */
+.sheet .sheet-lead,
+.sheet .verdict-yes p {
+  --display-scale: 0.9;
+  --display-tracking: -0.015em;
+  font-family: var(--font-read);
+}
+
+/* ── The title of a page or of a book: the narrow serif, in capitals ──────── */
+
+:root[data-type='plate'] .about h1,
+:root[data-type='plate'] .legal h1,
+:root[data-type='plate'] .essays-head h1,
+:root[data-type='plate'] .essay-head h1,
+:root[data-type='plate'] .person-who h1,
+:root[data-type='plate'] .signin-aside h1,
+:root[data-type='plate'] .first-intro h1,
+:root[data-type='plate'] .first-book h1,
+:root[data-type='plate'] .notebook-empty h1,
+:root[data-type='plate'] .notebook-trail,
+:root[data-type='plate'] .admin h1,
+:root[data-type='plate'] .write-sent h1,
+:root[data-type='plate'] .write-preview h1,
+.sheet .sheet-title {
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+}
+
+@media (max-width: 640px) {
+  :root[data-type='plate'] .page-nav > a,
+  :root[data-type='plate'] .page-nav > button {
+    font-size: 0.6875rem;
+  }
+}
