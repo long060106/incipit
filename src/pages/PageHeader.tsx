@@ -16,9 +16,9 @@ export const PAGE_LINKS: { id: Exclude<PageId, 'signin'>; label: 'navFirst' | 'n
 
 export const pageUrl = (id: PageId | 'privacy' | 'terms' | '') => `${import.meta.env.BASE_URL}${id}`;
 
-/** The load screen of index.html, kept short on the inner pages. */
+/** The load screen of index.html is not shown on the inner pages: this takes it off at once. */
 export function useQuickLoader() {
-  useEffect(() => runLoader(() => undefined, 450), []);
+  useEffect(() => runLoader(() => undefined), []);
 }
 
 /** The bar across the top of the inner pages: the name leads home, then the other pages. */

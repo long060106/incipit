@@ -10,8 +10,17 @@
     if (!lang) lang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
     root.lang = lang === 'fr' ? 'fr' : 'en';
   } catch (e) {}
-  // The load screen is for the first page of a visit. After that it is not shown (src/lib/loader.ts).
+  // The load screen is for opening the home page from outside: by its address, a link, or a reload.
+  // Not on the pages inside, and not on coming back to the home page from one of them (the same
+  // rule as App.tsx has for its opening). See src/lib/loader.ts.
   try {
-    if (sessionStorage.getItem('incipit:arrived')) root.classList.add('no-loader');
+    var nav = performance.getEntriesByType('navigation')[0];
+    var inside =
+      !!nav &&
+      (nav.type === 'back_forward' ||
+        (nav.type === 'navigate' && !!document.referrer && new URL(document.referrer).origin === location.origin));
+    var path = location.pathname;
+    var home = path === '/' || path.indexOf('/book/') === 0;
+    if (!home || inside) root.classList.add('no-loader');
   } catch (e) {}
 })();

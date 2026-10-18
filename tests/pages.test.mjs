@@ -276,22 +276,29 @@ describe('the links in the bar across the top', () => {
 });
 
 describe('the load screen', () => {
-  test('is shown on the first page of a visit, and on none of the pages after it', async () => {
+  test('is shown when the home page is opened, and on no page inside', async () => {
     const { page, problems, close } = await fresh();
-    await page.goto(BASE + '/about', { waitUntil: 'commit' });
-    await page.waitForSelector('#loader', { state: 'attached' });
-    await page.waitForFunction(() => sessionStorage.getItem('incipit:arrived') !== null, null, { timeout: 10000 });
-    for (const path of ['/essays', '/', '/signin']) {
-      await page.goto(BASE + path, { waitUntil: 'domcontentloaded' });
-      const gone = await page.evaluate(() => {
+    const shown = () =>
+      page.evaluate(() => {
         const loader = document.getElementById('loader');
-        return !loader || getComputedStyle(loader).display === 'none';
+        return !!loader && getComputedStyle(loader).display !== 'none';
       });
-      assert.equal(gone, true, `${path} showed the load screen again`);
-    }
-    // And the page after it is whole at once, not held back.
-    await page.goto(BASE + '/about', { waitUntil: 'load' });
-    await page.waitForSelector('.page-head');
+    // The home page, opened by its address.
+    await page.goto(BASE + '/', { waitUntil: 'commit' });
+    await page.waitForSelector('#loader', { state: 'attached' });
+    assert.equal(await shown(), true, 'the home page had no load screen');
+    // A page inside, opened by its address: none.
+    await page.goto(BASE + '/about', { waitUntil: 'domcontentloaded' });
+    assert.equal(await shown(), false, 'an inner page showed the load screen');
+    // Back to the home page from inside: none.
+    await page.locator('.page-wordmark').click();
+    await page.waitForURL(BASE + '/');
+    await page.waitForSelector('#root > *');
+    assert.equal(await shown(), false, 'coming back home showed the load screen');
+    // The home page opened by its address again: shown again, as at any arrival.
+    await page.goto(BASE + '/', { waitUntil: 'commit' });
+    await page.waitForSelector('#loader', { state: 'attached' });
+    assert.equal(await shown(), true, 'the load screen was gone on a second arrival');
     assert.deepEqual(problems, []);
     await close();
   });

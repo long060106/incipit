@@ -1,14 +1,8 @@
 // The bar creeps forward by itself until the page's code arrives and takes it over (src/lib/loader.ts).
 (function () {
   var el = document.getElementById('loader');
-  // Not on a page after the first of the visit (the file theme.js has usually hidden it already).
+  // Not on the pages where theme.js has ruled the load screen out.
   if (document.documentElement.classList.contains('no-loader')) return;
-  try {
-    if (sessionStorage.getItem('incipit:arrived')) {
-      el.style.display = 'none';
-      return;
-    }
-  } catch (e) {}
   var count = el.querySelector('.loader-count');
   var state = { shown: 0, stop: function () { cancelAnimationFrame(frame); } };
   var frame = 0;

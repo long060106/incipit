@@ -41,7 +41,7 @@ const cameFromInside = () => {
 /** How long the glide between the hero and the gallery takes over its full distance. */
 const TRAVEL_MS = 5200;
 /** How long the page takes to open itself on arrival, if the reader does not scroll first. */
-const OPENING_MS = 6500;
+const OPENING_MS = 3500;
 /** How soon after the load screen it starts. */
 const OPENING_DELAY_MS = 250;
 /** How many screens of scroll the opening takes (the scroll track in base.css is this much taller). */
@@ -334,7 +334,7 @@ export default function App() {
         };
       }, OPENING_DELAY_MS);
     };
-    const stopLoader = runLoader(start, cameFromInside() ? 450 : undefined);
+    const stopLoader = runLoader(start);
     return () => {
       cancelled = true;
       stopLoader();
