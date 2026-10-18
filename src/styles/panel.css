@@ -330,16 +330,57 @@
   color: var(--accent);
 }
 
+/* The scale: eleven notches the bead stops at, longer at both ends and in the middle. They are
+   laid between the bead's own two extremes, half its width in from each side. */
+.mood-scale {
+  position: relative;
+}
+
+.mood-notches {
+  position: absolute;
+  inset: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.mood-notches i {
+  width: 1px;
+  height: 8px;
+  background: var(--line-strong);
+  transition: background-color 0.25s ease, height 0.25s var(--ease-out);
+}
+
+.mood-notches i[data-major] {
+  height: 14px;
+}
+
+.mood-notches i[data-on] {
+  background: var(--accent);
+}
+
 .mood input[type='range'] {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
-  height: 30px;
+  height: 34px;
   margin: 0;
-  /* A short tick marks the middle of the scale. */
-  background: linear-gradient(var(--line-strong), var(--line-strong)) center / 1px 9px no-repeat;
+  background: transparent;
   cursor: var(--cursor-press);
   -webkit-appearance: none;
   appearance: none;
+}
+
+/* Once a level is chosen the line behind the bead is drawn in brass up to it. */
+.mood.is-set input[type='range']::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, var(--accent) calc(8px + (100% - 16px) * var(--at)), var(--line-strong) 0);
+}
+
+.mood.is-set input[type='range']::-moz-range-progress {
+  height: 1px;
+  background: var(--accent);
 }
 
 .mood input[type='range']::-webkit-slider-runnable-track {

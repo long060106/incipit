@@ -267,13 +267,20 @@ interface MoodSliderProps {
   onChange: (value: number | undefined) => void;
 }
 
+/** The slider stops at eleven notches, 0 to 10 tenths of the way along; the values it hands on are 0 to 100. */
+const NOTCHES = 11;
+const NOTCH_STEP = 100 / (NOTCHES - 1);
+
 function MoodSlider({ low, high, value, onChange }: MoodSliderProps) {
   const { t } = useI18n();
   const isSet = value !== undefined;
+  // The notch the bead rests on (a value from a preset may lie between two: it is drawn on the nearer).
+  const at = Math.round((value ?? 50) / NOTCH_STEP);
 
   return (
-    // --v lets the stylesheet weight the two words by how far the bead sits towards each.
-    <div className={`mood ${isSet ? 'is-set' : ''}`} style={{ '--v': (value ?? 50) / 100 } as CSSProperties}>
+    // --v lets the stylesheet weight the two words by how far the bead sits towards each; --at is the
+    // share of the scale the bead has covered, for the line behind it.
+    <div className={`mood ${isSet ? 'is-set' : ''}`} style={{ '--v': (value ?? 50) / 100, '--at': at / (NOTCHES - 1) } as CSSProperties}>
       <div className="mood-ends">
         <span>{low}</span>
         {isSet && (
@@ -283,21 +290,29 @@ function MoodSlider({ low, high, value, onChange }: MoodSliderProps) {
         )}
         <span>{high}</span>
       </div>
-      <input
-        type="range"
-        min={0}
-        max={100}
-        step={1}
-        value={value ?? 50}
-        aria-label={`${low} / ${high}`}
-        aria-valuetext={isSet ? `${value}` : t('anywhere')}
-        onChange={(event) => onChange(Number(event.target.value))}
-        // A click that lands on the resting middle position changes nothing, so no change
-        // event fires; treat the release as choosing that position.
-        onPointerUp={(event) => {
-          if (!isSet) onChange(Number(event.currentTarget.value));
-        }}
-      />
+      <div className="mood-scale">
+        {/* The notches of the scale, those up to the bead lit once a level is chosen. */}
+        <div className="mood-notches" aria-hidden="true">
+          {Array.from({ length: NOTCHES }, (_, notch) => (
+            <i key={notch} data-major={notch % 5 === 0 || undefined} data-on={(isSet && notch <= at) || undefined} />
+          ))}
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          step={NOTCH_STEP}
+          value={at * NOTCH_STEP}
+          aria-label={`${low} / ${high}`}
+          aria-valuetext={isSet ? `${at} / ${NOTCHES - 1}` : t('anywhere')}
+          onChange={(event) => onChange(Number(event.target.value))}
+          // A click that lands on the resting middle position changes nothing, so no change
+          // event fires; treat the release as choosing that position.
+          onPointerUp={(event) => {
+            if (!isSet) onChange(Number(event.currentTarget.value));
+          }}
+        />
+      </div>
     </div>
   );
 }
