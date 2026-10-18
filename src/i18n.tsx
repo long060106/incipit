@@ -20,7 +20,7 @@ const STRINGS = {
   readOn: { en: 'Continue reading', fr: 'Reprendre la lecture' },
   downloadShort: { en: 'Download', fr: 'Télécharger' },
   around: { en: 'Around the book', fr: 'Autour du livre' },
-  aroundNote: { en: 'Background from Wikipedia: the book, its author, and the time and place it is set in.', fr: 'Repères tirés de Wikipédia : le livre, son auteur, l’époque et le lieu du récit.' },
+  aroundNote: { en: 'Each line opens its Wikipedia article in a new tab: the book, its author, and the time and place it is set in.', fr: 'Chaque ligne ouvre son article Wikipédia dans un nouvel onglet : le livre, son auteur, l’époque et le lieu du récit.' },
   wikiBook: { en: 'The book', fr: 'Le livre' },
   wikiAuthor: { en: 'The author', fr: 'L’auteur' },
   wikiSetting: { en: 'The setting', fr: 'Le cadre' },
