@@ -13,97 +13,101 @@
     ↗     a link that leaves the site, in the texts
 
   This is one switch. To go back to the old type, remove the import of this file in start.tsx.
-  start.tsx marks the pages with data-type="plate" on <html>, all but the reader and the first
-  pages, which keep the type they had.
+  start.tsx marks the pages with data-type="plate" on <html>. The reader is left out and keeps the
+  type it had. The first pages are marked data-keep too: they keep the type of their own text, but
+  the bar across the top is the same there as everywhere.
 */
 
-:root[data-type='plate'] {
+:root[data-type='plate']:not([data-keep]) {
   --font-display: 'Instrument Serif', 'Brygada 1918', Georgia, 'Times New Roman', serif;
   /* The old face is wide and this one narrow: the sizes written for it grow to match. */
   --display-scale: 1.22;
   --display-tracking: 0;
+}
+
+:root[data-type='plate'] {
   --font-label: 'Geist Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
 }
 
 /* ── What labels and points: mono, in capitals ────────────────────────────── */
 
-:root[data-type='plate'] .page-nav > a,
-:root[data-type='plate'] .page-nav > button,
-:root[data-type='plate'] .header-link,
-:root[data-type='plate'] .signin-doors button,
-:root[data-type='plate'] .page-eyebrow,
-:root[data-type='plate'] .about h2,
-:root[data-type='plate'] .spine-author,
-:root[data-type='plate'] .essay-card-books,
-:root[data-type='plate'] .panel-handle,
-:root[data-type='plate'] .quick button,
-:root[data-type='plate'] .mood-ends,
-:root[data-type='plate'] .mood-clear,
-:root[data-type='plate'] .field-label,
-:root[data-type='plate'] .segmented button,
-:root[data-type='plate'] .combo-count,
-:root[data-type='plate'] .panel-foot .text-button,
-:root[data-type='plate'] .hero-credit,
-:root[data-type='plate'] .hero-def-class,
-:root[data-type='plate'] .sheet .stats dt,
-:root[data-type='plate'] .sheet .verdict h2,
-:root[data-type='plate'] .sheet .sheet-reference h3,
-:root[data-type='plate'] .sheet .facts dt,
-:root[data-type='plate'] .sheet .advice dt,
-:root[data-type='plate'] .sheet .around-kind,
-:root[data-type='plate'] .sheet .sheet-author {
+:root[data-type='plate']:not([data-keep]) .page-nav > a,
+:root[data-type='plate']:not([data-keep]) .page-nav > button,
+:root[data-type='plate']:not([data-keep]) .header-link,
+:root[data-type='plate']:not([data-keep]) .signin-doors button,
+:root[data-type='plate']:not([data-keep]) .page-eyebrow,
+:root[data-type='plate']:not([data-keep]) .about h2,
+:root[data-type='plate']:not([data-keep]) .spine-author,
+:root[data-type='plate']:not([data-keep]) .essay-card-books,
+:root[data-type='plate']:not([data-keep]) .panel-handle,
+:root[data-type='plate']:not([data-keep]) .quick button,
+:root[data-type='plate']:not([data-keep]) .mood-ends,
+:root[data-type='plate']:not([data-keep]) .mood-clear,
+:root[data-type='plate']:not([data-keep]) .field-label,
+:root[data-type='plate']:not([data-keep]) .segmented button,
+:root[data-type='plate']:not([data-keep]) .combo-count,
+:root[data-type='plate']:not([data-keep]) .panel-foot .text-button,
+:root[data-type='plate']:not([data-keep]) .hero-credit,
+:root[data-type='plate']:not([data-keep]) .hero-def-class,
+:root[data-type='plate']:not([data-keep]) .sheet .stats dt,
+:root[data-type='plate']:not([data-keep]) .sheet .verdict h2,
+:root[data-type='plate']:not([data-keep]) .sheet .sheet-reference h3,
+:root[data-type='plate']:not([data-keep]) .sheet .facts dt,
+:root[data-type='plate']:not([data-keep]) .sheet .advice dt,
+:root[data-type='plate']:not([data-keep]) .sheet .around-kind,
+:root[data-type='plate']:not([data-keep]) .sheet .sheet-author {
   font-family: var(--font-label);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
-:root[data-type='plate'] .page-nav > a,
-:root[data-type='plate'] .page-nav > button,
-:root[data-type='plate'] .header-link {
+:root[data-type='plate']:not([data-keep]) .page-nav > a,
+:root[data-type='plate']:not([data-keep]) .page-nav > button,
+:root[data-type='plate']:not([data-keep]) .header-link {
   font-size: 0.75rem;
 }
 
-:root[data-type='plate'] .signin-doors button,
-:root[data-type='plate'] .panel-handle,
-:root[data-type='plate'] .quick button,
-:root[data-type='plate'] .segmented button,
-:root[data-type='plate'] .panel-foot .text-button {
+:root[data-type='plate']:not([data-keep]) .signin-doors button,
+:root[data-type='plate']:not([data-keep]) .panel-handle,
+:root[data-type='plate']:not([data-keep]) .quick button,
+:root[data-type='plate']:not([data-keep]) .segmented button,
+:root[data-type='plate']:not([data-keep]) .panel-foot .text-button {
   font-size: 0.75rem;
 }
 
-:root[data-type='plate'] .mood-ends,
-:root[data-type='plate'] .mood-clear,
-:root[data-type='plate'] .field-label,
-:root[data-type='plate'] .combo-count,
-:root[data-type='plate'] .hero-credit,
-:root[data-type='plate'] .hero-def-class {
+:root[data-type='plate']:not([data-keep]) .mood-ends,
+:root[data-type='plate']:not([data-keep]) .mood-clear,
+:root[data-type='plate']:not([data-keep]) .field-label,
+:root[data-type='plate']:not([data-keep]) .combo-count,
+:root[data-type='plate']:not([data-keep]) .hero-credit,
+:root[data-type='plate']:not([data-keep]) .hero-def-class {
   font-size: 0.6875rem;
 }
 
-:root[data-type='plate'] .page-eyebrow,
-:root[data-type='plate'] .about h2 {
+:root[data-type='plate']:not([data-keep]) .page-eyebrow,
+:root[data-type='plate']:not([data-keep]) .about h2 {
   font-size: 0.75rem;
   letter-spacing: 0.08em;
 }
 
-:root[data-type='plate'] .sheet .stats dt,
-:root[data-type='plate'] .sheet .verdict h2,
-:root[data-type='plate'] .sheet .sheet-reference h3,
-:root[data-type='plate'] .sheet .facts dt,
-:root[data-type='plate'] .sheet .advice dt,
-:root[data-type='plate'] .sheet .around-kind,
-:root[data-type='plate'] .sheet .sheet-author {
+:root[data-type='plate']:not([data-keep]) .sheet .stats dt,
+:root[data-type='plate']:not([data-keep]) .sheet .verdict h2,
+:root[data-type='plate']:not([data-keep]) .sheet .sheet-reference h3,
+:root[data-type='plate']:not([data-keep]) .sheet .facts dt,
+:root[data-type='plate']:not([data-keep]) .sheet .advice dt,
+:root[data-type='plate']:not([data-keep]) .sheet .around-kind,
+:root[data-type='plate']:not([data-keep]) .sheet .sheet-author {
   font-size: 0.75rem;
   line-height: 1.5;
 }
 
-:root[data-type='plate'] .sheet .stats dt {
+:root[data-type='plate']:not([data-keep]) .sheet .stats dt {
   letter-spacing: 0.04em;
 }
 
 /* Sentences are read, not looked at: the book face, at the size it had. */
-:root[data-type='plate'] .sheet .sheet-lead,
-:root[data-type='plate'] .sheet .verdict-yes p {
+:root[data-type='plate']:not([data-keep]) .sheet .sheet-lead,
+:root[data-type='plate']:not([data-keep]) .sheet .verdict-yes p {
   --display-scale: 0.9;
   --display-tracking: -0.015em;
   font-family: var(--font-read);
@@ -111,35 +115,115 @@
 
 /* ── The title of a page or of a book: the narrow serif, in capitals ──────── */
 
-:root[data-type='plate'] .about h1,
-:root[data-type='plate'] .legal h1,
-:root[data-type='plate'] .essays-head h1,
-:root[data-type='plate'] .essay-head h1,
-:root[data-type='plate'] .person-who h1,
-:root[data-type='plate'] .signin-aside h1,
-:root[data-type='plate'] .first-intro h1,
-:root[data-type='plate'] .first-book h1,
-:root[data-type='plate'] .notebook-empty h1,
-:root[data-type='plate'] .notebook-trail,
-:root[data-type='plate'] .admin h1,
-:root[data-type='plate'] .write-sent h1,
-:root[data-type='plate'] .write-preview h1,
-:root[data-type='plate'] .globe-title,
-:root[data-type='plate'] .reader-head h1,
-:root[data-type='plate'] .line,
-:root[data-type='plate'] .panel h2,
-:root[data-type='plate'] .sheet .sheet-title {
+:root[data-type='plate']:not([data-keep]) .about h1,
+:root[data-type='plate']:not([data-keep]) .legal h1,
+:root[data-type='plate']:not([data-keep]) .essays-head h1,
+:root[data-type='plate']:not([data-keep]) .essay-head h1,
+:root[data-type='plate']:not([data-keep]) .person-who h1,
+:root[data-type='plate']:not([data-keep]) .signin-aside h1,
+:root[data-type='plate']:not([data-keep]) .first-intro h1,
+:root[data-type='plate']:not([data-keep]) .first-book h1,
+:root[data-type='plate']:not([data-keep]) .notebook-empty h1,
+:root[data-type='plate']:not([data-keep]) .notebook-trail,
+:root[data-type='plate']:not([data-keep]) .admin h1,
+:root[data-type='plate']:not([data-keep]) .write-sent h1,
+:root[data-type='plate']:not([data-keep]) .write-preview h1,
+:root[data-type='plate']:not([data-keep]) .globe-title,
+:root[data-type='plate']:not([data-keep]) .reader-head h1,
+:root[data-type='plate']:not([data-keep]) .line,
+:root[data-type='plate']:not([data-keep]) .panel h2,
+:root[data-type='plate']:not([data-keep]) .sheet .sheet-title {
   text-transform: uppercase;
   letter-spacing: 0.005em;
 }
 
-:root[data-type='plate'] .legal h2 {
+:root[data-type='plate']:not([data-keep]) .legal h2 {
   font-size: 1.5rem;
 }
 
 /* ── The signs ────────────────────────────────────────────────────────────── */
 
 /* ●  Where you are, in the bar across the top: a dot in place of the line under the word. */
+:root[data-type='plate']:not([data-keep]) .page-nav > a[aria-current='page']::after {
+  display: none;
+}
+
+:root[data-type='plate']:not([data-keep]) .page-nav > a[aria-current='page']::before {
+  content: '';
+  display: inline-block;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: 0.0625rem;
+}
+
+/* (01)  The parts of a long text, numbered as in a catalogue. */
+:root[data-type='plate']:not([data-keep]) .legal article,
+:root[data-type='plate']:not([data-keep]) .sheet-content {
+  counter-reset: part;
+}
+
+:root[data-type='plate']:not([data-keep]) .legal h2::before,
+:root[data-type='plate']:not([data-keep]) .sheet-section > h2::before {
+  counter-increment: part;
+  content: '(' counter(part, decimal-leading-zero) ')';
+  display: inline-block;
+  margin-right: 0.85em;
+  color: var(--muted);
+  font-family: var(--font-label);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  vertical-align: 0.5em;
+}
+
+/* —  The items of a list in a text. */
+:root[data-type='plate']:not([data-keep]) .legal ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+:root[data-type='plate']:not([data-keep]) .legal li {
+  position: relative;
+  padding-left: 1.75rem;
+}
+
+:root[data-type='plate']:not([data-keep]) .legal li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+}
+
+/* ↗  A link that leaves the site, inside a text. */
+:root[data-type='plate']:not([data-keep]) .legal article a[href^='http']::after,
+:root[data-type='plate']:not([data-keep]) .about-links a[href^='http']::after,
+:root[data-type='plate']:not([data-keep]) .sheet .text-link[target='_blank']::after {
+  content: '\00a0\2197';
+  font-family: var(--font-label);
+  font-size: 0.8em;
+  text-decoration: none;
+  display: inline-block;
+}
+
+@media (max-width: 640px) {
+  :root[data-type='plate']:not([data-keep]) .page-nav > a,
+  :root[data-type='plate']:not([data-keep]) .page-nav > button {
+    font-size: 0.6875rem;
+  }
+}
+
+/* ── The bar across the top: the same on every page that has it, the first pages too ── */
+
+:root[data-type='plate'] .page-nav > a,
+:root[data-type='plate'] .page-nav > button {
+  font-family: var(--font-label);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 :root[data-type='plate'] .page-nav > a[aria-current='page']::after {
   display: none;
 }
@@ -153,54 +237,6 @@
   border-radius: 50%;
   background: var(--accent);
   vertical-align: 0.0625rem;
-}
-
-/* (01)  The parts of a long text, numbered as in a catalogue. */
-:root[data-type='plate'] .legal article,
-:root[data-type='plate'] .sheet-content {
-  counter-reset: part;
-}
-
-:root[data-type='plate'] .legal h2::before,
-:root[data-type='plate'] .sheet-section > h2::before {
-  counter-increment: part;
-  content: '(' counter(part, decimal-leading-zero) ')';
-  display: inline-block;
-  margin-right: 0.85em;
-  color: var(--muted);
-  font-family: var(--font-label);
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  vertical-align: 0.5em;
-}
-
-/* —  The items of a list in a text. */
-:root[data-type='plate'] .legal ul {
-  padding-left: 0;
-  list-style: none;
-}
-
-:root[data-type='plate'] .legal li {
-  position: relative;
-  padding-left: 1.75rem;
-}
-
-:root[data-type='plate'] .legal li::before {
-  content: '—';
-  position: absolute;
-  left: 0;
-  color: var(--muted);
-}
-
-/* ↗  A link that leaves the site, inside a text. */
-:root[data-type='plate'] .legal article a[href^='http']::after,
-:root[data-type='plate'] .about-links a[href^='http']::after,
-:root[data-type='plate'] .sheet .text-link[target='_blank']::after {
-  content: '\00a0\2197';
-  font-family: var(--font-label);
-  font-size: 0.8em;
-  text-decoration: none;
-  display: inline-block;
 }
 
 @media (max-width: 640px) {

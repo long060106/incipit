@@ -34,8 +34,10 @@ const PAGES = {
 };
 const route = location.pathname.split('/')[1];
 const Page = PAGES[route as keyof typeof PAGES];
-// The pages share one type (styles/type.css), except the reader and the first pages, which keep their own.
-if (route !== 'read' && route !== 'first-pages') document.documentElement.dataset.type = 'plate';
+// The pages share one type (styles/type.css). The reader keeps its own; the first pages keep the type of
+// their text but share the bar across the top.
+if (route !== 'read') document.documentElement.dataset.type = 'plate';
+if (route === 'first-pages') document.documentElement.dataset.keep = 'text';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -258,14 +258,18 @@ describe('the links in the bar across the top', () => {
     await close();
   });
 
-  test('stay still on the pages that keep the old type', async () => {
+  test('are the same on the first pages, whose own text keeps its type, and not on the reader', async () => {
     const { page, close } = await fresh();
     await page.goto(BASE + '/first-pages', { waitUntil: 'load' });
     const link = page.locator('.page-nav > a', { hasText: 'Essays' });
     await link.waitFor();
-    await link.hover();
-    await page.waitForTimeout(260);
-    assert.equal(await link.textContent(), 'Essays');
+    assert.match(await link.evaluate((element) => getComputedStyle(element).fontFamily), /Geist Mono/);
+    assert.equal(await link.evaluate((element) => getComputedStyle(element).textTransform), 'uppercase');
+    await page.locator('h1').first().waitFor();
+    assert.match(await page.locator('h1').first().evaluate((element) => getComputedStyle(element).fontFamily), /Brygada/, 'the text of the first pages changed type');
+    await page.goto(BASE + '/read/frankenstein', { waitUntil: 'load' });
+    await page.waitForTimeout(800);
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.type ?? 'none'), 'none');
     await close();
   });
 });
