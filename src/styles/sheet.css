@@ -697,28 +697,6 @@
   }
 }
 
-/* The line of credit, small under the cover of a book's page. */
-.sheet-credit {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(var(--pad) / 2 - 0.75em);
-  color: var(--muted);
-  font-size: 0.75rem;
-  letter-spacing: 0.02em;
-  text-align: center;
-}
-
-.sheet-credit a {
-  color: color-mix(in srgb, var(--text) 62%, var(--muted));
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.sheet-credit a:hover {
-  color: var(--accent);
-}
-
 /* What readers say (Readers.tsx). */
 .mood-readers {
   margin: 0.75rem 0 0;

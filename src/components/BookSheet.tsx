@@ -7,10 +7,8 @@ import { READABLE } from '../data/texts';
 import { saveFile, useDecided } from '../lib/keeper';
 import { reads } from '../lib/kepttext';
 import { bookLinks, coverUrl } from '../lib/links';
-import { useProfile } from '../lib/profile';
 import { blendedMood, blendedRating, useReviews } from '../lib/reviews';
 import { useShelf } from '../lib/shelf';
-import { pageUrl } from '../pages/PageHeader';
 import { MIN_RATINGS, similarBooks } from '../lib/match';
 import { coverOrigin, type CoverOrigin } from '../lib/wall';
 import { Around } from './Around';
@@ -47,7 +45,6 @@ interface BookSheetProps {
  */
 export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMood, onPickTheme }: BookSheetProps) {
   const { t, tl, lang } = useI18n();
-  const [{ profile }] = useProfile();
   const shelf = useShelf();
   // The keeper of the site can switch a book's download off (src/lib/keeper.ts).
   const decided = useDecided()[book.id];
@@ -166,10 +163,6 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
 
       <div className="sheet-cover">
         <img ref={coverRef} key={book.id} className={origin ? 'is-landing' : ''} src={coverUrl(book, 'md')} alt="" />
-        {/* Who made the site, small under the cover; the name leads to the page about it. */}
-        <p className="sheet-credit">
-          {t('developedByLabel')} <a href={pageUrl('about')}>{profile.name}</a>
-        </p>
       </div>
 
       <div className="sheet-body" ref={scrollRef} data-scroll>

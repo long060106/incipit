@@ -1,6 +1,5 @@
 import type { CSSProperties, Ref } from 'react';
 import { SITE_NAME, useI18n } from '../i18n';
-import { useProfile } from '../lib/profile';
 import { pageUrl } from '../pages/PageHeader';
 import { Roll } from './Roll';
 
@@ -34,7 +33,6 @@ const HAND = `${import.meta.env.BASE_URL}hero/hand`;
  */
 export function Intro({ active, onBrowse, wordRef }: IntroProps) {
   const { t } = useI18n();
-  const [{ profile }] = useProfile();
 
   return (
     <div className="intro">
@@ -77,11 +75,8 @@ export function Intro({ active, onBrowse, wordRef }: IntroProps) {
         </div>
       </section>
 
-      {/* Who made the site, in one small line at the foot of the first page; the page about it says more. Beside it, the keeper's way in. */}
+      {/* The privacy policy, in one small line at the foot of the first page. Beside it, the keeper's way in. */}
       <p className="hero-credit" inert={!active}>
-        <span>
-          {t('developedByLabel')} <a href={pageUrl('about')}>{profile.name}</a>
-        </span>
         <a href={pageUrl('privacy')}>{t('privacyLink')}</a>
         <a href={`${import.meta.env.BASE_URL}admin`}>{t('signInAdmin')}</a>
       </p>
