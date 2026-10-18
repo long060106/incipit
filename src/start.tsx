@@ -32,8 +32,8 @@ const PAGES = {
 };
 const route = location.pathname.split('/')[1];
 const Page = PAGES[route as keyof typeof PAGES];
-// The text pages share one type (styles/type.css). The globe and the reader keep their own.
-if (route in PAGES && route !== 'globe' && route !== 'read') document.documentElement.dataset.type = 'plate';
+// The pages share one type (styles/type.css), except the reader and the first pages, which keep their own.
+if (route !== 'read' && route !== 'first-pages') document.documentElement.dataset.type = 'plate';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

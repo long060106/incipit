@@ -1,19 +1,23 @@
 /*
-  The type of the text pages and of a book's sheet. The home page (the wall, the two hands, the name)
-  keeps its own faces and is not touched here.
+  The type of the whole site. Only the name, Incipit, and the flourished first letter keep
+  the faces they were given (--font-hero, --font-initial): they are the site's own mark.
 
-  Three voices: a narrow, high-contrast serif (Instrument Serif) for titles, set in capitals when it is
-  the title of a page; a monospace (Geist Mono) in capitals for what labels or points; and Brygada
-  1918 for everything that is read, which is not changed.
+  Three voices: a narrow, high-contrast serif (Instrument Serif) for titles, set in capitals when
+  it is the title of a page; a monospace (Geist Mono) in capitals for what labels or points; and
+  Brygada 1918 for everything that is read, which is not changed.
+
+  A few signs go with them, always the same ones and always in the same places:
+    ●     the page you are on, in the bar at the top
+    (01)  the numbered parts of a long text (a book's sheet, the privacy policy and the terms)
+    —     the items of a list in those texts
+    ↗     a link that leaves the site, in the texts
 
   This is one switch. To go back to the old type, remove the import of this file in start.tsx.
-
-  The pages mark themselves with data-type="plate" on <html> (start.tsx). A book's sheet carries
-  the same voices without it, since it opens over the home page.
+  start.tsx marks the pages with data-type="plate" on <html>, all but the reader and the first
+  pages, which keep the type they had.
 */
 
-:root[data-type='plate'],
-.sheet {
+:root[data-type='plate'] {
   --font-display: 'Instrument Serif', 'Brygada 1918', Georgia, 'Times New Roman', serif;
   /* The old face is wide and this one narrow: the sizes written for it grow to match. */
   --display-scale: 1.22;
@@ -25,30 +29,55 @@
 
 :root[data-type='plate'] .page-nav > a,
 :root[data-type='plate'] .page-nav > button,
+:root[data-type='plate'] .header-link,
 :root[data-type='plate'] .signin-doors button,
 :root[data-type='plate'] .page-eyebrow,
 :root[data-type='plate'] .about h2,
 :root[data-type='plate'] .spine-author,
 :root[data-type='plate'] .essay-card-books,
-.sheet .stats dt,
-.sheet .verdict h2,
-.sheet .sheet-reference h3,
-.sheet .facts dt,
-.sheet .advice dt,
-.sheet .around-kind,
-.sheet .sheet-author {
+:root[data-type='plate'] .panel-handle,
+:root[data-type='plate'] .quick button,
+:root[data-type='plate'] .mood-ends,
+:root[data-type='plate'] .mood-clear,
+:root[data-type='plate'] .field-label,
+:root[data-type='plate'] .segmented button,
+:root[data-type='plate'] .combo-count,
+:root[data-type='plate'] .panel-foot .text-button,
+:root[data-type='plate'] .hero-credit,
+:root[data-type='plate'] .hero-def-class,
+:root[data-type='plate'] .sheet .stats dt,
+:root[data-type='plate'] .sheet .verdict h2,
+:root[data-type='plate'] .sheet .sheet-reference h3,
+:root[data-type='plate'] .sheet .facts dt,
+:root[data-type='plate'] .sheet .advice dt,
+:root[data-type='plate'] .sheet .around-kind,
+:root[data-type='plate'] .sheet .sheet-author {
   font-family: var(--font-label);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 :root[data-type='plate'] .page-nav > a,
-:root[data-type='plate'] .page-nav > button {
+:root[data-type='plate'] .page-nav > button,
+:root[data-type='plate'] .header-link {
   font-size: 0.75rem;
 }
 
-:root[data-type='plate'] .signin-doors button {
-  font-size: 0.8125rem;
+:root[data-type='plate'] .signin-doors button,
+:root[data-type='plate'] .panel-handle,
+:root[data-type='plate'] .quick button,
+:root[data-type='plate'] .segmented button,
+:root[data-type='plate'] .panel-foot .text-button {
+  font-size: 0.75rem;
+}
+
+:root[data-type='plate'] .mood-ends,
+:root[data-type='plate'] .mood-clear,
+:root[data-type='plate'] .field-label,
+:root[data-type='plate'] .combo-count,
+:root[data-type='plate'] .hero-credit,
+:root[data-type='plate'] .hero-def-class {
+  font-size: 0.6875rem;
 }
 
 :root[data-type='plate'] .page-eyebrow,
@@ -57,24 +86,24 @@
   letter-spacing: 0.08em;
 }
 
-.sheet .stats dt,
-.sheet .verdict h2,
-.sheet .sheet-reference h3,
-.sheet .facts dt,
-.sheet .advice dt,
-.sheet .around-kind,
-.sheet .sheet-author {
+:root[data-type='plate'] .sheet .stats dt,
+:root[data-type='plate'] .sheet .verdict h2,
+:root[data-type='plate'] .sheet .sheet-reference h3,
+:root[data-type='plate'] .sheet .facts dt,
+:root[data-type='plate'] .sheet .advice dt,
+:root[data-type='plate'] .sheet .around-kind,
+:root[data-type='plate'] .sheet .sheet-author {
   font-size: 0.75rem;
   line-height: 1.5;
 }
 
-.sheet .stats dt {
+:root[data-type='plate'] .sheet .stats dt {
   letter-spacing: 0.04em;
 }
 
 /* Sentences are read, not looked at: the book face, at the size it had. */
-.sheet .sheet-lead,
-.sheet .verdict-yes p {
+:root[data-type='plate'] .sheet .sheet-lead,
+:root[data-type='plate'] .sheet .verdict-yes p {
   --display-scale: 0.9;
   --display-tracking: -0.015em;
   font-family: var(--font-read);
@@ -95,9 +124,83 @@
 :root[data-type='plate'] .admin h1,
 :root[data-type='plate'] .write-sent h1,
 :root[data-type='plate'] .write-preview h1,
-.sheet .sheet-title {
+:root[data-type='plate'] .globe-title,
+:root[data-type='plate'] .reader-head h1,
+:root[data-type='plate'] .line,
+:root[data-type='plate'] .panel h2,
+:root[data-type='plate'] .sheet .sheet-title {
   text-transform: uppercase;
   letter-spacing: 0.005em;
+}
+
+:root[data-type='plate'] .legal h2 {
+  font-size: 1.5rem;
+}
+
+/* ── The signs ────────────────────────────────────────────────────────────── */
+
+/* ●  Where you are, in the bar across the top: a dot in place of the line under the word. */
+:root[data-type='plate'] .page-nav > a[aria-current='page']::after {
+  display: none;
+}
+
+:root[data-type='plate'] .page-nav > a[aria-current='page']::before {
+  content: '';
+  display: inline-block;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: 0.0625rem;
+}
+
+/* (01)  The parts of a long text, numbered as in a catalogue. */
+:root[data-type='plate'] .legal article,
+:root[data-type='plate'] .sheet-content {
+  counter-reset: part;
+}
+
+:root[data-type='plate'] .legal h2::before,
+:root[data-type='plate'] .sheet-section > h2::before {
+  counter-increment: part;
+  content: '(' counter(part, decimal-leading-zero) ')';
+  display: inline-block;
+  margin-right: 0.85em;
+  color: var(--muted);
+  font-family: var(--font-label);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  vertical-align: 0.5em;
+}
+
+/* —  The items of a list in a text. */
+:root[data-type='plate'] .legal ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+:root[data-type='plate'] .legal li {
+  position: relative;
+  padding-left: 1.75rem;
+}
+
+:root[data-type='plate'] .legal li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+}
+
+/* ↗  A link that leaves the site, inside a text. */
+:root[data-type='plate'] .legal article a[href^='http']::after,
+:root[data-type='plate'] .about-links a[href^='http']::after,
+:root[data-type='plate'] .sheet .text-link[target='_blank']::after {
+  content: '\00a0\2197';
+  font-family: var(--font-label);
+  font-size: 0.8em;
+  text-decoration: none;
+  display: inline-block;
 }
 
 @media (max-width: 640px) {
