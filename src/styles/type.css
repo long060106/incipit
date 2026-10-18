@@ -13,9 +13,9 @@
     ↗     a link that leaves the site, in the texts
 
   This is one switch. To go back to the old type, remove the import of this file in start.tsx.
-  start.tsx marks the pages with data-type="plate" on <html>. The reader is left out and keeps the
-  type it had. The first pages are marked data-keep too: they keep the type of their own text, but
-  the bar across the top is the same there as everywhere.
+  start.tsx marks the pages with data-type="plate" on <html>. The reader and the first pages are
+  marked data-keep too: they keep the type of their own text, but the bar across the top is the
+  same there as everywhere.
 */
 
 :root[data-type='plate']:not([data-keep]) {

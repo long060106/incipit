@@ -258,18 +258,19 @@ describe('the links in the bar across the top', () => {
     await close();
   });
 
-  test('are the same on the first pages, whose own text keeps its type, and not on the reader', async () => {
+  test('are the same on the first pages and in the reader, whose own text keeps its type', async () => {
     const { page, close } = await fresh();
+    const family = (selector) => page.locator(selector).first().evaluate((element) => getComputedStyle(element).fontFamily);
     await page.goto(BASE + '/first-pages', { waitUntil: 'load' });
-    const link = page.locator('.page-nav > a', { hasText: 'Essays' });
-    await link.waitFor();
-    assert.match(await link.evaluate((element) => getComputedStyle(element).fontFamily), /Geist Mono/);
-    assert.equal(await link.evaluate((element) => getComputedStyle(element).textTransform), 'uppercase');
+    await page.locator('.page-nav > a').first().waitFor();
+    assert.match(await family('.page-nav > a'), /Geist Mono/);
+    assert.equal(await page.locator('.page-nav > a').first().evaluate((element) => getComputedStyle(element).textTransform), 'uppercase');
     await page.locator('h1').first().waitFor();
-    assert.match(await page.locator('h1').first().evaluate((element) => getComputedStyle(element).fontFamily), /Brygada/, 'the text of the first pages changed type');
+    assert.match(await family('h1'), /Brygada/, 'the text of the first pages changed type');
     await page.goto(BASE + '/read/frankenstein', { waitUntil: 'load' });
-    await page.waitForTimeout(800);
-    assert.equal(await page.evaluate(() => document.documentElement.dataset.type ?? 'none'), 'none');
+    await page.locator('.reader-bar .page-nav > button').first().waitFor();
+    assert.match(await family('.reader-bar .page-nav > button'), /Geist Mono/);
+    assert.match(await family('.reader-book'), /Brygada/, 'the reader changed type');
     await close();
   });
 });

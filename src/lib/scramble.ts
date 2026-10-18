@@ -1,8 +1,7 @@
 /*
   The links in the bar across the top: when the pointer meets one, its letters shuffle, then settle
   back one by one from the left. The type there is a monospace, so the word does not change width
-  while it shuffles. Not for touch, not where the reader has asked for less motion, and not on the
-  pages that keep the old type (they have no monospace to hold the width).
+  while it shuffles. Not for touch, and not where the reader has asked for less motion.
 */
 
 const SELECTOR = '.page-nav > a, .page-nav > button, .header-link';
@@ -25,6 +24,8 @@ function textNodesOf(element: HTMLElement): Text[] {
 }
 
 function scramble(element: HTMLElement) {
+  // A button with a name of its own (the signs →← and A− of the reader) is not a word to shuffle.
+  if (element.hasAttribute('aria-label')) return;
   const nodes = textNodesOf(element);
   if (!nodes.length) return;
   const words = nodes.map((node) => node.data);
