@@ -304,7 +304,8 @@
   font-size: 0.8125rem;
 }
 
-.around a svg {
+.around a svg,
+.outbound svg {
   box-sizing: content-box;
   padding: 7px;
   border: 1px solid var(--line-strong);
@@ -314,7 +315,9 @@
 }
 
 .around a:hover svg,
-.around a:focus-visible svg {
+.around a:focus-visible svg,
+.outbound:hover svg,
+.outbound:focus-visible svg {
   border-color: var(--accent);
   background: var(--accent);
   color: var(--on-accent);
@@ -723,6 +726,22 @@
   .sheet-cover img {
     animation: none;
   }
+}
+
+/* The links that leave the site, in the sheet (BookSheet.tsx), read as links like the rows of Around the
+   book: a thread of brass under the words, the arrow in a ring that fills under the pointer. */
+.outbound {
+  gap: 0.65rem;
+  padding: 0.1875rem 0;
+}
+
+.outbound .u {
+  background-image: linear-gradient(var(--accent), var(--accent)), linear-gradient(color-mix(in srgb, var(--accent) 45%, transparent), color-mix(in srgb, var(--accent) 45%, transparent));
+}
+
+.outbound:hover,
+.outbound:focus-visible {
+  color: var(--accent);
 }
 
 /* What readers say (Readers.tsx). */

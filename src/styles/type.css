@@ -198,8 +198,7 @@
 
 /* ↗  A link that leaves the site, inside a text. */
 :root[data-type='plate']:not([data-keep]) .legal article a[href^='http']::after,
-:root[data-type='plate']:not([data-keep]) .about-links a[href^='http']::after,
-:root[data-type='plate']:not([data-keep]) .sheet .text-link[target='_blank']::after {
+:root[data-type='plate']:not([data-keep]) .about-links a[href^='http']::after {
   content: '\00a0\2197';
   font-family: var(--font-label);
   font-size: 0.8em;

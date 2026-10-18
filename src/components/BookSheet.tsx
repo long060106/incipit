@@ -408,7 +408,7 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
 function Outbound({ href, children }: { href: string; children: ReactNode }) {
   const { t } = useI18n();
   return (
-    <a className="text-link" href={href} target="_blank" rel="noopener noreferrer">
+    <a className="text-link outbound" href={href} target="_blank" rel="noopener noreferrer">
       <span className="u">{children}</span>
       <ExternalIcon />
       <span className="sr-only">({t('opensNewTab')})</span>
