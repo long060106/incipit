@@ -41,7 +41,9 @@ const cameFromInside = () => {
 /** How long the glide between the hero and the gallery takes over its full distance. */
 const TRAVEL_MS = 5200;
 /** How long the page takes to open itself on arrival, if the reader does not scroll first. */
-const OPENING_MS = 11000;
+const OPENING_MS = 6500;
+/** How soon after the load screen it starts. */
+const OPENING_DELAY_MS = 250;
 /** How many screens of scroll the opening takes (the scroll track in base.css is this much taller). */
 const OPENING_SCREENS = 3;
 /**
@@ -330,7 +332,7 @@ export default function App() {
           // keeps the opening unhurried from end to end, with no rush in the middle.
           ease: easeInOutSine,
         };
-      }, 700);
+      }, OPENING_DELAY_MS);
     };
     const stopLoader = runLoader(start, cameFromInside() ? 450 : undefined);
     return () => {
@@ -595,13 +597,6 @@ export default function App() {
   return (
     <>
       <div className="scroll-track" data-opening={opening ? 'window' : undefined} aria-hidden="true" />
-      {/* While the page is still a small window, a word under it says how it opens. Pressing it opens the page. */}
-      {opening && (
-        <button type="button" className="scroll-cue" data-gone={opened || undefined} onClick={goToIntro} tabIndex={opened ? -1 : 0}>
-          <span>{t('scrollCue')}</span>
-          <i aria-hidden="true" />
-        </button>
-      )}
 
       <main
         className="stage"

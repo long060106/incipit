@@ -296,3 +296,16 @@ describe('the load screen', () => {
     await close();
   });
 });
+
+describe('the opening of the home page', () => {
+  test('opens by itself, with no word asking the reader to scroll', async () => {
+    const { page, problems, close } = await fresh();
+    await page.goto(BASE + '/', { waitUntil: 'load' });
+    assert.equal(await page.locator('.scroll-cue').count(), 0);
+    // Nothing is pressed and nothing is scrolled: the window opens on its own to the name.
+    await page.waitForFunction(() => scrollY > innerHeight * 2.5, null, { timeout: 15000 });
+    assert.equal(await page.locator('.stage').getAttribute('data-scene'), 'hero');
+    assert.deepEqual(problems, []);
+    await close();
+  });
+});
