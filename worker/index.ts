@@ -1400,6 +1400,8 @@ async function sitemap(request: Request, env: Env): Promise<Response> {
     'first-pages',
     'essays',
     'about',
+    'privacy',
+    'terms',
     ...BOOKS.map((book) => `book/${book.id}`),
     ...added.results.map((row) => `book/${row.id}`),
     ...written.results.map((row) => `essays/${row.id}`),

@@ -14,7 +14,7 @@ export const PAGE_LINKS: { id: Exclude<PageId, 'signin'>; label: 'navFirst' | 'n
   { id: 'about', label: 'navAbout' },
 ];
 
-export const pageUrl = (id: PageId | '') => `${import.meta.env.BASE_URL}${id}`;
+export const pageUrl = (id: PageId | 'privacy' | 'terms' | '') => `${import.meta.env.BASE_URL}${id}`;
 
 /** The load screen of index.html, kept short on the inner pages. */
 export function useQuickLoader() {

@@ -44,6 +44,12 @@ const TEXT = {
     fr: 'Jamais montré à personne. Un mot de passe oublié se redéfinit par lui, et vous pouvez vous connecter avec lui ou avec votre nom.',
   },
   or: { en: 'or', fr: 'ou' },
+  accept: {
+    en: 'By making an account, or continuing with Google, you accept the {terms} and the {privacy}.',
+    fr: 'En créant un compte, ou en continuant avec Google, vous acceptez les {terms} et la {privacy}.',
+  },
+  termsName: { en: 'terms of use', fr: 'conditions d’utilisation' },
+  privacyName: { en: 'privacy policy', fr: 'politique de confidentialité' },
   googleLead: {
     en: 'Google knows you as {email}. Choose the name others will see beside your reviews and essays.',
     fr: 'Google vous connaît sous {email}. Choisissez le nom que les autres verront près de vos avis et essais.',
@@ -454,7 +460,24 @@ function Doors({ holdsCard, google }: { holdsCard: boolean; google: string | nul
         </>
       )}
       {door === 'in' && <Forgot who={who} />}
+      <Accept />
     </>
+  );
+}
+
+/** What making an account means, with the two pages it points to. */
+function Accept() {
+  const { tl } = useI18n();
+  const link = (page: 'terms' | 'privacy', name: string) => (
+    <a key={page} className="text-link" href={pageUrl(page)} target="_blank" rel="noopener">
+      <span className="u">{name}</span>
+    </a>
+  );
+  const parts = tl(TEXT.accept).split(/(\{terms\}|\{privacy\})/);
+  return (
+    <p className="card-note signin-accept">
+      {parts.map((part, at) => (part === '{terms}' ? link('terms', tl(TEXT.termsName)) : part === '{privacy}' ? link('privacy', tl(TEXT.privacyName)) : <span key={at}>{part}</span>))}
+    </p>
   );
 }
 

@@ -1,0 +1,96 @@
+/* The privacy policy and the terms (/privacy, /terms): one quiet column of reading. */
+
+.legal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.legal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: clamp(2rem, 6vh, 5rem) var(--gutter) 5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.legal article {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.legal .page-eyebrow {
+  margin: 0 0 0.75rem;
+}
+
+.legal h1 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: clamp(2rem, 4.4vw, 3rem);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.legal-updated {
+  margin: 0 0 1.75rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.legal-lead {
+  margin: 0 0 2.5rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.legal section {
+  margin-bottom: 2.25rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.legal h2 {
+  margin: 0 0 0.875rem;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+.legal p,
+.legal li {
+  line-height: 1.7;
+}
+
+.legal section p {
+  margin: 0 0 0.875rem;
+}
+
+.legal ul {
+  margin: 0 0 0.875rem;
+  padding-left: 1.25rem;
+}
+
+.legal li {
+  margin-bottom: 0.625rem;
+  padding-left: 0.25rem;
+}
+
+.legal article a {
+  color: var(--accent);
+  text-underline-offset: 0.2em;
+}
+
+.legal-contact {
+  margin: 2.5rem 0 0.5rem;
+}
+
+.legal-other {
+  margin: 0;
+  font-size: 0.9375rem;
+}

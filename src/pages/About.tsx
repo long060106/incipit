@@ -5,7 +5,7 @@ import type { L } from '../data/types';
 import { SITE_NAME, useI18n } from '../i18n';
 import { portraitUrl, useProfile } from '../lib/profile';
 import { installIncipits } from './incipits';
-import { PageHeader, useQuickLoader } from './PageHeader';
+import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
 import './about.css';
 
 /*
@@ -46,6 +46,8 @@ const TEXT = {
     en: 'From Michelangelo’s Creation of Adam, on the ceiling of the Sistine Chapel, about 1511.',
     fr: 'D’après La Création d’Adam de Michel-Ange, au plafond de la chapelle Sixtine, vers 1511.',
   },
+  privacy: { en: 'Privacy', fr: 'Confidentialité' },
+  terms: { en: 'Terms', fr: 'Conditions' },
   type: { en: 'Typefaces', fr: 'Caractères' },
   typeBy: {
     en: 'Cinzel Decorative, Brygada 1918, Monsieur La Doulaise and Hanken Grotesk, all under open licences.',
@@ -192,7 +194,9 @@ export default function About() {
           </dl>
         </section>
 
-        <p className="about-foot">{t('developedBy', { name: profile.name })}</p>
+        <p className="about-foot">
+          {t('developedBy', { name: profile.name })} · <a href={pageUrl('privacy')}>{tl(TEXT.privacy)}</a> · <a href={pageUrl('terms')}>{tl(TEXT.terms)}</a>
+        </p>
       </main>
     </div>
   );

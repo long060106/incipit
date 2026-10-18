@@ -25,6 +25,11 @@ describe('rules sent with every answer', () => {
     });
   }
 
+  test('the sitemap lists the privacy policy and the terms', async () => {
+    const xml = await (await fetch(BASE + '/sitemap.xml')).text();
+    assert.ok(xml.includes('/privacy</loc>') && xml.includes('/terms</loc>'));
+  });
+
   test('no page carries a script written into it', async () => {
     for (const path of ['/', `/essays/${ESSAY}`, '/book/frankenstein']) {
       const html = await (await fetch(BASE + path)).text();

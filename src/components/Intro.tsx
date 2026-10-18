@@ -82,6 +82,7 @@ export function Intro({ active, onBrowse, wordRef }: IntroProps) {
         <span>
           {t('developedByLabel')} <a href={pageUrl('about')}>{profile.name}</a>
         </span>
+        <a href={pageUrl('privacy')}>{t('privacyLink')}</a>
         <a href={`${import.meta.env.BASE_URL}admin`}>{t('signInAdmin')}</a>
       </p>
 

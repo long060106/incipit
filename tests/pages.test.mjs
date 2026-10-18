@@ -49,7 +49,7 @@ async function fresh(width = 1280, height = 860) {
 }
 
 describe('every page opens, with nothing refused and no error', () => {
-  const pages = ['/', '/signin', '/notebook', '/essays', '/essays/seedessay001', '/book/frankenstein', '/read/frankenstein', '/about', '/u/nobody-here'];
+  const pages = ['/', '/signin', '/notebook', '/essays', '/essays/seedessay001', '/book/frankenstein', '/read/frankenstein', '/about', '/privacy', '/terms', '/u/nobody-here'];
   for (const path of pages) {
     test(path, async () => {
       const { page, problems, close } = await fresh();
@@ -200,6 +200,25 @@ describe('signing in with Google, from the sign-in page', () => {
     await page.waitForSelector('.signin-form .card-problem');
     assert.match(await page.locator('.signin-form .card-problem').textContent(), /already uses that email/);
     assert.deepEqual(problems, []);
+    await close();
+  });
+});
+
+describe('the privacy policy and the terms', () => {
+  test('the home page, the About page and the sign-in page point to them', async () => {
+    const { page, close } = await fresh();
+    for (const path of ['/', '/about', '/signin']) {
+      await page.goto(BASE + path, { waitUntil: 'load' });
+      await page.waitForTimeout(800);
+      assert.ok((await page.locator('a[href="/privacy"]').count()) >= 1, `${path} does not link to /privacy`);
+    }
+    await page.goto(BASE + '/privacy', { waitUntil: 'load' });
+    await page.waitForSelector('.legal h1');
+    assert.match(await page.locator('.legal h1').textContent(), /Privacy policy/);
+    assert.ok((await page.locator('.legal h2').count()) >= 5);
+    await page.goto(BASE + '/terms', { waitUntil: 'load' });
+    await page.waitForSelector('.legal h1');
+    assert.match(await page.locator('.legal h1').textContent(), /Terms of use/);
     await close();
   });
 });

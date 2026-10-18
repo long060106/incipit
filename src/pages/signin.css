@@ -315,6 +315,10 @@
   justify-items: start;
 }
 
+.signin-accept {
+  margin: 1rem 0 0;
+}
+
 .signin-forgot-address {
   margin: 0;
   font-size: 1.0625rem;
