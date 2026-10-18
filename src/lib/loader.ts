@@ -7,16 +7,41 @@ const FADE_MS = 900;
 
 type Handoff = { shown: number; stop: () => void };
 
+/** Set once the load screen has been seen: the rest of the visit, in this tab, goes without it. */
+const ARRIVED = 'incipit:arrived';
+
+const hasArrived = () => {
+  try {
+    return sessionStorage.getItem(ARRIVED) !== null;
+  } catch {
+    return false;
+  }
+};
+
 /**
  * The load screen in index.html: a bar that fills as the fonts and the pictures of the first
- * screen arrive. `onDone` is called as it starts to fade. Returns a cleanup. The inner pages
- * pass a short `least`, so that going from one to another is not held up by the bar.
+ * screen arrive. `onDone` is called as it starts to fade. Returns a cleanup. The screen is shown
+ * once, on the first page of a visit; the pages after it open at once, as soon as the fonts are
+ * in. The first page of a visit passes `least` too: a short one on an inner page, so that it is
+ * not held up by the bar.
  */
 export function runLoader(onDone: () => void, least = MIN_MS): () => void {
   const el = document.getElementById('loader');
   if (!el) {
     onDone();
     return () => {};
+  }
+  if (hasArrived()) {
+    (window as unknown as { __loader?: Handoff }).__loader?.stop();
+    el.remove();
+    document.documentElement.classList.remove('is-loading');
+    let cancelled = false;
+    document.fonts.ready.then(() => {
+      if (!cancelled) onDone();
+    });
+    return () => {
+      cancelled = true;
+    };
   }
   const count = el.querySelector('.loader-count');
   // The script in index.html has been creeping the bar forward while this code was on its way.
@@ -61,6 +86,9 @@ export function runLoader(onDone: () => void, least = MIN_MS): () => void {
     cancelAnimationFrame(frame);
     document.documentElement.classList.remove('is-loading');
     el.dataset.done = 'true';
+    try {
+      sessionStorage.setItem(ARRIVED, '1');
+    } catch {}
     onDone();
     fade = window.setTimeout(() => el.remove(), FADE_MS + 100);
   };

@@ -274,3 +274,25 @@ describe('the links in the bar across the top', () => {
     await close();
   });
 });
+
+describe('the load screen', () => {
+  test('is shown on the first page of a visit, and on none of the pages after it', async () => {
+    const { page, problems, close } = await fresh();
+    await page.goto(BASE + '/about', { waitUntil: 'commit' });
+    await page.waitForSelector('#loader', { state: 'attached' });
+    await page.waitForFunction(() => sessionStorage.getItem('incipit:arrived') !== null, null, { timeout: 10000 });
+    for (const path of ['/essays', '/', '/signin']) {
+      await page.goto(BASE + path, { waitUntil: 'domcontentloaded' });
+      const gone = await page.evaluate(() => {
+        const loader = document.getElementById('loader');
+        return !loader || getComputedStyle(loader).display === 'none';
+      });
+      assert.equal(gone, true, `${path} showed the load screen again`);
+    }
+    // And the page after it is whole at once, not held back.
+    await page.goto(BASE + '/about', { waitUntil: 'load' });
+    await page.waitForSelector('.page-head');
+    assert.deepEqual(problems, []);
+    await close();
+  });
+});

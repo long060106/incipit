@@ -10,4 +10,8 @@
     if (!lang) lang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
     root.lang = lang === 'fr' ? 'fr' : 'en';
   } catch (e) {}
+  // The load screen is for the first page of a visit. After that it is not shown (src/lib/loader.ts).
+  try {
+    if (sessionStorage.getItem('incipit:arrived')) root.classList.add('no-loader');
+  } catch (e) {}
 })();
