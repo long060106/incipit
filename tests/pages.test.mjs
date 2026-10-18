@@ -232,3 +232,40 @@ describe('making an account asks for an email', () => {
     await close();
   });
 });
+
+describe('the links in the bar across the top', () => {
+  test('shuffle under the pointer, keep their width, and settle back to the word', async () => {
+    const { page, problems, close } = await fresh();
+    await page.goto(BASE + '/about', { waitUntil: 'load' });
+    const link = page.locator('.page-nav > a', { hasText: 'Essays' });
+    await link.waitFor();
+    // Every state the link passes through, recorded in the page itself: the shuffle is quicker than a round trip.
+    await link.evaluate((element) => {
+      window.__seen = [];
+      new MutationObserver(() => window.__seen.push({ text: element.textContent, width: element.getBoundingClientRect().width })).observe(element, { subtree: true, characterData: true, childList: true });
+      window.__width = element.getBoundingClientRect().width;
+    });
+    await link.hover();
+    await page.waitForTimeout(1500);
+    const seen = await page.evaluate(() => ({ list: window.__seen, width: window.__width }));
+    assert.ok(seen.list.length >= 5, 'the letters did not move');
+    assert.ok(seen.list.some((state) => state.text !== 'Essays'), 'the word never changed');
+    assert.ok(seen.list.every((state) => state.text.length === 'Essays'.length), 'a letter was lost on the way');
+    assert.ok(seen.list.every((state) => Math.abs(state.width - seen.width) < 1.5), 'the bar moved while the letters shuffled');
+    assert.equal(await link.textContent(), 'Essays');
+    assert.equal(await link.getAttribute('aria-label'), null);
+    assert.deepEqual(problems, []);
+    await close();
+  });
+
+  test('stay still on the pages that keep the old type', async () => {
+    const { page, close } = await fresh();
+    await page.goto(BASE + '/first-pages', { waitUntil: 'load' });
+    const link = page.locator('.page-nav > a', { hasText: 'Essays' });
+    await link.waitFor();
+    await link.hover();
+    await page.waitForTimeout(260);
+    assert.equal(await link.textContent(), 'Essays');
+    await close();
+  });
+});

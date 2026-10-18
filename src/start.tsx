@@ -4,6 +4,7 @@ import App from './App';
 import { I18nProvider } from './i18n';
 import { keepInStep } from './lib/card';
 import { installInkOrigin } from './lib/ink';
+import { installScramble } from './lib/scramble';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/stage.css';
@@ -13,6 +14,7 @@ import './styles/touch.css';
 import './styles/type.css';
 
 installInkOrigin();
+installScramble();
 keepInStep();
 
 // The inner pages each load on their own, only when visited. Everything else is the main page.
