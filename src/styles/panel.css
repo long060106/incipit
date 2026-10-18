@@ -373,14 +373,26 @@
   appearance: none;
 }
 
-/* Once a level is chosen the line behind the bead is drawn in brass up to it. */
+/* Once a level is chosen the line is drawn in brass from the middle out to the bead, to either side.
+   (One rule for each engine: a rule with a selector the browser does not know is dropped whole.) */
 .mood.is-set input[type='range']::-webkit-slider-runnable-track {
-  background: linear-gradient(90deg, var(--accent) calc(8px + (100% - 16px) * var(--at)), var(--line-strong) 0);
+  background: linear-gradient(
+    90deg,
+    var(--line-strong) calc(8px + (100% - 16px) * var(--lo)),
+    var(--accent) calc(8px + (100% - 16px) * var(--lo)),
+    var(--accent) calc(8px + (100% - 16px) * var(--hi)),
+    var(--line-strong) calc(8px + (100% - 16px) * var(--hi))
+  );
 }
 
-.mood.is-set input[type='range']::-moz-range-progress {
-  height: 1px;
-  background: var(--accent);
+.mood.is-set input[type='range']::-moz-range-track {
+  background: linear-gradient(
+    90deg,
+    var(--line-strong) calc(8px + (100% - 16px) * var(--lo)),
+    var(--accent) calc(8px + (100% - 16px) * var(--lo)),
+    var(--accent) calc(8px + (100% - 16px) * var(--hi)),
+    var(--line-strong) calc(8px + (100% - 16px) * var(--hi))
+  );
 }
 
 .mood input[type='range']::-webkit-slider-runnable-track {

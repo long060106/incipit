@@ -270,6 +270,8 @@ interface MoodSliderProps {
 /** The slider stops at eleven notches, 0 to 10 tenths of the way along; the values it hands on are 0 to 100. */
 const NOTCHES = 11;
 const NOTCH_STEP = 100 / (NOTCHES - 1);
+/** The notch in the middle, where an untouched slider rests: the scale runs both ways from it. */
+const MIDDLE = (NOTCHES - 1) / 2;
 
 function MoodSlider({ low, high, value, onChange }: MoodSliderProps) {
   const { t } = useI18n();
@@ -278,9 +280,12 @@ function MoodSlider({ low, high, value, onChange }: MoodSliderProps) {
   const at = Math.round((value ?? 50) / NOTCH_STEP);
 
   return (
-    // --v lets the stylesheet weight the two words by how far the bead sits towards each; --at is the
-    // share of the scale the bead has covered, for the line behind it.
-    <div className={`mood ${isSet ? 'is-set' : ''}`} style={{ '--v': (value ?? 50) / 100, '--at': at / (NOTCHES - 1) } as CSSProperties}>
+    // --v lets the stylesheet weight the two words by how far the bead sits towards each; --lo and --hi
+    // are the stretch of the scale between the middle and the bead, which is drawn in brass.
+    <div
+      className={`mood ${isSet ? 'is-set' : ''}`}
+      style={{ '--v': (value ?? 50) / 100, '--lo': Math.min(at, MIDDLE) / (NOTCHES - 1), '--hi': Math.max(at, MIDDLE) / (NOTCHES - 1) } as CSSProperties}
+    >
       <div className="mood-ends">
         <span>{low}</span>
         {isSet && (
@@ -291,10 +296,10 @@ function MoodSlider({ low, high, value, onChange }: MoodSliderProps) {
         <span>{high}</span>
       </div>
       <div className="mood-scale">
-        {/* The notches of the scale, those up to the bead lit once a level is chosen. */}
+        {/* The notches of the scale; once a level is chosen, those between the middle and the bead are lit. */}
         <div className="mood-notches" aria-hidden="true">
           {Array.from({ length: NOTCHES }, (_, notch) => (
-            <i key={notch} data-major={notch % 5 === 0 || undefined} data-on={(isSet && notch <= at) || undefined} />
+            <i key={notch} data-major={notch % 5 === 0 || undefined} data-on={(isSet && notch >= Math.min(at, MIDDLE) && notch <= Math.max(at, MIDDLE)) || undefined} />
           ))}
         </div>
         <input

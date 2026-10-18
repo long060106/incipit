@@ -54,7 +54,9 @@ describe('every page opens, with nothing refused and no error', () => {
     test(path, async () => {
       const { page, problems, close } = await fresh();
       await page.goto(BASE + path, { waitUntil: 'load' });
-      await page.waitForTimeout(1500);
+      // The page's code arrives after the load event: wait for it to draw, then a little longer to hear any error.
+      await page.waitForFunction(() => (document.querySelector('#root')?.childElementCount ?? 0) > 0, null, { timeout: 10000 }).catch(() => {});
+      await page.waitForTimeout(1200);
       assert.equal(await page.locator('#root').evaluate((root) => root.childElementCount > 0), true, 'the page drew nothing');
       assert.deepEqual(problems, []);
       await close();
@@ -209,7 +211,8 @@ describe('the privacy policy and the terms', () => {
     const { page, close } = await fresh();
     for (const path of ['/', '/about', '/signin']) {
       await page.goto(BASE + path, { waitUntil: 'load' });
-      await page.waitForTimeout(800);
+      // The page's code arrives after the load event: wait for the link, not for a guess of how long.
+      await page.waitForSelector('a[href="/privacy"]', { state: 'attached', timeout: 10000 }).catch(() => {});
       assert.ok((await page.locator('a[href="/privacy"]').count()) >= 1, `${path} does not link to /privacy`);
     }
     await page.goto(BASE + '/privacy', { waitUntil: 'load' });
