@@ -126,6 +126,16 @@
   text-wrap: pretty;
 }
 
+/* Prose is set flush on both sides, as in a printed book. On a phone the column is too narrow
+   for it (a line holds six or seven words, and the gaps open up), so it stays ragged there. The
+   verse, the quotations and the lede below say their own alignment and are not touched. */
+@media (min-width: 40rem) {
+  .reader-text p {
+    text-align: justify;
+    text-justify: inter-word;
+  }
+}
+
 /* The ribbon: a mark in the margin beside the paragraph the reader stopped at. Every
    paragraph shows a faint one under the pointer; a press there moves the ribbon. */
 .reader-text > * {
