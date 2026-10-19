@@ -37,6 +37,7 @@ export function bookLinks(book: Book) {
     also: [...(book.free?.also ?? []), ...(book.original ?? [])],
     borrow: book.borrow ? `https://archive.org/details/${book.borrow}` : null,
     libby: `https://www.overdrive.com/search?q=${search(book)}`,
+    worldcat: `https://search.worldcat.org/search?q=${search(book)}`,
     bookshop: `https://bookshop.org/search?keywords=${search(book)}`,
     goodreads: `https://www.goodreads.com/search?q=${search(book)}`,
     storygraph: `https://app.thestorygraph.com/browse?search_term=${search(book)}`,

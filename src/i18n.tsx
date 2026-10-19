@@ -141,7 +141,7 @@ const STRINGS = {
     en: 'The Internet Archive lends this copy free, with an account.',
     fr: 'Internet Archive prête cet exemplaire gratuitement, avec un compte.',
   },
-  borrowLibraryShort: { en: 'Borrow it from a library', fr: 'L’emprunter en bibliothèque' },
+  findLibraryShort: { en: 'Find it in a library', fr: 'Le trouver en bibliothèque' },
   libraryNote: {
     en: 'Still in copyright, so no free download exists. A library loan costs nothing.',
     fr: 'Encore sous droits : aucun téléchargement gratuit n’existe. Un prêt en bibliothèque ne coûte rien.',
@@ -157,6 +157,7 @@ const STRINGS = {
   yearBC: { en: 'c. {year} BC', fr: 'v. {year} av. J.-C.' },
   fromGutenberg: { en: 'Project Gutenberg', fr: 'Projet Gutenberg' },
   readOnline: { en: 'Read online', fr: 'Lire en ligne' },
+  findLibrary: { en: 'Find it in a library near you', fr: 'Le trouver dans une bibliothèque près de chez vous' },
   buyCopy: { en: 'Buy a copy', fr: 'Acheter un exemplaire' },
   details: { en: 'Details', fr: 'Fiche' },
   aroundShort: { en: 'c. {year}', fr: 'v. {year}' },
