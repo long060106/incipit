@@ -286,8 +286,6 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
             </button>
           </section>
 
-          <Readers book={book} said={said} mood={mood} save={save} remove={remove} takeDown={takeDown} />
-
           <BookEssays book={book} />
 
           <section className="sheet-section">
@@ -399,6 +397,9 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
               </ul>
             </div>
           </section>
+
+          {/* What readers here say comes last, after everything about the book itself. */}
+          <Readers book={book} said={said} mood={mood} save={save} remove={remove} takeDown={takeDown} />
         </div>
       </div>
     </Dialog>

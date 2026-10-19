@@ -490,7 +490,7 @@
   font-size: 0.8125rem;
 }
 
-/* ── Last: reference, set smaller on a tinted ground ──────────────────────── */
+/* ── Reference, set smaller on a tinted ground (only Readers comes after it) ─ */
 
 .sheet-reference {
   display: grid;
