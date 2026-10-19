@@ -190,8 +190,9 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
               <Roll>{t('borrowOnline')}</Roll>
             </a>
           ) : (
-            <a className="button button-large" href={links.worldcat} target="_blank" rel="noopener noreferrer" data-outbound="library">
-              <Roll>{t('findLibraryShort')}</Roll>
+            // In copyright and nowhere to borrow online for free: a library loan, through Libby.
+            <a className="button button-large" href={links.libby} target="_blank" rel="noopener noreferrer" data-outbound="libby">
+              <Roll>{t('borrowLibraryShort')}</Roll>
             </a>
           )}
           {kept && (
@@ -378,9 +379,6 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
                     <Outbound href={links.libby}>{t('libby')}</Outbound>
                   </li>
                 )}
-                <li>
-                  <Outbound href={links.worldcat}>{t('findLibrary')}</Outbound>
-                </li>
                 <li>
                   <Outbound href={links.bookshop}>{t('buyCopy')}</Outbound>
                 </li>
