@@ -38,7 +38,7 @@ const BOOKS = [...catalogue.matchAll(/\n    id: '([^']+)'[\s\S]*?(?=\n  \{\n    
   .filter((book) => book.gutenberg);
 
 /** Where the story starts, for the books in which the guess below is wrong: a section index. */
-const OPENS_AT = { 'on-the-origin-of-species': 2, middlemarch: 1, 'noli-me-tangere': 6, 'the-red-and-the-black': 1, 'cyrano-de-bergerac': 2, bushido: 3, beowulf: 6 };
+const OPENS_AT = { 'on-the-origin-of-species': 2, middlemarch: 1, 'noli-me-tangere': 6, 'the-red-and-the-black': 1, 'cyrano-de-bergerac': 2, bushido: 3, beowulf: 6, 'the-bhagavad-gita': 2, 'the-tale-of-genji': 2, steppenwolf: 0, 'the-rubaiyat-of-omar-khayyam': 1 };
 /**
  * Books whose chapters are made of many short numbered pieces (the Analects' sayings,
  * Nietzsche's aphorisms): each chapter is read as one section, every piece under its number,

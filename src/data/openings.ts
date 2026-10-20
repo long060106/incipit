@@ -973,5 +973,132 @@ export const OPENINGS: Record<string, { section: number; lines: string[] }> = {
   "lines": [
    "A kindly thing it is to have compassion of the afflicted and albeit it well beseemeth every one, yet of those is it more particularly required who have erst had need of comfort and have found it in any, amongst whom, if ever any had need thereof or held it dear or took pleasure therein aforetimes, certes, I am one of these."
   ]
+ },
+ "the-idiot": {
+  "section": 0,
+  "lines": [
+   "Towards the end of November, during a thaw, at nine o’clock one morning, a train on the Warsaw and Petersburg railway was approaching the latter city at full speed. The morning was so damp and misty that it was only with great difficulty that the day succeeded in breaking; and it was impossible to distinguish anything more than a few yards away from the carriage windows.",
+   "Some of the passengers by this particular train were returning from abroad; but the third-class carriages were the best filled, chiefly with insignificant persons of various occupations and degrees, picked up at the different stations nearer town. All of them seemed weary, and most of them had sleepy eyes and a shivering expression, while their complexions generally appeared to have taken on the colour of the fog outside."
+  ]
+ },
+ "a-hero-of-our-time": {
+  "section": 1,
+  "lines": [
+   "I was travelling post from Tiflis.",
+   "All the luggage I had in my cart consisted of one small portmanteau half filled with travelling-notes on Georgia; of these the greater part has been lost, fortunately for you; but the portmanteau itself and the rest of its contents have remained intact, fortunately for me.",
+   "As I entered the Koishaur Valley the sun was disappearing behind the snow-clad ridge of the mountains. In order to accomplish the ascent of Mount Koishaur by nightfall, my driver, an Ossete, urged on the horses indefatigably, singing zealously the while at the top of his voice."
+  ]
+ },
+ "dangerous-liaisons": {
+  "section": 2,
+  "lines": [
+   "You see, my dear friend, I keep my word, and that dress does not totally take up all my time; I shall ever have some left for you. In this single day I have seen more finery of attire, than in the four years we have spent together; and I believe the haughty Tanville will be more mortified at my first visit, when I shall certainly desire to see her, than she used to be every time she came to see us in fiochi. Mamma advises with me in everything; she behaves to me no longer as a boarder in a convent."
+  ]
+ },
+ "the-portrait-of-a-lady": {
+  "section": 1,
+  "lines": [
+   "Under certain circumstances there are few hours in life more agreeable than the hour dedicated to the ceremony known as afternoon tea. There are circumstances in which, whether you partake of the tea or not⁠—some people of course never do⁠—the situation is in itself delightful. Those that I have in mind in beginning to unfold this simple history offered an admirable setting to an innocent pastime. The implements of the little feast had been disposed upon the lawn of an old English country-house, in what I should call the perfect middle of a splendid summer afternoon."
+  ]
+ },
+ "a-room-with-a-view": {
+  "section": 0,
+  "lines": [
+   "“The Signora had no business to do it,” said Miss Bartlett, “no business at all. She promised us south rooms with a view close together, instead of which here are north rooms, looking into a courtyard, and a long way apart. Oh, Lucy!”",
+   "“And a Cockney, besides!” said Lucy, who had been further saddened by the Signora’s unexpected accent. “It might be London.”"
+  ]
+ },
+ "the-moon-and-sixpence": {
+  "section": 0,
+  "lines": [
+   "I confess that when first I made acquaintance with Charles Strickland I never for a moment discerned that there was in him anything out of the ordinary. Yet now few will be found to deny his greatness. I do not speak of that greatness which is achieved by the fortunate politician or the successful soldier; that is a quality which belongs to the place he occupies rather than to the man; and a change of circumstances reduces it to very discreet proportions. The Prime Minister out of office is seen, too often, to have been but a pompous rhetorician, and the General without an army is but the tame hero of a market town."
+  ]
+ },
+ "the-jungle": {
+  "section": 1,
+  "lines": [
+   "It was four o’clock when the ceremony was over and the carriages began to arrive. There had been a crowd following all the way, owing to the exuberance of Marija Berczynskas. The occasion rested heavily upon Marija’s broad shoulders⁠—it was her task to see that all things went in due form, and after the best home traditions; and, flying wildly hither and thither, bowling everyone out of the way, and scolding and exhorting all day with her tremendous voice, Marija was too eager to see that others conformed to the proprieties to consider them herself."
+  ]
+ },
+ "the-souls-of-black-folk": {
+  "section": 2,
+  "lines": [
+   "Between me and the other world there is ever an unasked question: unasked by some through feelings of delicacy; by others through the difficulty of rightly framing it. All, nevertheless, flutter round it. They approach me in a half-hesitant sort of way, eye me curiously or compassionately, and then, instead of saying directly, How does it feel to be a problem? they say, I know an excellent colored man in my town; or, I fought at Mechanicsville; or, Do not these Southern outrages make your blood boil? At these I smile, or am interested, or reduce the boiling to a simmer, as the occasion may require. To the real question, How does it feel to be a problem? I answer seldom a word."
+  ]
+ },
+ "the-murder-of-roger-ackroyd": {
+  "section": 1,
+  "lines": [
+   "Mrs. Ferrars died on the night of the 16th⁠–⁠17th September⁠—a Thursday. I was sent for at eight o’clock on the morning of Friday the 17th. There was nothing to be done. She had been dead some hours.",
+   "It was just a few minutes after nine when I reached home once more. I opened the front door with my latchkey, and purposely delayed a few moments in the hall, hanging up my hat and the light overcoat that I had deemed a wise precaution against the chill of an early autumn morning. To tell the truth, I was considerably upset and worried. I am not going to pretend that at that moment I foresaw the events of the next few weeks. I emphatically did not do so. But my instinct told me that there were stirring times ahead."
+  ]
+ },
+ "winnie-the-pooh": {
+  "section": 2,
+  "lines": [
+   "Here is Edward Bear, coming downstairs now, bump, bump, bump, on the back of his head, behind Christopher Robin. It is, as far as he knows, the only way of coming downstairs, but sometimes he feels that there really is another way, if only he could stop bumping for a moment and think of it. And then he feels that perhaps there isn’t. Anyhow, here he is at the bottom, and ready to be introduced to you. Winnie-the-Pooh."
+  ]
+ },
+ "a-farewell-to-arms": {
+  "section": 1,
+  "lines": [
+   "In the late summer of that year we lived in a house in a village that looked across the river and the plain to the mountains. In the bed of the river there were pebbles and boulders, dry and white in the sun, and the water was clear and swiftly moving and blue in the channels. Troops went by the house and down the road and the dust they raised powdered the leaves of the trees. The trunks of the trees too were dusty and the leaves fell early that year and we saw the troops marching along the road and the dust rising and leaves, stirred by the breeze, falling and the soldiers marching and afterward the road bare and white except for the leaves."
+  ]
+ },
+ "all-quiet-on-the-western-front": {
+  "section": 1,
+  "lines": [
+   "We are at rest five miles behind the front. Yesterday we were relieved, and now our bellies are full of beef and haricot beans. We are satisfied and at peace. Each man has another mess-tin full for the evening; and, what is more, there is a double ration of sausage and bread. That puts a man in fine trim. We have not had such luck as this for a long time. The cook with his carroty head is begging us to eat; he beckons with his ladle to everyone that passes, and spoons him out a great dollop. He does not see how he can empty his stew-pot in time for coffee."
+  ]
+ },
+ "we": {
+  "section": 1,
+  "lines": [
+   "This is merely a copy, word by word, of what was published this morning in the State newspaper:",
+   "“In another hundred and twenty days the building of the Integral will be completed. The great historic hour is near, when the first Integral will rise into the limitless space of the universe. A thousand years ago your heroic ancestors subjected the whole earth to the power of the United State. A still more glorious task is before you⁠—the integration of the indefinite equation of the Cosmos by the use of the glass, electric, fire-breathing Integral."
+  ]
+ },
+ "quo-vadis": {
+  "section": 2,
+  "lines": [
+   "Petronius woke only about midday, and as usual greatly wearied. The evening before he had been at one of Nero’s feasts, which was prolonged till late at night. For some time his health had been failing. He said himself that he woke up benumbed, as it were, and without power of collecting his thoughts. But the morning bath and careful kneading of the body by trained slaves hastened gradually the course of his slothful blood, roused him, quickened him, restored his strength, so that he issued from the elaeothesium, that is, the last division of the bath, as if he had risen from the dead, with eyes gleaming from wit and gladness, rejuvenated, filled with life, exquisite, so unapproachable that Otho himself could not compare with him, and was really that which he had been called⁠—arbiter elegantiarum."
+  ]
+ },
+ "the-maltese-falcon": {
+  "section": 1,
+  "lines": [
+   "Samuel Spade’s jaw was long and bony, his chin a jutting v under the more flexible v of his mouth. His nostrils curved back to make another, smaller, v. His yellow-grey eyes were horizontal. The v motif was picked up again by thickish brows rising outward from twin creases above a hooked nose, and his pale brown hair grew down⁠—from high flat temples⁠—in a point on his forehead. He looked rather pleasantly like a blond satan."
+  ]
+ },
+ "steppenwolf": {
+  "section": 0,
+  "lines": [
+   "This book contains the records left us by a man whom, according to the expression he often used himself, we called the Steppenwolf. Whether this manuscript needs any introductory remarks may be open to question. I, however, feel the need of adding a few pages to those of the Steppenwolf in which I try to record my recollections of him. What I know of him is little enough. Indeed, of his past life and origins I know nothing at all. Yet the impression left by his personality has remained, in spite of all, a deep and sympathetic one."
+  ]
+ },
+ "the-rubaiyat-of-omar-khayyam": {
+  "section": 1,
+  "lines": [
+   "Wake! For the Sun, who scatter’d into flight\nThe Stars before him from the Field of Night,\nDrives Night along with them from Heav’n, and strikes\nThe Sultán’s Turret with a Shaft of Light."
+  ]
+ },
+ "the-bhagavad-gita": {
+  "section": 2,
+  "lines": [
+   "Dhritirashtra:\nRanged thus for battle on the sacred plain--\nOn Kurukshetra--say, Sanjaya! say\nWhat wrought my people, and the Pandavas?",
+   "Sanjaya:\nWhen he beheld the host of Pandavas,\nRaja Duryodhana to Drona drew,\nAnd spake these words: \"Ah, Guru! see this line,\nHow vast it is of Pandu fighting-men,\nEmbattled by the son of Drupada,\nThy scholar in the war! Therein stand ranked\nChiefs like Arjuna, like to Bhima chiefs,\nBenders of bows; Virata, Yuyudhan,\nDrupada, eminent upon his car,\nDhrishtaket, Chekitan, Kasi's stout lord,\nPurujit, Kuntibhoj, and Saivya,\nWith Yudhamanyu, and Uttamauj\nSubhadra's child; and Drupadi's;-all famed!\nAll mounted on their shining chariots!\nOn our side, too,--thou best of Brahmans!"
+  ]
+ },
+ "andersens-fairy-tales": {
+  "section": 0,
+  "lines": [
+   "In the garden all the apple-trees were in blossom. They had hastened to bring forth flowers before they got green leaves, and in the yard all the ducklings walked up and down, and the cat too: it basked in the sun and licked the sunshine from its own paws. And when one looked at the fields, how beautifully the corn stood and how green it shone, without comparison! and there was a twittering and a fluttering of all the little birds, as if the day were a great festival; and so it was, for it was Sunday."
+  ]
+ },
+ "the-tale-of-genji": {
+  "section": 2,
+  "lines": [
+   "AT the Court of an Emperor (he lived it matters not when) there was among the many gentlewomen of the Wardrobe and Chamber one, who though she was not of very high rank was favoured far beyond all the rest; so that the great ladies of the Palace, each of whom had secretly hoped that she herself would be chosen, looked with scorn and hatred upon the upstart who had dispelled their dreams. Still less were her former companions, the minor ladies of the Wardrobe, content to see her raised so far above them."
+  ]
  }
 };

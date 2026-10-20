@@ -41,6 +41,8 @@ const OWN = {
   bushido: 'Bushido: The Soul of Japan',
   kim: 'Kim (novel)',
   gitanjali: 'Gitanjali',
+  'the-idiot': 'The Idiot',
+  we: 'We (novel)',
 };
 /** The same for the author. */
 const BY = {
@@ -56,6 +58,9 @@ const BY = {
   'notes-from-underground': 'Fyodor Dostoevsky',
   bushido: 'Nitobe Inazō',
   gitanjali: 'Rabindranath Tagore',
+  'the-idiot': 'Fyodor Dostoevsky',
+  we: 'Yevgeny Zamyatin',
+  'andersens-fairy-tales': 'Hans Christian Andersen',
 };
 
 // What Wikidata records that is no help as background: bare dates, and subjects too broad to say anything.

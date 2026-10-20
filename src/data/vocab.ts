@@ -88,6 +88,10 @@ export const LANGUAGES: Record<LanguageId, L> = {
   bn: { en: 'Bengali', fr: 'bengali' },
   id: { en: 'Indonesian', fr: 'indonésien' },
   ang: { en: 'Old English', fr: 'vieil anglais' },
+  pl: { en: 'Polish', fr: 'polonais' },
+  fa: { en: 'Persian', fr: 'persan' },
+  sa: { en: 'Sanskrit', fr: 'sanskrit' },
+  da: { en: 'Danish', fr: 'danois' },
 };
 
 /** Stands for books set nowhere on the map, among the ISO country codes of the settings. */

@@ -14,8 +14,8 @@ Designed and developed by **Long Nguyen**.
 ![The reader at night](docs/reader.png)
 -->
 
-**179 books** from 53 countries in 21 languages: 109 out of copyright (readable on the site and
-downloadable as PDF) and 70 still in copyright (described, with links to libraries and bookshops only).
+**239 books** from 57 countries in 26 languages: 159 out of copyright (readable on the site and
+downloadable as PDF) and 80 still in copyright (described, with links to libraries and bookshops only).
 
 ## What is in it
 
@@ -53,9 +53,9 @@ scripts/        the scripts that fetched the catalogue, covers and texts
 ## About the book data
 
 The mood scores, themes, descriptions and "read it if / skip it if" advice were written with the
-help of AI, not taken from a published source. The ratings come from Open Library. A batch of
-104 books added on 2026-10-10 has not yet been reviewed by hand, so treat the mood scores of those
-books as a first draft.
+help of AI, not taken from a published source. The ratings come from Open Library. The batches
+added on 2026-10-10 (104 books) and 2026-10-19 (30 books) have not yet been reviewed by hand, so
+treat the mood scores of those books as a first draft.
 
 ## Running it
 

@@ -70,7 +70,11 @@ export type LanguageId =
   | 'ar'
   | 'bn'
   | 'id'
-  | 'ang';
+  | 'ang'
+  | 'pl'
+  | 'fa'
+  | 'sa'
+  | 'da';
 
 export interface Book {
   /** URL slug. */
