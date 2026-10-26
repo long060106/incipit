@@ -107,6 +107,10 @@ export interface Env {
   ACCOUNT_SEAL_KEY?: string;
   /** A development server only: the keys Google's tokens are checked against instead of Google's own (base64 of a JWKS). */
   GOOGLE_DEV_KEYS?: string;
+  /** Workers AI (wrangler.jsonc), which turns a reader's few words into filters (/api/ask). */
+  AI?: Ai;
+  /** '1' on a development server only: /api/ask answers without the model, which runs only at Cloudflare. */
+  ASK_DEV?: string;
 }
 
 interface Card {
@@ -1874,6 +1878,147 @@ async function claim(request: Request, env: Env, card: Card): Promise<Response> 
   return json({ role: 'admin' });
 }
 
+// ---------------------------------------------------------------------------------------
+// Asking for a book in a few words (/api/ask)
+//
+// The reader writes what they would like to read ("something sad and short, set in Russia"),
+// and a model on Cloudflare's Workers AI turns it into the site's own filters. The model never
+// names a book: the books come from the catalogue, through the filters, as when the sliders are
+// moved by hand. What it answers is checked here, and anything not one of the site's own words
+// is dropped.
+
+/** Built with Llama: its licence asks that this be said where the model is used (src/components/AskField.tsx). */
+const ASK_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
+const MAX_ASK = 240; // characters of a wish
+const MAX_ASKS_PER_DAY = 15; // from one address
+/** From everyone: about 65 of the free plan's 10,000 neurons a day go on each. */
+const MAX_ASKS_ALL_PER_DAY = 120;
+const LENGTHS = ['short', 'medium', 'long'] as const;
+const ERAS = ['pre1900', 'c20', 'c21'] as const;
+const LEVELS = ['easy', 'moderate', 'demanding'] as const;
+const KINDS = ['learn', 'story'] as const;
+const SETTINGS = [...new Set(BOOKS.flatMap((book) => book.setting.countries))].sort();
+
+/** A development server (the tests): the model is stood in for by a fixed answer, since it only runs at Cloudflare. */
+const askDev = (request: Request, env: Env) => env.ASK_DEV === '1' && ['localhost', '127.0.0.1', '[::1]'].includes(new URL(request.url).hostname);
+const askReady = (request: Request, env: Env) => !!env.AI || askDev(request, env);
+
+/** Counts a use of something from everyone today, and says whether it is still within `most`. */
+async function withinAll(env: Env, what: string, most: number): Promise<boolean> {
+  const day = new Date().toISOString().slice(0, 10);
+  const row = await env.DB.prepare(
+    'INSERT INTO limits (bucket, day, count) VALUES (?1, ?2, 1) ON CONFLICT (bucket) DO UPDATE SET count = count + 1 RETURNING count',
+  )
+    .bind(await sha256(`${what}:all:${day}`), day)
+    .first<{ count: number }>();
+  return (row?.count ?? 1) <= most;
+}
+
+const ASK_PROMPT = `You turn a reader's short wish for a book into the filters of a book site. Answer with JSON only.
+Set only what the reader's words call for, and leave every other field out: most wishes need the mood and one or two fields more. The reader may write in any language.
+
+mood: each axis from 0 to 100.
+- tone: 0 hopeful, 100 bleak
+- voice: 0 funny, 100 serious
+- intensity: 0 gentle, 100 intense
+- pace: 0 slow, 100 fast
+- strange: 0 familiar and realistic, 100 strange or fantastical
+genre: one of ${Object.entries(GENRES)
+  .map(([id, label]) => `${id} (${label.en})`)
+  .join(', ')}.
+keywords: at most 3 of ${Object.entries(KEYWORDS)
+  .map(([id, label]) => `${id} (${label.en})`)
+  .join(', ')}.
+length: short (under 200 pages), medium (200 to 400), long (over 400).
+era: when it was written. pre1900, c20 (1900 to 1999), c21 (2000 on).
+level: how hard it is to read. easy, moderate, demanding.
+kind: learn (non-fiction, to learn something) or story (fiction).
+country: the ISO code of where the book is set, only when the reader names a place. One of ${SETTINGS.join(', ')}.
+freeOnly: true only when the reader wants a book that is free or can be read on the site.
+query: only when the reader asks for books by a named author or for a named title: that surname or title. A writer named as a comparison ("like Dostoevsky") is not a query: set the mood, genre, era and country that writer suggests instead.
+note: a few words, in the reader's language, saying what you understood.`;
+
+const ASK_SCHEMA = {
+  type: 'object',
+  properties: {
+    mood: { type: 'object', properties: Object.fromEntries(AXES.map((axis) => [axis.id, { type: 'integer', minimum: 0, maximum: 100 }])) },
+    genre: { type: 'string', enum: Object.keys(GENRES) },
+    keywords: { type: 'array', items: { type: 'string', enum: Object.keys(KEYWORDS) }, maxItems: 3 },
+    length: { type: 'string', enum: LENGTHS },
+    era: { type: 'string', enum: ERAS },
+    level: { type: 'string', enum: LEVELS },
+    kind: { type: 'string', enum: KINDS },
+    country: { type: 'string', enum: SETTINGS },
+    freeOnly: { type: 'boolean' },
+    query: { type: 'string' },
+    note: { type: 'string' },
+  },
+  required: ['note'],
+};
+
+const oneOf = <T extends string>(list: readonly T[], value: unknown): T | undefined => (list.includes(value as T) ? (value as T) : undefined);
+
+/** The model's answer, kept to the site's own words: what is not one of them is left out. */
+function wishFrom(raw: unknown): { filters: Record<string, unknown>; note: string } {
+  const answer = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
+  const filters: Record<string, unknown> = {};
+  const given = (answer.mood && typeof answer.mood === 'object' ? answer.mood : {}) as Record<string, unknown>;
+  const mood: Record<string, number> = {};
+  for (const axis of AXES) {
+    const value = given[axis.id];
+    if (typeof value === 'number' && Number.isFinite(value)) mood[axis.id] = Math.round(Math.min(100, Math.max(0, value)));
+  }
+  if (Object.keys(mood).length) filters.mood = mood;
+  const genre = oneOf(Object.keys(GENRES), answer.genre);
+  if (genre) filters.genre = genre;
+  const keywords = Array.isArray(answer.keywords) ? [...new Set(answer.keywords.filter((id) => typeof id === 'string' && id in KEYWORDS))].slice(0, 3) : [];
+  if (keywords.length) filters.keywords = keywords;
+  for (const [key, list] of [
+    ['length', LENGTHS],
+    ['era', ERAS],
+    ['level', LEVELS],
+    ['kind', KINDS],
+    ['country', SETTINGS],
+  ] as const) {
+    const value = oneOf(list, answer[key]);
+    if (value) filters[key] = value;
+  }
+  if (answer.freeOnly === true) filters.freeOnly = true;
+  if (typeof answer.query === 'string' && answer.query.trim()) filters.query = answer.query.trim().slice(0, 60);
+  const note = typeof answer.note === 'string' ? answer.note.replace(/\s+/g, ' ').trim().slice(0, 120) : '';
+  return { filters, note };
+}
+
+async function askForBook(request: Request, env: Env): Promise<Response> {
+  if (!askReady(request, env)) return refuse(503, 'not-ready');
+  const body = await bodyOf(request);
+  const wish = typeof body?.text === 'string' ? body.text.replace(/\s+/g, ' ').trim() : '';
+  if (wish.length < 2 || wish.length > MAX_ASK) return refuse(400, 'bad-wish');
+  if (!(await within(env, request, 'ask', MAX_ASKS_PER_DAY))) return refuse(429, 'too-many');
+  if (!(await withinAll(env, 'ask', MAX_ASKS_ALL_PER_DAY))) return refuse(429, 'resting');
+  if (askDev(request, env)) {
+    // Words of the site's own and words that are not, as a model might answer: the second kind is dropped.
+    return json(wishFrom({ mood: { tone: 88, intensity: 140 }, length: 'short', keywords: ['war', 'not-a-theme'], genre: 'poetry', country: 'RU', note: `Dark and short: ${wish}` }));
+  }
+  try {
+    const answer = (await env.AI!.run(ASK_MODEL as never, {
+      messages: [
+        { role: 'system', content: ASK_PROMPT },
+        { role: 'user', content: wish },
+      ],
+      response_format: { type: 'json_schema', json_schema: ASK_SCHEMA },
+      max_tokens: 300,
+      temperature: 0.2,
+    } as never)) as { response?: unknown };
+    const response = typeof answer.response === 'string' ? JSON.parse(answer.response) : answer.response;
+    return json(wishFrom(response));
+  } catch (error) {
+    // Most often the day's free allowance is spent, or the model could not keep to the form.
+    console.error('ask', error);
+    return refuse(503, 'resting');
+  }
+}
+
 async function api(request: Request, env: Env, path: string, ctx: ExecutionContext): Promise<Response> {
   if (path === '/api/card' && request.method === 'POST') return makeCard(request, env);
   if (path === '/api/account/enter' && request.method === 'POST') return enterAccount(request, env);
@@ -1886,6 +2031,8 @@ async function api(request: Request, env: Env, path: string, ctx: ExecutionConte
   if (path === '/api/books' && request.method === 'GET') return overrides(env);
   if (path === '/api/profile' && request.method === 'GET') return profile(env);
   if (path === '/api/portrait' && request.method === 'GET') return portrait(env);
+  if (path === '/api/ask' && request.method === 'GET') return json({ ready: askReady(request, env) });
+  if (path === '/api/ask' && request.method === 'POST') return askForBook(request, env);
 
   const [, , section, book, rest, more] = path.split('/');
   if (section === 'essays') return essays(request, env, book, rest, more);

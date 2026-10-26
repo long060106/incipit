@@ -167,6 +167,19 @@ export function matchBooks(books: Book[], filters: Filters): MatchResult {
   return result.active ? { ...result, fits: ordered(result.fits, filters) } : result;
 }
 
+/** What is let go first when filters asked for in a few words leave no book at all; the mood always stays. */
+const LOOSEN: (keyof Filters)[] = ['keywords', 'level', 'era', 'length', 'genre', 'country', 'kind', 'freeOnly', 'query'];
+
+/** The filters, loosened one by one in that order until at least one book fits them. */
+export function loosened(books: Book[], filters: Filters): Filters {
+  let next = filters;
+  for (const key of LOOSEN) {
+    if (matchBooks(books, next).fits.length) break;
+    next = { ...next, [key]: EMPTY_FILTERS[key] };
+  }
+  return next;
+}
+
 function rank(books: Book[], filters: Filters): MatchResult {
   if (countActive(filters) === 0) return { active: false, fits: [], closest: false };
 

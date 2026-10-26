@@ -318,6 +318,30 @@ describe('the daily first line', () => {
   });
 });
 
+describe('a wish in a few words, in the filters', () => {
+  test('sets the filters it is answered with, and says what was understood', async () => {
+    const { page, problems, close } = await fresh();
+    await page.goto(BASE + '/', { waitUntil: 'load' });
+    await page.getByRole('button', { name: 'Browse the books' }).click();
+    const field = page.locator('.ask input');
+    await field.waitFor({ state: 'visible', timeout: 15000 });
+    // The panel takes no input while the page is still travelling to the wall.
+    await page.waitForFunction(() => !document.querySelector('.panel')?.inert);
+    await field.fill('something sad and short, set in Russia');
+    await field.press('Enter');
+    await page.waitForFunction(() => {
+      const said = document.querySelector('.ask-said')?.textContent ?? '';
+      return said && !said.startsWith('Reading');
+    });
+    assert.match(await page.locator('.ask-said').textContent(), /^Understood: Dark and short/);
+    // Bleak, short, about war and set in Russia leaves no book: the wish is loosened until some fit.
+    assert.ok(Number(await page.locator('.panel-handle .badge').textContent()) >= 3, 'the filters were not set');
+    assert.equal(await page.getByText('No book fits all of that').count(), 0, 'the wish left no book');
+    assert.deepEqual(problems, []);
+    await close();
+  });
+});
+
 describe('the load screen', () => {
   test('is shown when the home page is opened, and on no page inside', async () => {
     const { page, problems, close } = await fresh();

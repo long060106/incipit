@@ -40,6 +40,20 @@ describe('rules sent with every answer', () => {
   });
 });
 
+describe('asking for a book in a few words', () => {
+  test("gives back only the site's own filters, never a book, and refuses words that are not a wish", async () => {
+    assert.equal((await ask('/api/ask')).body.ready, true);
+    // The test server stands in for the model with an answer that mixes the site's words with others.
+    const { status, body } = await ask('/api/ask', { method: 'POST', body: { text: 'something sad and short, set in Russia' } });
+    assert.equal(status, 200);
+    assert.deepEqual(body.filters, { mood: { tone: 88, intensity: 100 }, keywords: ['war'], length: 'short', country: 'RU' });
+    assert.match(body.note, /sad and short/);
+    assert.equal((await ask('/api/ask', { method: 'POST', body: { text: ' ' } })).status, 400);
+    assert.equal((await ask('/api/ask', { method: 'POST', body: { text: 'x'.repeat(241) } })).status, 400);
+    assert.equal((await ask('/api/ask', { method: 'POST', body: { words: 'no text' } })).status, 400);
+  });
+});
+
 describe('cards and accounts', () => {
   test('a card opens its notebook; a wrong code opens nothing', async () => {
     const { body } = await ask('/api/card', { method: 'POST' });

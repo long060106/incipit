@@ -6,6 +6,7 @@ dist
 # wrangler files
 .wrangler
 .dev.vars*
+wrangler.test.jsonc
 !.dev.vars.example
 .env*
 !.env.example

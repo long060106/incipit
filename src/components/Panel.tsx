@@ -3,8 +3,9 @@ import { BOOKS } from '../data/books';
 import type { AxisId, GenreId, KeywordId, Mood } from '../data/types';
 import { AXES, countryName, ELSEWHERE, GENRES, KEYWORDS, MOOD_PRESETS, type MoodPresetId } from '../data/vocab';
 import { useI18n, type StringKey } from '../i18n';
-import { countActive, EMPTY_FILTERS, type EraBand, type Filters, type LengthBand, type LevelBand, type SortId } from '../lib/match';
+import { countActive, EMPTY_FILTERS, loosened, type EraBand, type Filters, type LengthBand, type LevelBand, type SortId } from '../lib/match';
 import type { CSSProperties, ReactNode } from 'react';
+import { AskField } from './AskField';
 import { CountryField, type CountryOption } from './CountryField';
 import { BoltIcon, BookIcon, BulbIcon, ChevronIcon, DiceIcon, HeartIcon, SearchIcon, StormIcon, SunIcon, TeaIcon } from './Icons';
 import { Roll } from './Roll';
@@ -155,6 +156,7 @@ export function Panel({ active, filters, onChange, countLabel, open, onToggle, o
             spellCheck={false}
           />
         </label>
+        <AskField onWish={(wish) => onChange(loosened(BOOKS, { ...EMPTY_FILTERS, ...wish }))} />
 
         <section className="panel-section">
           <div className="panel-heading">

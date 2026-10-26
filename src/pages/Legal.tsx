@@ -108,6 +108,10 @@ const PRIVACY: Doc = {
           fr: 'Google fournit le bouton de connexion, si vous l’utilisez, et les caractères typographiques. Votre navigateur contacte les serveurs de Google pour les charger, ce qui montre votre adresse internet à Google.',
         },
         {
+          en: 'Cloudflare’s Workers AI reads the words you type into “Or in a few words”, to turn them into the site’s filters, using Meta’s Llama model. Incipit does not keep those words; Cloudflare handles them as its own policies describe and says it does not use them to train models. Do not type anything personal there.',
+          fr: 'Workers AI de Cloudflare lit les mots que vous tapez dans « Ou en quelques mots », pour en faire les filtres du site, avec le modèle Llama de Meta. Incipit ne garde pas ces mots ; Cloudflare les traite comme le décrivent ses propres règles et dit ne pas s’en servir pour entraîner des modèles. N’y tapez rien de personnel.',
+        },
+        {
           en: 'Brevo sends the letter that sets a new password, so it receives your email address and that letter.',
           fr: 'Brevo envoie la lettre qui permet de choisir un nouveau mot de passe ; il reçoit donc votre adresse e-mail et cette lettre.',
         },

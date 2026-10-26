@@ -19,6 +19,12 @@
   "vars": {
     "GOOGLE_CLIENT_ID": "759869963592-d4ga37o2hil65uvnegmj0j43ogoi5qov.apps.googleusercontent.com"
   },
+  // Workers AI: turns a reader's few words into the site's filters (/api/ask). It only runs at
+  // Cloudflare, never on this machine; the tests use a copy of this file without it (tests/run.mjs).
+  "ai": {
+    "binding": "AI",
+    "remote": true
+  },
   // Library cards and readers' notebooks. Tables: worker/migrations.
   "d1_databases": [
     {

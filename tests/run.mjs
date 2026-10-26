@@ -11,7 +11,7 @@
 // The pages are opened in Microsoft Edge (BROWSER_CHANNEL=chrome for Chrome).
 import { generateKeyPairSync } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
-import { rmSync } from 'node:fs';
+import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const PORT = 8790;
@@ -47,9 +47,15 @@ const { publicKey, privateKey } = generateKeyPairSync('rsa', { modulusLength: 20
 const keys = Buffer.from(JSON.stringify({ keys: [{ ...publicKey.export({ format: 'jwk' }), kid: 'test-key', alg: 'RS256', use: 'sig' }] })).toString('base64url');
 process.env.TEST_GOOGLE_KEY = Buffer.from(privateKey.export({ type: 'pkcs8', format: 'pem' })).toString('base64');
 
+// Workers AI runs only at Cloudflare, and asks to be signed in there even to start: the server here
+// is given a copy of wrangler.jsonc without it, and answers /api/ask without the model (ASK_DEV).
+const CONFIG = 'wrangler.test.jsonc';
+writeFileSync(CONFIG, readFileSync('wrangler.jsonc', 'utf8').replace(/\r?\n  "ai": \{[^}]*\},/, ''));
+process.on('exit', () => rmSync(CONFIG, { force: true }));
+
 console.log(`\n── A server at ${BASE}`);
 // MAIL_DEV: a letter is handed back in the answer instead of sent (worker/index.ts, mailDev).
-const vars = `--var MAIL_DEV:1 --var GOOGLE_CLIENT_ID:test-client.apps.googleusercontent.com --var ACCOUNT_SEAL_KEY:a-seal-key-for-this-run-only --var GOOGLE_DEV_KEYS:${keys}`;
+const vars = `--config ${CONFIG} --var MAIL_DEV:1 --var ASK_DEV:1 --var GOOGLE_CLIENT_ID:test-client.apps.googleusercontent.com --var ACCOUNT_SEAL_KEY:a-seal-key-for-this-run-only --var GOOGLE_DEV_KEYS:${keys}`;
 const server = spawn(`npx wrangler dev --ip 127.0.0.1 --port ${PORT} --persist-to ${STATE} ${vars} --show-interactive-dev-session=false`, {
   shell: true,
   stdio: ['ignore', 'pipe', 'pipe'],

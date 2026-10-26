@@ -819,3 +819,72 @@
     animation: none;
   }
 }
+
+/* ── A wish in a few words (AskField) ─────────────────────────────────────── */
+
+.ask {
+  margin-top: 14px;
+}
+
+.ask-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 2px 10px;
+  border-bottom: 1px solid var(--line);
+  transition: border-color 0.2s ease;
+}
+
+.ask-field:focus-within {
+  border-color: var(--accent);
+}
+
+.ask-field:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+}
+
+.ask-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+
+.ask-field input::placeholder {
+  color: var(--muted);
+}
+
+.ask-go {
+  flex: none;
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: var(--cursor-press);
+}
+
+.ask-go:disabled {
+  color: var(--muted);
+  cursor: var(--cursor);
+  opacity: 0.6;
+}
+
+.ask-said:empty {
+  display: none;
+}
+
+.ask-said {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.ask-credit {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
