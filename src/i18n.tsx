@@ -8,6 +8,7 @@ const STRINGS = {
   index: { en: 'Index', fr: 'Index' },
   menu: { en: 'Menu', fr: 'Menu' },
   navFirst: { en: 'First pages', fr: 'Premières pages' },
+  navDaily: { en: 'Daily line', fr: 'Ligne du jour' },
   navGlobe: { en: 'Globe', fr: 'Globe' },
   navNotebook: { en: 'Notebook', fr: 'Carnet' },
   navEssays: { en: 'Essays', fr: 'Essais' },

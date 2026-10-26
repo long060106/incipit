@@ -21,6 +21,7 @@ keepInStep();
 const PAGES = {
   globe: lazy(() => import('./globe/GlobePage')),
   'first-pages': lazy(() => import('./pages/FirstPages')),
+  daily: lazy(() => import('./pages/Daily')),
   notebook: lazy(() => import('./pages/Notebook')),
   read: lazy(() => import('./reader/ReaderPage')),
   admin: lazy(() => import('./pages/Admin')),
@@ -34,10 +35,10 @@ const PAGES = {
 };
 const route = location.pathname.split('/')[1];
 const Page = PAGES[route as keyof typeof PAGES];
-// The pages share one type (styles/type.css). The reader and the first pages keep the type of their
-// own text but share the bar across the top.
+// The pages share one type (styles/type.css). The reader, the first pages and the daily line keep the
+// type of their own text but share the bar across the top.
 document.documentElement.dataset.type = 'plate';
-if (route === 'first-pages' || route === 'read') document.documentElement.dataset.keep = 'text';
+if (route === 'first-pages' || route === 'daily' || route === 'read') document.documentElement.dataset.keep = 'text';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

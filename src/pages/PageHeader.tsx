@@ -4,10 +4,11 @@ import { useCard } from '../lib/card';
 import { runLoader } from '../lib/loader';
 import './pages.css';
 
-export type PageId = 'first-pages' | 'globe' | 'notebook' | 'essays' | 'about' | 'signin';
+export type PageId = 'first-pages' | 'daily' | 'globe' | 'notebook' | 'essays' | 'about' | 'signin';
 
-export const PAGE_LINKS: { id: Exclude<PageId, 'signin'>; label: 'navFirst' | 'navGlobe' | 'navNotebook' | 'navEssays' | 'navAbout' }[] = [
+export const PAGE_LINKS: { id: Exclude<PageId, 'signin'>; label: 'navFirst' | 'navDaily' | 'navGlobe' | 'navNotebook' | 'navEssays' | 'navAbout' }[] = [
   { id: 'first-pages', label: 'navFirst' },
+  { id: 'daily', label: 'navDaily' },
   { id: 'globe', label: 'navGlobe' },
   { id: 'essays', label: 'navEssays' },
   { id: 'notebook', label: 'navNotebook' },

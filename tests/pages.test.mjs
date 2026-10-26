@@ -49,7 +49,7 @@ async function fresh(width = 1280, height = 860) {
 }
 
 describe('every page opens, with nothing refused and no error', () => {
-  const pages = ['/', '/signin', '/notebook', '/essays', '/essays/seedessay001', '/book/frankenstein', '/read/frankenstein', '/about', '/privacy', '/terms', '/u/nobody-here'];
+  const pages = ['/', '/signin', '/notebook', '/essays', '/essays/seedessay001', '/book/frankenstein', '/read/frankenstein', '/daily', '/about', '/privacy', '/terms', '/u/nobody-here'];
   for (const path of pages) {
     test(path, async () => {
       const { page, problems, close } = await fresh();
@@ -65,7 +65,7 @@ describe('every page opens, with nothing refused and no error', () => {
 
   test('on a phone too, with no sideways scroll', async () => {
     const { page, problems, close } = await fresh(390, 844);
-    for (const path of ['/', '/signin', '/essays/seedessay001']) {
+    for (const path of ['/', '/signin', '/essays/seedessay001', '/daily']) {
       await page.goto(BASE + path, { waitUntil: 'load' });
       await page.waitForTimeout(800);
       assert.ok((await page.evaluate(() => document.documentElement.scrollWidth)) <= 390, `${path} scrolls sideways`);
@@ -275,6 +275,46 @@ describe('the links in the bar across the top', () => {
     assert.match(await family('.reader-bar .page-nav > button'), /Geist Mono/);
     assert.match(await family('.reader-book'), /Brygada/, 'the reader changed type');
     await close();
+  });
+});
+
+describe('the daily first line', () => {
+  test('gives a clue with each guess passed, the answer after the fifth, and keeps the day as it was left', async () => {
+    const { page, problems, close } = await fresh();
+    await page.goto(BASE + '/daily', { waitUntil: 'load' });
+    await page.locator('.first-lines p').first().waitFor();
+    assert.equal(await page.locator('.daily-clues li').count(), 0, 'a clue was shown before any guess');
+    for (let clue = 1; clue <= 4; clue += 1) {
+      await page.locator('.daily-pass').click();
+      assert.equal(await page.locator('.daily-clues li').count(), clue);
+    }
+    await page.locator('.daily-pass').click();
+    const title = await page.locator('.daily-answer h2').textContent();
+    assert.ok(title, 'the answer was not shown');
+    assert.equal(await page.locator('.daily-squares').textContent(), '⬛⬛⬛⬛⬛');
+    await page.reload({ waitUntil: 'load' });
+    assert.equal(await page.locator('.daily-answer h2').textContent(), title, 'the day was not kept');
+    assert.equal(await page.locator('#daily-guess').count(), 0, 'the day could be played again');
+    assert.deepEqual(problems, []);
+    await close();
+
+    // Another reader, the same day: a wrong book first, then the right one, chosen from what is typed.
+    const other = await fresh();
+    await other.page.goto(BASE + '/daily', { waitUntil: 'load' });
+    const field = other.page.locator('#daily-guess');
+    await field.waitFor();
+    const wrong = title === 'Dracula' ? 'Frankenstein' : 'Dracula';
+    await field.fill(wrong);
+    await other.page.locator('.daily-found [role="option"]', { hasText: wrong }).first().dispatchEvent('pointerdown');
+    assert.equal(await other.page.locator('.daily-guesses li').first().textContent(), wrong);
+    assert.equal(await other.page.locator('.daily-clues li').count(), 1, 'a wrong guess gave no clue');
+    await field.fill(title);
+    await field.press('Enter');
+    await other.page.locator('.daily-answer').waitFor();
+    assert.equal(await other.page.locator('.daily-squares').textContent(), '🟥🟩');
+    assert.match(await other.page.locator('.daily-verdict').textContent(), /Found in 2/);
+    assert.deepEqual(other.problems, []);
+    await other.close();
   });
 });
 

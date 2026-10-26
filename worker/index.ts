@@ -1387,6 +1387,33 @@ async function essayPage(request: Request, env: Env, id: string): Promise<Respon
   return new Response(page.transform(shell).body, { headers });
 }
 
+/** /daily: the site, described in the head as the daily first line, for links to it shared with the result. */
+async function dailyPage(request: Request, env: Env): Promise<Response> {
+  const origin = new URL(request.url).origin;
+  const shell = await env.ASSETS.fetch(new Request(`${origin}/`, { headers: { accept: 'text/html' } }));
+  const title = 'Whose first line is this? · Incipit';
+  const description = 'One first line a day, from a book free to read. Five guesses to name it, and a clue with each miss.';
+  const content = (value: string) => ({
+    element(element: Element) {
+      element.setAttribute('content', value);
+    },
+  });
+  const page = new HTMLRewriter()
+    .on('title', {
+      element(element) {
+        element.setInnerContent(title);
+      },
+    })
+    .on('meta[name="description"]', content(description))
+    .on('meta[property="og:title"]', content(title))
+    .on('meta[property="og:description"]', content(description))
+    .on('meta[property="og:url"]', content(`${origin}/daily`))
+    .on('meta[name="twitter:title"]', content(title))
+    .on('meta[name="twitter:description"]', content(description))
+    .transform(shell);
+  return new Response(page.body, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300' } });
+}
+
 /** Every page there is, for search engines. */
 async function sitemap(request: Request, env: Env): Promise<Response> {
   const origin = new URL(request.url).origin;
@@ -1398,6 +1425,7 @@ async function sitemap(request: Request, env: Env): Promise<Response> {
     '',
     'globe',
     'first-pages',
+    'daily',
     'essays',
     'about',
     'privacy',
@@ -2000,6 +2028,7 @@ async function answer(request: Request, env: Env, ctx: ExecutionContext): Promis
   try {
     if (pathname.startsWith('/book/')) return await bookPage(request, env, decodeURIComponent(pathname.slice('/book/'.length)).replace(/\/$/, ''));
     if (pathname === '/sitemap.xml') return await sitemap(request, env);
+    if (pathname === '/daily' || pathname === '/daily/') return await dailyPage(request, env);
     if (pathname.startsWith('/essays/')) return await essayPage(request, env, pathname.slice('/essays/'.length).replace(/\/$/, ''));
   } catch (error) {
     console.error(error);
