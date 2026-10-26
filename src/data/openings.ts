@@ -1100,5 +1100,154 @@ export const OPENINGS: Record<string, { section: number; lines: string[] }> = {
   "lines": [
    "AT the Court of an Emperor (he lived it matters not when) there was among the many gentlewomen of the Wardrobe and Chamber one, who though she was not of very high rank was favoured far beyond all the rest; so that the great ladies of the Palace, each of whom had secretly hoped that she herself would be chosen, looked with scorn and hatred upon the upstart who had dispelled their dreams. Still less were her former companions, the minor ladies of the Wardrobe, content to see her raised so far above them."
   ]
+ },
+ "the-wealth-of-nations": {
+  "section": 2,
+  "lines": [
+   "The greatest improvement in the productive powers of labour, and the greater part of the skill, dexterity, and judgment with which it is anywhere directed, or applied, seem to have been the effects of the division of labour.",
+   "The effects of the division of labour, in the general business of society, will be more easily understood, by considering in what manner it operates in some particular manufactures."
+  ]
+ },
+ "extraordinary-popular-delusions": {
+  "section": 4,
+  "lines": [
+   "Contents",
+   "Some in clandestine companies combine;",
+   "Erect new stocks to trade beyond the line;",
+   "With air and empty names beguile the town,",
+   "And raise new credits first, then cry ’em down;",
+   "Divide the empty nothing into shares,",
+   "And set the crowd together by the ears.—Defoe.",
+   "The personal character and career of one man are so intimately connected with the great scheme of the years 1719 and 1720, that a history of the Mississippi madness can have no fitter introduction than a sketch of the life of its great author John Law. Historians are divided in opinion as to whether they should designate him a knave or a madman."
+  ]
+ },
+ "reminiscences-of-a-stock-operator": {
+  "section": 1,
+  "lines": [
+   "I went to work when I was just out of grammar school. I got a job as quotation-board boy in a stock-brokerage office. I was quick at figures. At school I did three years of arithmetic in one. I was particularly good at mental arithmetic. As quotation-board boy I posted the numbers on the big board in the customers’ room. One of the customers usually sat by the ticker and called out the prices. They couldn’t come too fast for me. I have always remembered figures. No trouble at all."
+  ]
+ },
+ "lombard-street": {
+  "section": 0,
+  "lines": [
+   "Introductory.",
+   "I venture to call this Essay 'Lombard Street,' and not the 'Money Market,' or any such phrase, because I wish to deal, and to show that I mean to deal, with concrete realities. A notion prevails that the Money Market is something so impalpable that it can only be spoken of in very abstract words, and that therefore books on it must always be exceedingly difficult. But I maintain that the Money Market is as concrete and real as anything else; that it can be described in as plain words; that it is the writer's fault if what he says is not clear."
+  ]
+ },
+ "the-theory-of-the-leisure-class": {
+  "section": 1,
+  "lines": [
+   "The institution of a leisure class is found in its best development at the higher stages of the barbarian culture; as, for instance, in feudal Europe or feudal Japan. In such communities the distinction between classes is very rigorously observed; and the feature of most striking economic significance in these class differences is the distinction maintained between the employments proper to the several classes. The upper classes are by custom exempt or excluded from industrial occupations, and are reserved for certain employments to which a degree of honour attaches. Chief among the honourable employments in any feudal community is warfare; and priestly service is commonly second to warfare."
+  ]
+ },
+ "the-communist-manifesto": {
+  "section": 2,
+  "lines": [
+   "The history of all hitherto existing society is the history of class struggles.",
+   "Freeman and slave, patrician and plebeian, lord and serf, guildmaster and journeyman, in a word, oppressor and oppressed, stood in constant opposition to one another, carried on an uninterrupted, now hidden, now open fight, that each time ended, either in the revolutionary reconstitution of society at large, or in the common ruin of the contending classes.",
+   "In the earlier epochs of history we find almost everywhere a complicated arrangement of society into various orders, a manifold gradation of social rank. In ancient Rome we have patricians, knights, plebeians, slaves; in the middle ages, feudal lords, vassals, guild masters, journeymen, apprentices, serfs; in almost all of these classes, again, subordinate gradations."
+  ]
+ },
+ "the-economic-consequences-of-the-peace": {
+  "section": 1,
+  "lines": [
+   "The power to become habituated to his surroundings is a marked characteristic of mankind. Very few of us realize with conviction the intensely unusual, unstable, complicated, unreliable, temporary nature of the economic organization by which Western Europe has lived for the last half century. We assume some of the most peculiar and temporary of our late advantages as natural, permanent, and to be depended on, and we lay our plans accordingly. On this sandy and false foundation we scheme for social improvement and dress our political platforms, pursue our animosities and particular ambitions, and feel ourselves with enough margin in hand to foster, not assuage, civil conflict in the European family."
+  ]
+ },
+ "progress-and-poverty": {
+  "section": 5,
+  "lines": [
+   "The present century has been marked by a prodigious increase in wealth-producing power. The utilization of steam and electricity, the introduction of improved processes and laborsaving machinery, the greater subdivision and grander scale of production, the wonderful facilitation of exchanges, have multiplied enormously the effectiveness of labor.",
+   "At the beginning of this marvelous era it was natural to expect, and it was expected, that laborsaving inventions would lighten the toil and improve the condition of the laborer; that the enormous increase in the power of producing wealth would make real poverty a thing of the past."
+  ]
+ },
+ "the-science-of-getting-rich": {
+  "section": 1,
+  "lines": [
+   "Whatever may be said in praise of poverty, the fact remains that it is not possible to live a really complete or successful life unless one is rich. No man can rise to his greatest possible height in talent or soul development unless he has plenty of money; for to unfold the soul and to develop talent he must have many things to use, and he cannot have these things unless he has money to buy them with."
+  ]
+ },
+ "the-autobiography-of-benjamin-franklin": {
+  "section": 3,
+  "lines": [
+   "Twyford, at the Bishop of St. Asaph’s, 1771.",
+   "Dear Son: I have ever had pleasure in obtaining any little anecdotes of my ancestors. You may remember the inquiries I made among the remains of my relations when you were with me in England, and the journey I undertook for that purpose. Imagining it may be equally agreeable to you to know the circumstances of my life, many of which you are yet unacquainted with, and expecting the enjoyment of a week’s uninterrupted leisure in my present country retirement, I sit down to write them for you. To which I have besides some other inducements."
+  ]
+ },
+ "the-voyage-of-the-beagle": {
+  "section": 2,
+  "lines": [
+   "After having been twice driven back by heavy southwestern gales, Her Majesty’s ship Beagle, a ten-gun brig, under the command of Captain Fitz Roy, R.N., sailed from Devonport on the 27th of December, 1831. The object of the expedition was to complete the survey of Patagonia and Tierra del Fuego, commenced under Captain King in 1826 to 1830⁠—to survey the shores of Chile, Peru, and of some islands in the Pacific⁠—and to carry a chain of chronometrical measurements round the world."
+  ]
+ },
+ "relativity": {
+  "section": 1,
+  "lines": [
+   "In your schooldays most of you who read this book made acquaintance with the noble building of Euclid’s geometry, and you remember—perhaps with more respect than love—the magnificent structure, on the lofty staircase of which you were chased about for uncounted hours by conscientious teachers. By reason of our past experience, you would certainly regard everyone with disdain who should pronounce even the most out-of-the-way proposition of this science to be untrue. But perhaps this feeling of proud certainty would leave you immediately if some one were to ask you: “What, then, do you mean by the assertion that these propositions are true?” Let us proceed to give this question a little consideration."
+  ]
+ },
+ "the-chemical-history-of-a-candle": {
+  "section": 1,
+  "lines": [
+   "I purpose, in return for the honour you do us by coming to see what are our proceedings here, to bring before you, in the course of these lectures, the Chemical History of a Candle. I have taken this subject on a former occasion; and were it left to my own will, I should prefer to repeat it almost every year—so abundant is the interest that attaches itself to the subject, so wonderful are the varieties of outlet which it offers into the various departments of philosophy. There is not a law under which any part of this universe is governed which does not come into play, and is touched upon in these phenomena."
+  ]
+ },
+ "on-the-nature-of-things": {
+  "section": 1,
+  "lines": [
+   "PROEM"
+  ]
+ },
+ "novum-organum": {
+  "section": 2,
+  "lines": [
+   "I. Man, as the minister and interpreter of nature, does and understands as much as his observations on the order of nature, either with regard to things or the mind, permit him, and neither knows nor is capable of more.",
+   "II. The unassisted hand and the understanding left to itself possess but little power. Effects are produced by the means of instruments and helps, which the understanding requires no less than the hand; and as instruments either promote or regulate the motion of the hand, so those that are applied to the mind prompt or protect the understanding."
+  ]
+ },
+ "discourse-on-the-method": {
+  "section": 1,
+  "lines": [
+   "Good sense is, of all things among men, the most equally distributed; for every one thinks himself so abundantly provided with it, that those even who are the most difficult to satisfy in everything else, do not usually desire a larger measure of this quality than they already possess."
+  ]
+ },
+ "the-interpretation-of-dreams": {
+  "section": 5,
+  "lines": [
+   "In the following pages I shall prove that there exists a psychological technique by which dreams may be interpreted, and that upon the application of this method every dream will show itself to be a senseful psychological structure which may be introduced into an assignable place in the psychic activity of the waking state. I shall furthermore endeavour to explain the processes which give rise to the strangeness and obscurity of the dream, and to discover through them the nature of the psychic forces which operate, whether in combination or in opposition, to produce the dream. This accomplished, my investigation will terminate, as it will have reached the point where the problem of the dream meets with broader problems, the solution of which must be attempted through other material."
+  ]
+ },
+ "the-principles-of-psychology": {
+  "section": 1,
+  "lines": [
+   "Psychology is the Science of Mental Life, both of its phenomena and of their conditions. The phenomena are such things as we call feelings, desires, cognitions, reasonings, decisions, and the like; and, superficially considered, their variety and complexity is such as to leave a chaotic impression on the observer. The most natural and consequently the earliest way of unifying the material was, first, to classify it as well as might be, and, secondly, to affiliate the diverse mental modes thus found, upon a simple entity, the personal Soul, of which they are taken to be so many facultative manifestations."
+  ]
+ },
+ "microbe-hunters": {
+  "section": 1,
+  "lines": [
+   "I",
+   "Two hundred and fifty years ago an obscure man named Leeuwenhoek looked for the first time into a mysterious new world peopled with a thousand different kinds of tiny beings, some ferocious and deadly, others friendly and useful, many of them more important to mankind than any continent or archipelago.",
+   "Leeuwenhoek, unsung and scarce remembered, is now almost as unknown as his strange little animals and plants were at the time he discovered them. This is the story of Leeuwenhoek, the first of the microbe hunters. It is the tale of the bold and persistent and curious explorers and fighters of death who came after him."
+  ]
+ },
+ "arrowsmith": {
+  "section": 1,
+  "lines": [
+   "The driver of the wagon swaying through forest and swamp of the Ohio wilderness was a ragged girl of fourteen. Her mother they had buried near the Monongahela⁠—the girl herself had heaped with torn sods the grave beside the river of the beautiful name. Her father lay shrinking with fever on the floor of the wagon-box, and about him played her brothers and sisters, dirty brats, tattered brats, hilarious brats."
+  ]
+ },
+ "the-autobiography-of-charles-darwin": {
+  "section": 0,
+  "lines": [
+   "A German Editor having written to me for an account of the development of my mind and character with some sketch of my autobiography, I have thought that the attempt would amuse me, and might possibly interest my children or their children. I know that it would have interested me greatly to have read even so short and dull a sketch of the mind of my grandfather, written by himself, and what he thought and did, and how he worked. I have attempted to write the following account of myself, as if I were a dead man in another world looking back at my own life. Nor have I found this difficult, for life is nearly over with me. I have taken no pains about my style of writing."
+  ]
+ },
+ "the-nature-of-the-physical-world": {
+  "section": 2,
+  "lines": [
+   "I have settled down to the task of writing these lectures and have drawn up my chairs to my two tables. Two tables! Yes; there are duplicates of every object about me—two tables, two chairs, two pens.",
+   "This is not a very profound beginning to a course which ought to reach transcendent levels of scientific philosophy. But we cannot touch bedrock immediately; we must scratch a bit at the surface of things first. And whenever I begin to scratch the first thing I strike is—my two tables."
+  ]
  }
 };

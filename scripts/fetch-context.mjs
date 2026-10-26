@@ -43,6 +43,8 @@ const OWN = {
   gitanjali: 'Gitanjali',
   'the-idiot': 'The Idiot',
   we: 'We (novel)',
+  'lombard-street': 'Lombard Street: A Description of the Money Market',
+  'the-millionaire-next-door': 'The Millionaire Next Door',
 };
 /** The same for the author. */
 const BY = {

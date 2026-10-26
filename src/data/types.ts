@@ -20,7 +20,11 @@ export type GenreId =
   | 'historical'
   | 'philosophy'
   | 'memoir'
-  | 'history';
+  | 'history'
+  | 'science'
+  | 'economics'
+  | 'investing'
+  | 'psychology';
 
 export type KeywordId =
   | 'love'
@@ -46,7 +50,9 @@ export type KeywordId =
   | 'art'
   | 'knowledge'
   | 'survival'
-  | 'faith';
+  | 'faith'
+  | 'money'
+  | 'research';
 
 export type LanguageId =
   | 'en'
@@ -74,7 +80,8 @@ export type LanguageId =
   | 'pl'
   | 'fa'
   | 'sa'
-  | 'da';
+  | 'da'
+  | 'la';
 
 export interface Book {
   /** URL slug. */

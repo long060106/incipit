@@ -48,6 +48,8 @@ export const KEYWORDS: Record<KeywordId, L> = {
   knowledge: { en: 'Books and learning', fr: 'Livres et savoir' },
   survival: { en: 'Survival', fr: 'Survie' },
   faith: { en: 'Faith', fr: 'Foi' },
+  money: { en: 'Money', fr: 'Argent' },
+  research: { en: 'Research and discovery', fr: 'Recherche et découverte' },
 };
 
 export const GENRES: Record<GenreId, L> = {
@@ -63,6 +65,10 @@ export const GENRES: Record<GenreId, L> = {
   philosophy: { en: 'Philosophy', fr: 'Philosophie' },
   memoir: { en: 'Memoir', fr: 'Mémoires' },
   history: { en: 'History and ideas', fr: 'Histoire et idées' },
+  science: { en: 'Science', fr: 'Sciences' },
+  economics: { en: 'Economics and money', fr: 'Économie et argent' },
+  investing: { en: 'Investing and markets', fr: 'Bourse et placements' },
+  psychology: { en: 'Psychology', fr: 'Psychologie' },
 };
 
 export const LANGUAGES: Record<LanguageId, L> = {
@@ -92,6 +98,7 @@ export const LANGUAGES: Record<LanguageId, L> = {
   fa: { en: 'Persian', fr: 'persan' },
   sa: { en: 'Sanskrit', fr: 'sanskrit' },
   da: { en: 'Danish', fr: 'danois' },
+  la: { en: 'Latin', fr: 'latin' },
 };
 
 /** Stands for books set nowhere on the map, among the ISO country codes of the settings. */

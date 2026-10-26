@@ -1,0 +1,72 @@
+<h3>THE PRINCIPLES: OF: PSYCHOLOGY</h3>
+<h3>BY</h3>
+<h3>WILLIAM JAMES</h3>
+<h3>PROFESSOR OF PSYCHOLOGY IN HARVARD UNIVERSITY</h3>
+<h3>IN TWO VOLUMES</h3>
+<h3>VOL. I</h3>
+<h3>NEW YORK: HENRY HOLT AND COMPANY</h3>
+<h3>1918</h3>
+<hr>
+<p class="verse">TO<br> MY DEAR FRIEND<br> FRANÇOIS PILLON.<br> AS A TOKEN OF AFFECTION,<br> AND AN ACKNOWLEDGMENT OF WHAT I OWE<br> TO THE<br> CRITIQUE PHILOSOPHIQUE.</p>
+<hr>
+<h3>PREFACE</h3>
+<p>The treatise which follows has in the main grown up in connection with the author's class-room instruction in Psychology, although it is true that some of the chapters are more 'metaphysical,' and others fuller of detail, than is suitable for students who are going over the subject for the first time. The consequence of this is that, in spite of the exclusion of the important subjects of pleasure and pain, and moral and æsthetic feelings and judgments, the work has grown to a length which no one can regret more than the writer himself. The man must indeed be sanguine who, in this crowded age, can hope to have many readers for fourteen hundred continuous pages from his pen. But <i>wer Vieles bringt wird Manchem etwas bringen</i>; and, by judiciously skipping according to their several needs, I am sure that many sorts of readers, even those who are just beginning the study of the subject, will find my book of use. Since the beginners are most in need of guidance, I suggest for their behoof that they omit altogether on a first reading chapters 6, 7, 8, 10 (from page 330 to page 371), 12, 13, 15, 17, 20, 21, and 28. The better to awaken the neophyte's interest, it is possible that the wise order would be to pass directly from chapter 4 to chapters 23, 24, 25, and 26, and thence to return to the first volume again. Chapter 20, on Space-perception, is a terrible thing, which, unless written with all that detail, could not be fairly treated at all. An abridgment of it, called 'The Spatial Quale,' which appeared in the Journal of Speculative Philosophy, vol. xiii, p. 64, may be found by some persons a useful substitute for the entire chapter.</p>
+<p>I have kept close to the point of view of natural science throughout the book. Every natural science assumes certain data uncritically, and declines to challenge the elements between which its own 'laws' obtain, and from which its own deductions are carried on. Psychology, the science of finite individual minds, assumes as its data (1) <i>thoughts and feelings</i>, and (2) <i>a physical world</i> in time and space with which they coexist and which (3) <i>they know</i>. Of course these data themselves are discussable; but the discussion of them (as of other elements) is called metaphysics and falls outside the province of this book. This book, assuming that thoughts and feelings exist and are vehicles of knowledge, thereupon contends that psychology when she has ascertained the empirical correlation of the various sorts of thought or feeling with definite conditions of the brain, can go no farther—can go no farther, that is, as a natural science. If she goes farther she becomes metaphysical. All attempts to <i>explain</i> our phenomenally given thoughts as products of deeper-lying entities (whether the latter be named 'Soul,' 'Transcendental Ego,' 'Ideas,' or 'Elementary Units of Consciousness') are metaphysical. This book consequently rejects both the associationist and the spiritualist theories; and in this strictly positivistic point of view consists the only feature of it for which I feel tempted to claim originality. Of course this point of view is anything but ultimate. Men must keep thinking; and the data assumed by psychology, just like those assumed by physics and the other natural sciences, must some time be overhauled. The effort to overhaul them clearly and thoroughly is metaphysics; but metaphysics can only perform her task well when distinctly conscious of its great extent. Metaphysics fragmentary, irresponsible, and half-awake, and unconscious that she is metaphysical, spoils two good things when she injects herself into a natural science. And it seems to me that the theories both of a spiritual agent and of associated 'ideas' are, as they figure in the psychology-books, just such metaphysics as this. Even if their results be true, it would be as well to keep them, <i>as thus presented</i>, out of psychology as it is to keep the results of idealism out of physics.</p>
+<p>I have therefore treated our passing thoughts as integers, and regarded the mere laws of their coexistence with brain-states as the ultimate laws for our science. The reader will in vain seek for any closed system in the book. It is mainly a mass of descriptive details, running out into queries which only a metaphysics alive to the weight of her task can hope successfully to deal with. That will perhaps be centuries hence; and meanwhile the best mark of health that a science can show is this unfinished-seeming front.</p>
+<p>The completion of the book has been so slow that several chapters have been published successively in Mind, the Journal of Speculative Philosophy, the Popular Science Monthly, and Scribner's Magazine. Acknowledgment is made in the proper places.</p>
+<p>The bibliography, I regret to say, is quite unsystematic. I have habitually given my authority for special experimental facts; but beyond that I have aimed mainly to cite books that would probably be actually used by the ordinary American college-student in his collateral reading. The bibliography in W. Volkmann von Volkmar's Lehrbuch der Psychologie (1875) is so complete, up to its date, that there is no need of an inferior duplicate. And for more recent references, Sully's Outlines, Dewey's Psychology, and Baldwin's Handbook of Psychology may be advantageously used.</p>
+<p>Finally, where one owes to so many, it seems absurd to single out particular creditors; yet I cannot resist the temptation at the end of my first literary venture to record my gratitude for the inspiration I have got from the writings of J. S. Mill, Lotze, Renouvier, Hodgson, and Wundt, and from the intellectual companionship (to name only five names) of Chauncey Wright and Charles Peirce in old times, and more recently of Stanley Hall, James Putnam, and Josiah Royce.</p>
+<p>Harvard University, August 1890.</p>
+<hr>
+<h3>CONTENTS</h3>
+<p>CHAPTER I.</p>
+<p>The Scope of Psychology, 1</p>
+<p>Mental Manifestations depend on Cerebral Conditions, 1. Pursuit of ends and choice are the marks of Mind's presence, 6.</p>
+<p>CHAPTER II.</p>
+<p>The Functions of the Brain, 12</p>
+<p>Reflex, semi-reflex, and voluntary acts, 12. The Frog's nerve-centres, 14. General notion of the hemispheres, 20. Their Education—the Meynert scheme, 24. The phrenological contrasted with the physiological conception, 27. The localization of function in the hemispheres, 30. The motor zone, 31. Motor Aphasia, 37. The sight-centre, 41. Mental blindness, 48. The hearing-centre, 52. Sensory Aphasia, 54. Centres for smell and taste, 57. The touch-centre, 58. Man's Consciousness limited to the hemispheres, 65. The restitution of function, 67. Final correction of the Meynert scheme, 72. Conclusions, 78.</p>
+<p>CHAPTER III.</p>
+<p>On Some General Conditions of Brain-activity, 81</p>
+<p>The summation of Stimuli, 82. Reaction-time, 85. Cerebral blood-supply, 97. Cerebral Thermometry, 99. Phosphorus and Thought, 101.</p>
+<p>CHAPTER IV.</p>
+<p>Habit, 104</p>
+<p>Due to plasticity of neural matter, 105. Produces ease of action, 112. Diminishes attention, 115. Concatenated performances, 116. Ethical implications and pedagogic maxims, 120.</p>
+<p>CHAPTER V.</p>
+<p>The Automaton-theory, 128</p>
+<p>The theory described, 128. Reasons for it, 133. Reasons against it, 138.</p>
+<p>CHAPTER VI.</p>
+<p>The Mind-stuff Theory, 145</p>
+<p>Evolutionary Psychology demands a Mind-dust, 146. Some alleged proofs that it exists, 150. Refutation of these proofs, 154. Self-compounding of mental facts is inadmissible, 158. Can states of mind be unconscious? 162. Refutation of alleged proofs of unconscious thought, 164. Difficulty of stating the connection between mind and brain, 176. 'The Soul' is logically the least objectionable hypothesis, 180. Conclusion, 182.</p>
+<p>CHAPTER VII.</p>
+<p>The Methods and Snares of Psychology, 183</p>
+<p>Psychology is a natural Science, 183. Introspection, 185. Experiment, 192. Sources of error, 194. The 'Psychologist's fallacy,' 196.</p>
+<p>CHAPTER VIII.</p>
+<p>The Relations of Minds to other Things, 199</p>
+<p>Time relations: lapses of Consciousness—Locke <i>v</i>. Descartes, 200. The 'unconsciousness' of hysterics not genuine, 202. Minds may split into dissociated parts, 206. Space-relations: the Seat of the Soul, 214. Cognitive relations, 216. The Psychologist's point of view, 218. Two kinds of knowledge, acquaintance and knowledge about, 221.</p>
+<p>CHAPTER IX.</p>
+<p>The Stream of Thought, 224</p>
+<p>Consciousness tends to the personal form, 225. It is in constant change, 229. It is sensibly continuous, 237. 'Substantive' and 'transitive' parts of Consciousness, 243. Feelings of relation, 245. Feelings of tendency, 249. The 'fringe' of the object, 258. The feeling of rational sequence, 261. Thought possible in any kind of mental material, 265. Thought and language, 267. Consciousness is cognitive, 271. The word Object, 275. Every cognition is due to one integral pulse of thought 276. Diagrams of Thought's stream, 279. Thought is always selective, 284.</p>
+<p>CHAPTER X.</p>
+<p>The Consciousness of Self, 291</p>
+<p>The Empirical Self or Me, 291. Its constituents, 292. The material self, 292. The Social Self, 293. The Spiritual Self, 296. Difficulty of apprehending Thought as a purely spiritual activity, 299. Emotions of Self, 305. Rivalry and conflict of one's different selves, 309. Their hierarchy, 313. What Self we love in 'Self-love,' 317. The Pure Ego, 329. The verifiable ground of the sense of personal identity, 332. The passing Thought is the only Thinker which Psychology requires, 338. Theories of Self-consciousness: 1) The theory of the Soul, 342. 2) The Associationist theory, 350. 3) The Transcendentalist theory, 360. The mutations of the Self, 373. Insane delusions, 375. Alternating selves, 379. Mediumships or possessions, 393. Summary, 400.</p>
+<p>CHAPTER XI.</p>
+<p>Attention, 402</p>
+<p>Its neglect by English psychologists, 402. Description of it, 404. To how many things can we attend at once? 405. Wundt's experiments on displacement of date of impressions simultaneously attended to, 410. Personal equation, 413. The varieties of attention, 416. Passive attention, 418. Voluntary attention, 420. Attention's effects on sensation, 425;—on discrimination, 426;—on recollection, 427;—on reaction-time, 427. The neural process in attention: 1) Accommodation of sense-organ, 434. 2) Preperception, 438. Is voluntary attention a resultant or a force? 447. The effort to attend can be conceived as a resultant, 450. Conclusion, 453. Acquired Inattention, 455.</p>
+<p>CHAPTER XII.</p>
+<p>Conception, 459</p>
+<p>The sense of sameness, 459. Conception defined, 461. Conceptions are unchangeable, 464. Abstract ideas, 468. Universals, 473. The conception 'of the same' is not the 'same state' of mind, 480.</p>
+<p>CHAPTER XIII.</p>
+<p>Discrimination and Comparison, 483</p>
+<p>Locke on discrimination, 483. Martineau <i>ditto</i>, 484. Simultaneous sensations originally fuse into one object, 488. The principle of mediate comparison, 489. Not all differences are differences of composition, 490. The conditions of discrimination, 494. The sensation of difference, 495. The transcendentalist theory of the perception of differences uncalled for, 498. The process of analysis, 502. The process of abstraction, 505. The improvement of discrimination by practice, 508. Its two causes, 510. Practical interests limit our discrimination, 515. Reaction-time after discrimination, 523. The perception of likeness, 528. The magnitude of differences, 530. The measurement of discriminative  sensibility: Weber's law, 533. Fechner's interpretation of this as the psycho-physic law, 537. Criticism thereof, 545.</p>
+<p>CHAPTER XIV.</p>
+<p>Association, 550</p>
+<p>The problem of the connection of our thoughts, 550. It depends on mechanical conditions, 553. Association is of objects thought of, not of 'ideas,' 554. The rapidity of association, 557. The 'law of contiguity,' 561. The elementary law of association, 566. Impartial redintegration, 569. Ordinary or mixed association, 571. The law of interest, 572. Association by similarity, 578. Elementary expression of the difference between the three kinds of association, 581. Association in voluntary thought, 583. Similarity no elementary law, 590. History of the doctrine of association, 594.</p>
+<p>CHAPTER XV.</p>
+<p>The Perception of Time, 605</p>
+<p>The sensible present, 606. Its duration is the primitive time-perception, 608. Accuracy of our estimate of short durations, 611. We have no sense for empty time, 619. Variations of our time-estimate, 624. The feeling of past time is a present feeling, 627. Its cerebral process, 632.</p>
+<p>CHAPTER XVI.</p>
+<p>Memory, 643</p>
+<p>Primary memory, 643. Analysis of the phenomenon of memory, 648. Retention and reproduction are both caused by paths of association in the brain, 653. The conditions of goodness in memory, 659. Native retentiveness is unchangeable, 663. All improvement of memory consists in better <i>thinking</i>, 667. Other conditions of good memory, 669. Recognition, or the sense of familiarity, 673. Exact measurements of memory, 676. Forgetting, 679. Pathological cases, 681. Professor Ladd criticised, 687.</p>
+<p>INDEX.</p>
+<hr>
+<h3>PSYCHOLOGY</h3>

@@ -1,0 +1,13 @@
+<p>BY</p>
+<p>A. S. EDDINGTON</p>
+<p>M.A., LL.D., D.SC., F.R.S.</p>
+<p class="verse"><i>Plumian Professor of Astronomy<br> in the<br> University of Cambridge</i></p>
+<p class="verse">THE<br> GIFFORD LECTURES<br> 1927</p>
+<p class="verse">NEW YORK:<br> THE MACMILLAN COMPANY</p>
+<p class="verse">CAMBRIDGE, ENGLAND:<br> AT THE UNIVERSITY PRESS</p>
+<p>1929</p>
+<p><i>All rights reserved</i></p>
+<hr>
+<p class="verse">COPYRIGHT, 1928,<br> By THE MACMILLAN COMPANY.</p>
+<p class="verse">Set up and electrotyped.<br> Published November, 1928.<br> Reprinted February, 1929.<br> Twice. March, 1929.<br> Reprinted April, 1929.</p>
+<p class="verse">SET UP BY BROWN BROTHERS LINOTYPERS<br> PRINTED IN THE UNITED STATES OF AMERICA<br> BY THE FERRIS PRINTING COMPANY</p>

@@ -38,13 +38,22 @@ const BOOKS = [...catalogue.matchAll(/\n    id: '([^']+)'[\s\S]*?(?=\n  \{\n    
   .filter((book) => book.gutenberg);
 
 /** Where the story starts, for the books in which the guess below is wrong: a section index. */
-const OPENS_AT = { 'on-the-origin-of-species': 2, middlemarch: 1, 'noli-me-tangere': 6, 'the-red-and-the-black': 1, 'cyrano-de-bergerac': 2, bushido: 3, beowulf: 6, 'the-bhagavad-gita': 2, 'the-tale-of-genji': 2, steppenwolf: 0, 'the-rubaiyat-of-omar-khayyam': 1 };
+const OPENS_AT = { 'on-the-origin-of-species': 2, middlemarch: 1, 'noli-me-tangere': 6, 'the-red-and-the-black': 1, 'cyrano-de-bergerac': 2, bushido: 3, beowulf: 6, 'the-bhagavad-gita': 2, 'the-tale-of-genji': 2, steppenwolf: 0, 'the-rubaiyat-of-omar-khayyam': 1, 'extraordinary-popular-delusions': 4, 'reminiscences-of-a-stock-operator': 1, 'on-the-nature-of-things': 1, 'novum-organum': 2, 'the-interpretation-of-dreams': 5, 'microbe-hunters': 1, 'the-nature-of-the-physical-world': 2, 'the-principles-of-psychology': 1 };
 /**
  * Books whose chapters are made of many short numbered pieces (the Analects' sayings,
  * Nietzsche's aphorisms): each chapter is read as one section, every piece under its number,
  * rather than as hundreds of sections.
  */
 const GATHERED = new Set(['the-analects', 'beyond-good-and-evil']);
+/**
+ * Project Gutenberg editions laid out unlike the rest. `chapter`: the headings, at whatever
+ * level, that begin a chapter, each followed by a heading that names it. `opening`: what to call
+ * the text that the edition sets under its table of contents.
+ */
+const LAYOUT = {
+  'the-principles-of-psychology': { chapter: /^chapter [ivxlc]+\.?(\s*\[\d+\])?$/i },
+  'the-autobiography-of-charles-darwin': { opening: 'Shrewsbury and Edinburgh, 1809–1828' },
+};
 
 // ---------------------------------------------------------------------------------------
 // Cleaning
@@ -241,20 +250,40 @@ function fromStandardEbooks(html, gather = false) {
 const PG_SKIP = /^(contents|table of contents|list of illustrations|illustrations|transcriber.?s notes?|index|the full project gutenberg license)\b/i;
 const PG_NOT_STORY = /^(preface|foreword|introduction|introductory|prefatory|translator|note|dedication|editor|biograph|author.?s (preface|note)|to the reader|a note)/i;
 
-function fromGutenberg(html) {
+function fromGutenberg(html, _gathered, layout = {}) {
   const $ = cheerio.load(html);
   $('#pg-header, #pg-footer, .pg-boilerplate, #pg-start-separator, #pg-end-separator').remove();
   const list = blocks($('body')[0]);
   const raw = [];
   let current = { title: '', blocks: [] };
+  let named = true;
   for (const block of list) {
-    if (block.heading && block.heading <= 3) {
+    if (block.heading && layout.chapter?.test(block.text.trim())) {
+      raw.push(current);
+      current = { title: title(block.text.replace(/\s*\[\d+\]$/, '')), blocks: [] };
+      named = false;
+    } else if (block.heading && !named && current.blocks.length === 0) {
+      current.title += `: ${title(block.text)}`;
+      named = true;
+    } else if (block.heading && block.heading <= 3 && !layout.chapter) {
       raw.push(current);
       current = { title: title(block.text), blocks: [] };
     } else if (block.heading) current.blocks.push({ html: `<h3>${escape(block.text)}</h3>` });
     else current.blocks.push(block);
   }
   raw.push(current);
+  if (layout.opening) {
+    const contents = raw.find((entry) => /^contents\b/i.test(entry.title));
+    // Of the stretches between rules (the list, an editor's note, the text), the longest.
+    const runs = [[]];
+    for (const block of contents?.blocks ?? []) {
+      if (block.html === '<hr>') runs.push([]);
+      else runs.at(-1).push(block);
+    }
+    const size = (run) => words(plain(run.map((block) => block.html).join('\n')));
+    const longest = runs.reduce((best, run) => (size(run) > size(best) ? run : best));
+    if (contents) raw.splice(raw.indexOf(contents) + 1, 0, { title: layout.opening, blocks: longest });
+  }
 
   const sections = [];
   let pending = [];
@@ -355,7 +384,7 @@ for (const book of BOOKS) {
     report.push(`${book.id}: NO TEXT`);
     continue;
   }
-  const sections = (source.from === 'standardebooks' ? fromStandardEbooks : fromGutenberg)(source.html, GATHERED.has(book.id));
+  const sections = (source.from === 'standardebooks' ? fromStandardEbooks : fromGutenberg)(source.html, GATHERED.has(book.id), LAYOUT[book.id]);
   if (sections.length === 0) {
     report.push(`${book.id}: no sections found (${source.from})`);
     continue;
