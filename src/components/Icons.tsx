@@ -56,6 +56,19 @@ export const StormIcon = () => (
   </svg>
 );
 
+export const BookIcon = () => (
+  <svg {...base}>
+    <path d="M12 6.5c-1.8-1.3-4.300-1.800-7.5-1.500v12.500c3.200-.3 5.700.2 7.5 1.500 1.800-1.3 4.300-1.800 7.5-1.500V5c-3.200-.3-5.700.2-7.5 1.500ZM12 6.500V19" />
+  </svg>
+);
+
+export const DiceIcon = () => (
+  <svg {...base}>
+    <rect x="4.5" y="4.5" width="15" height="15" rx="3" />
+    <path d="M9 9h.01M15 9h.01M12 12h.01M9 15h.01M15 15h.01" strokeWidth={2.4} />
+  </svg>
+);
+
 export const SearchIcon = () => (
   <svg {...base}>
     <circle cx="11" cy="11" r="6.5" />

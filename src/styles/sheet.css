@@ -444,6 +444,21 @@
   transform: translate(-50%, -50%);
 }
 
+/* "Or one like it, but" and the ways it can differ, on one line that wraps. */
+.mood-nudges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0.9rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.mood-nudges span {
+  margin-right: 2px;
+}
+
 .similar {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

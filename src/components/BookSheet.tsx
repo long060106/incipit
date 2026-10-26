@@ -9,7 +9,7 @@ import { reads } from '../lib/kepttext';
 import { bookLinks, coverUrl } from '../lib/links';
 import { blendedMood, blendedRating, useReviews } from '../lib/reviews';
 import { useShelf } from '../lib/shelf';
-import { MIN_RATINGS, similarBooks } from '../lib/match';
+import { likeThis, MIN_RATINGS, nudgesFor, similarBooks, type Filters } from '../lib/match';
 import { coverOrigin, type CoverOrigin } from '../lib/wall';
 import { Around } from './Around';
 import { Dialog } from './Dialog';
@@ -28,6 +28,8 @@ interface BookSheetProps {
   onClose: () => void;
   onOpenBook: (bookId: string, origin?: CoverOrigin | null) => void;
   onUseMood: (mood: Mood) => void;
+  /** Shows books like this one, but lighter, darker, stranger or shorter. */
+  onLikeThis: (filters: Filters) => void;
   onPickTheme: (theme: KeywordId) => void;
 }
 
@@ -43,7 +45,7 @@ interface BookSheetProps {
  * out of copyright is handed over from this site as a PDF. A book in copyright is never
  * offered for download; its button goes to a lender when one exists, otherwise to libraries.
  */
-export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMood, onPickTheme }: BookSheetProps) {
+export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMood, onLikeThis, onPickTheme }: BookSheetProps) {
   const { t, tl, lang } = useI18n();
   const shelf = useShelf();
   // The keeper of the site can switch a book's download off (src/lib/keeper.ts).
@@ -284,6 +286,15 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
             <button type="button" className="text-button" onClick={() => onUseMood(mood)}>
               <span className="u">{t('useThisMood')}</span>
             </button>
+            {/* The same mood moved one way: how a reader says what they would change about this book. */}
+            <p className="mood-nudges">
+              <span>{t('likeItBut')}</span>
+              {nudgesFor(book, mood).map((nudge) => (
+                <button key={nudge} type="button" className="chip" onClick={() => onLikeThis(likeThis(book, mood, nudge))}>
+                  {t(nudge)}
+                </button>
+              ))}
+            </p>
           </section>
 
           <BookEssays book={book} />

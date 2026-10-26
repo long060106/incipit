@@ -11,16 +11,16 @@ export const AXES: { id: AxisId; low: L; high: L }[] = [
 export type MoodPresetId = 'feelgood' | 'edgy' | 'think' | 'emotional' | 'cosy' | 'dark';
 
 /**
- * Moods to start from: each sets the two or three sliders that make it, and leaves the
- * rest alone. The reader can move any slider afterwards.
+ * Moods to start from, each an answer to "A book to…": each sets the two or three sliders
+ * that make it, and leaves the rest alone. The reader can move any slider afterwards.
  */
 export const MOOD_PRESETS: { id: MoodPresetId; label: L; mood: Partial<Mood> }[] = [
-  { id: 'feelgood', label: { en: 'Feelgood', fr: 'Réconfortant' }, mood: { tone: 12, voice: 25, intensity: 22 } },
-  { id: 'edgy', label: { en: 'Edgy', fr: 'Qui bouscule' }, mood: { intensity: 82, pace: 66, strange: 70 } },
-  { id: 'think', label: { en: 'Make me think', fr: 'À méditer' }, mood: { voice: 90, intensity: 40, pace: 22 } },
-  { id: 'emotional', label: { en: 'Emotional', fr: 'Émouvant' }, mood: { tone: 62, voice: 80, intensity: 80 } },
-  { id: 'cosy', label: { en: 'Cosy escape', fr: 'Évasion douce' }, mood: { tone: 15, intensity: 12, pace: 35 } },
-  { id: 'dark', label: { en: 'Dark and gritty', fr: 'Noir et âpre' }, mood: { tone: 90, voice: 85, intensity: 86 } },
+  { id: 'feelgood', label: { en: 'lift my spirits', fr: 'me remonter le moral' }, mood: { tone: 12, voice: 25, intensity: 22 } },
+  { id: 'edgy', label: { en: 'shake me up', fr: 'me bousculer' }, mood: { intensity: 82, pace: 66, strange: 70 } },
+  { id: 'think', label: { en: 'make me think', fr: 'me faire réfléchir' }, mood: { voice: 90, intensity: 40, pace: 22 } },
+  { id: 'emotional', label: { en: 'move me', fr: 'm’émouvoir' }, mood: { tone: 62, voice: 80, intensity: 80 } },
+  { id: 'cosy', label: { en: 'wrap me up warm', fr: 'me tenir au chaud' }, mood: { tone: 15, intensity: 12, pace: 35 } },
+  { id: 'dark', label: { en: 'take me somewhere dark', fr: 'm’emmener dans le noir' }, mood: { tone: 90, voice: 85, intensity: 86 } },
 ];
 
 export const KEYWORDS: Record<KeywordId, L> = {

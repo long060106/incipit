@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BOOKS } from '../data/books';
 import type { AxisId, GenreId, KeywordId, Mood } from '../data/types';
 import { AXES, countryName, ELSEWHERE, GENRES, KEYWORDS, MOOD_PRESETS, type MoodPresetId } from '../data/vocab';
@@ -6,10 +6,12 @@ import { useI18n, type StringKey } from '../i18n';
 import { countActive, EMPTY_FILTERS, type EraBand, type Filters, type LengthBand, type LevelBand, type SortId } from '../lib/match';
 import type { CSSProperties, ReactNode } from 'react';
 import { CountryField, type CountryOption } from './CountryField';
-import { BoltIcon, BulbIcon, ChevronIcon, HeartIcon, SearchIcon, StormIcon, SunIcon, TeaIcon } from './Icons';
+import { BoltIcon, BookIcon, BulbIcon, ChevronIcon, DiceIcon, HeartIcon, SearchIcon, StormIcon, SunIcon, TeaIcon } from './Icons';
 import { Roll } from './Roll';
 
 const VISIBLE_THEMES = 10;
+/** How long the die of "surprise me" tumbles before its book opens; the stylesheet's die-roll matches it. */
+const ROLL_MS = 650;
 
 const LENGTHS: { id: LengthBand; label: StringKey }[] = [
   { id: 'short', label: 'short' },
@@ -58,12 +60,33 @@ interface PanelProps {
    */
   open: boolean;
   onToggle: () => void;
+  /** Opens a book picked at random from those the filters let through. */
+  onSurprise: () => void;
 }
 
-export function Panel({ active, filters, onChange, countLabel, open, onToggle }: PanelProps) {
+export function Panel({ active, filters, onChange, countLabel, open, onToggle, onSurprise }: PanelProps) {
   const { t, tl, lang } = useI18n();
   const [allThemes, setAllThemes] = useState(false);
+  // Each press of "surprise me" rolls the die once, and the book opens as it comes to rest.
+  const [rolls, setRolls] = useState(0);
+  const surprise = () => {
+    setRolls((n) => n + 1);
+    window.setTimeout(onSurprise, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : ROLL_MS);
+  };
   const activeCount = countActive(filters);
+
+  // Fine-tuning opens by itself when something set elsewhere (a book's mood, a theme, a nudge)
+  // lives behind it, so the reader can see what is shaping the wall.
+  const [tuneOpen, setTuneOpen] = useState(false);
+  const moodSet = Object.keys(filters.mood).length > 0;
+  const tuned =
+    (moodSet && !MOOD_PRESETS.some((preset) => sameMood(filters.mood, preset.mood))) ||
+    filters.keywords.length > 0 ||
+    filters.sort !== 'match' ||
+    Boolean(filters.country || filters.genre || filters.length || filters.era || filters.level || filters.minRating);
+  useEffect(() => {
+    if (tuned) setTuneOpen(true);
+  }, [tuned]);
 
   // Themes ordered by how many books carry them, so the short list is the useful one.
   const themes = useMemo(() => {
@@ -135,111 +158,138 @@ export function Panel({ active, filters, onChange, countLabel, open, onToggle }:
 
         <section className="panel-section">
           <div className="panel-heading">
-            <h2>{t('mood')}</h2>
-            <p>{t('moodHint')}</p>
+            <h2>{t('aBookTo')}</h2>
           </div>
-          <div className="quick" role="group" aria-label={t('quickMoods')}>
+          <div className="quick" role="group" aria-label={t('aBookTo')}>
             {MOOD_PRESETS.map((preset) => {
               const on = sameMood(filters.mood, preset.mood);
               return (
-                <button key={preset.id} type="button" aria-pressed={on} onClick={() => set('mood', on ? {} : { ...preset.mood })}>
+                <button
+                  key={preset.id}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => onChange({ ...filters, mood: on ? {} : { ...preset.mood }, kind: null })}
+                >
                   {PRESET_ICONS[preset.id]}
                   <span>{tl(preset.label)}</span>
                 </button>
               );
             })}
-          </div>
-          {AXES.map((axis) => (
-            <MoodSlider
-              key={axis.id}
-              low={tl(axis.low)}
-              high={tl(axis.high)}
-              value={filters.mood[axis.id]}
-              onChange={(value) => setMood(axis.id, value)}
-            />
-          ))}
-        </section>
-
-        <section className="panel-section">
-          <div className="panel-heading">
-            <h2>{t('themes')}</h2>
-          </div>
-          <div className="chips">
-            {shownThemes.map((id) => (
-              <button
-                key={id}
-                type="button"
-                className="chip"
-                aria-pressed={filters.keywords.includes(id)}
-                onClick={() => toggleTheme(id)}
-              >
-                {tl(KEYWORDS[id])}
-              </button>
-            ))}
-            <button type="button" className="chip chip-more" onClick={() => setAllThemes((value) => !value)}>
-              {allThemes ? t('fewerThemes') : t('moreThemes')}
+            <button
+              type="button"
+              aria-pressed={filters.kind === 'learn'}
+              onClick={() => onChange({ ...filters, mood: {}, kind: filters.kind === 'learn' ? null : 'learn' })}
+            >
+              <BookIcon />
+              <span>{t('teachMe')}</span>
+            </button>
+            <button type="button" className="quick-surprise" onClick={surprise}>
+              <span className="die" key={rolls} data-rolled={rolls > 0 || undefined}>
+                <DiceIcon />
+              </span>
+              <span>{t('surpriseMe')}</span>
             </button>
           </div>
-        </section>
-
-        <section className="panel-section panel-order">
-          <Segmented
-            label={t('sortBy')}
-            options={SORTS}
-            value={filters.sort === 'match' ? null : filters.sort}
-            onChange={(v) => set('sort', v ?? 'match')}
-          />
-          <CountryField label={t('setting')} options={countries} value={filters.country} onChange={(code) => set('country', code)} />
-        </section>
-
-        <details className="panel-section more">
-          <summary>
-            <h2>{t('moreFilters')}</h2>
-            <ChevronIcon />
-          </summary>
-
-          <div className="field">
-            <label htmlFor="filter-genre">{t('genre')}</label>
-            <select
-              id="filter-genre"
-              value={filters.genre ?? ''}
-              onChange={(event) => set('genre', (event.target.value || null) as GenreId | null)}
-            >
-              <option value="">{t('anyGenre')}</option>
-              {genres.map((id) => (
-                <option key={id} value={id}>
-                  {tl(GENRES[id])}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <Segmented label={t('length')} options={LENGTHS} value={filters.length} onChange={(v) => set('length', v)} />
-          <Segmented label={t('era')} options={ERAS} value={filters.era} onChange={(v) => set('era', v)} />
-          <Segmented label={t('readingLevel')} options={LEVELS} value={filters.level} onChange={(v) => set('level', v)} />
-
-          <div className="field">
-            <span className="field-label" id="filter-rating">
-              {t('rating')}
-            </span>
-            <div className="segmented" role="group" aria-labelledby="filter-rating">
-              {RATINGS.map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  aria-pressed={filters.minRating === n}
-                  onClick={() => set('minRating', filters.minRating === n ? null : n)}
-                >
-                  {t('ratingAtLeast', { n: n.toFixed(1) })}
-                </button>
-              ))}
-            </div>
-          </div>
-
           <label className="check">
             <input type="checkbox" checked={filters.freeOnly} onChange={(event) => set('freeOnly', event.target.checked)} />
             <span>{t('freeOnly')}</span>
           </label>
+        </section>
+
+        {/* Everything else: the sliders, themes, order and the rest, for a reader who wants them. */}
+        <details className="panel-section more" open={tuneOpen} onToggle={(event) => setTuneOpen(event.currentTarget.open)}>
+          <summary>
+            <h2>{t('fineTune')}</h2>
+            <ChevronIcon />
+          </summary>
+
+          <section className="tune-part">
+            <div className="panel-heading">
+              <h3>{t('mood')}</h3>
+              <p>{t('moodHint')}</p>
+            </div>
+            {AXES.map((axis) => (
+              <MoodSlider
+                key={axis.id}
+                low={tl(axis.low)}
+                high={tl(axis.high)}
+                value={filters.mood[axis.id]}
+                onChange={(value) => setMood(axis.id, value)}
+              />
+            ))}
+          </section>
+
+          <section className="tune-part">
+            <div className="panel-heading">
+              <h3>{t('themes')}</h3>
+            </div>
+            <div className="chips">
+              {shownThemes.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  className="chip"
+                  aria-pressed={filters.keywords.includes(id)}
+                  onClick={() => toggleTheme(id)}
+                >
+                  {tl(KEYWORDS[id])}
+                </button>
+              ))}
+              <button type="button" className="chip chip-more" onClick={() => setAllThemes((value) => !value)}>
+                {allThemes ? t('fewerThemes') : t('moreThemes')}
+              </button>
+            </div>
+          </section>
+
+          <section className="tune-part panel-order">
+            <Segmented
+              label={t('sortBy')}
+              options={SORTS}
+              value={filters.sort === 'match' ? null : filters.sort}
+              onChange={(v) => set('sort', v ?? 'match')}
+            />
+            <CountryField label={t('setting')} options={countries} value={filters.country} onChange={(code) => set('country', code)} />
+          </section>
+
+          <section className="tune-part">
+            <div className="field">
+              <label htmlFor="filter-genre">{t('genre')}</label>
+              <select
+                id="filter-genre"
+                value={filters.genre ?? ''}
+                onChange={(event) => set('genre', (event.target.value || null) as GenreId | null)}
+              >
+                <option value="">{t('anyGenre')}</option>
+                {genres.map((id) => (
+                  <option key={id} value={id}>
+                    {tl(GENRES[id])}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <Segmented label={t('length')} options={LENGTHS} value={filters.length} onChange={(v) => set('length', v)} />
+            <Segmented label={t('era')} options={ERAS} value={filters.era} onChange={(v) => set('era', v)} />
+            <Segmented label={t('readingLevel')} options={LEVELS} value={filters.level} onChange={(v) => set('level', v)} />
+
+            <div className="field">
+              <span className="field-label" id="filter-rating">
+                {t('rating')}
+              </span>
+              <div className="segmented" role="group" aria-labelledby="filter-rating">
+                {RATINGS.map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    aria-pressed={filters.minRating === n}
+                    onClick={() => set('minRating', filters.minRating === n ? null : n)}
+                  >
+                    {t('ratingAtLeast', { n: n.toFixed(1) })}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
         </details>
       </div>
 

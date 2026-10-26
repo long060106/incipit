@@ -592,6 +592,20 @@ export default function App() {
     [closeBook],
   );
 
+  const showLike = useCallback(
+    (like: Filters) => {
+      setFilters(like);
+      closeBook();
+    },
+    [closeBook],
+  );
+
+  // A book at random from those the wall is showing, or from them all when nothing is chosen.
+  const surprise = useCallback(() => {
+    const pool = result.active && result.fits.length ? result.fits.map((fit) => fit.book) : BOOKS;
+    openBook(pool[Math.floor(Math.random() * pool.length)].id);
+  }, [result, openBook]);
+
   const resetFilters = useCallback(() => setFilters(EMPTY_FILTERS), []);
 
   return (
@@ -637,6 +651,7 @@ export default function App() {
           countLabel={countLabel}
           open={panelOpen}
           onToggle={() => setPanelOpen((value) => !value)}
+          onSurprise={surprise}
         />
         <Tray
           active={inGallery}
@@ -679,6 +694,7 @@ export default function App() {
             onClose={closeBook}
             onOpenBook={openBook}
             onUseMood={applyMood}
+            onLikeThis={showLike}
             onPickTheme={pickTheme}
           />
         )}

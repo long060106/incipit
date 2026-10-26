@@ -1,5 +1,5 @@
 import { AXES, ELSEWHERE } from '../data/vocab';
-import type { AxisId, Book, GenreId, KeywordId } from '../data/types';
+import type { AxisId, Book, GenreId, KeywordId, Mood } from '../data/types';
 
 export type LengthBand = 'short' | 'medium' | 'long';
 export type EraBand = 'pre1900' | 'c20' | 'c21';
@@ -22,6 +22,10 @@ export interface Filters {
   minRating: number | null;
   country: string | null;
   freeOnly: boolean;
+  /** Only books read to learn something ('learn'), only stories ('story'), or either (null). */
+  kind: BookKind | null;
+  /** The book the reader came from, left out of what is shown "like it, but…". */
+  besides: string | null;
   sort: SortId;
 }
 
@@ -36,8 +40,20 @@ export const EMPTY_FILTERS: Filters = {
   minRating: null,
   country: null,
   freeOnly: false,
+  kind: null,
+  besides: null,
   sort: 'match',
 };
+
+export type BookKind = 'learn' | 'story';
+
+const LEARN_GENRES: GenreId[] = ['science', 'history', 'economics', 'investing', 'psychology', 'philosophy'];
+// Humour and adventure are left out: a book of science can be funny (Bryson) or a voyage (Darwin's).
+const STORY_GENRES: GenreId[] = ['literary', 'gothic', 'romance', 'scifi', 'fantasy', 'mystery', 'historical'];
+
+/** A book is read to learn something when its genres are those of ideas and none is a story's. */
+export const kindOf = (book: Book): BookKind =>
+  book.genres.some((g) => LEARN_GENRES.includes(g)) && !book.genres.some((g) => STORY_GENRES.includes(g)) ? 'learn' : 'story';
 
 export interface Scored {
   book: Book;
@@ -77,6 +93,7 @@ export function countActive(filters: Filters): number {
     (filters.minRating ? 1 : 0) +
     (filters.country ? 1 : 0) +
     (filters.freeOnly ? 1 : 0) +
+    (filters.kind ? 1 : 0) +
     (filters.sort !== 'match' ? 1 : 0)
   );
 }
@@ -97,6 +114,7 @@ function levelBand(difficulty: number): LevelBand {
 }
 
 function passesHardFilters(book: Book, filters: Filters, query: string): boolean {
+  if (book.id === filters.besides) return false;
   if (query) {
     const haystack = fold(`${book.title} ${book.originalTitle ?? ''} ${book.author}`);
     if (!haystack.includes(query)) return false;
@@ -107,6 +125,7 @@ function passesHardFilters(book: Book, filters: Filters, query: string): boolean
   if (filters.level && levelBand(book.difficulty) !== filters.level) return false;
   if (filters.minRating && ratingOf(book) < filters.minRating) return false;
   if (filters.freeOnly && !book.free) return false;
+  if (filters.kind && kindOf(book) !== filters.kind) return false;
   if (filters.country) {
     const inCountry =
       filters.country === ELSEWHERE
@@ -196,4 +215,47 @@ export function similarBooks(book: Book, books: Book[], count = 4): Book[] {
     .sort((a, b) => b.score - a.score)
     .slice(0, count)
     .map(({ other }) => other);
+}
+
+/** Ways to ask for a book like this one, but different in one respect. */
+export type Nudge = 'lighter' | 'darker' | 'stranger' | 'shorter';
+
+/** How far a nudge moves the axes it touches, out of 100: enough to leave the book's own neighbours behind. */
+const NUDGE = 30;
+const SHORTER: Partial<Record<LengthBand, LengthBand>> = { long: 'medium', medium: 'short' };
+
+const clamp = (n: number) => Math.max(0, Math.min(100, n));
+
+/**
+ * The nudges that mean something for this book: none towards an end of the scale it already sits at,
+ * and no "shorter" for a short book.
+ */
+export function nudgesFor(book: Book, mood: Mood): Nudge[] {
+  const out: Nudge[] = [];
+  if (mood.tone > 20 || mood.intensity > 20) out.push('lighter');
+  if (mood.tone < 80 || mood.intensity < 80) out.push('darker');
+  if (mood.strange < 75) out.push('stranger');
+  if (SHORTER[lengthBand(book.pages)]) out.push('shorter');
+  return out;
+}
+
+/** Filters for books of the same kind with this mood, moved by a nudge, leaving the book itself out. */
+export function likeThis(book: Book, mood: Mood, nudge: Nudge): Filters {
+  const next: Mood = { ...mood };
+  if (nudge === 'lighter') {
+    next.tone = clamp(mood.tone - NUDGE);
+    next.intensity = clamp(mood.intensity - NUDGE);
+  } else if (nudge === 'darker') {
+    next.tone = clamp(mood.tone + NUDGE);
+    next.intensity = clamp(mood.intensity + NUDGE);
+  } else if (nudge === 'stranger') {
+    next.strange = clamp(mood.strange + NUDGE + 5);
+  }
+  return {
+    ...EMPTY_FILTERS,
+    mood: next,
+    length: nudge === 'shorter' ? SHORTER[lengthBand(book.pages)] ?? null : null,
+    kind: kindOf(book),
+    besides: book.id,
+  };
 }

@@ -236,33 +236,32 @@
   -webkit-appearance: none;
 }
 
-/* ── Moods to start from ──────────────────────────────────────────────────── */
+/* ── A book to… ───────────────────────────────────────────────────────────── */
 
+/* The answers finish the heading's sentence, so each is a line of words with its sign before it. */
 .quick {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 6px;
-  margin-bottom: 20px;
 }
 
 .quick button {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 7px;
-  min-height: 66px;
-  padding: 9px 4px 8px;
+  gap: 10px;
+  min-height: 48px;
+  padding: 8px 12px;
   border: 1px solid var(--line-strong);
   border-radius: 3px;
-  font-size: 0.8125rem;
-  line-height: 1.15;
-  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  text-align: left;
   text-wrap: balance;
   transition: border-color 0.2s ease, background-color 0.25s ease;
 }
 
 .quick svg {
+  flex: none;
   color: var(--muted);
   transition: color 0.2s ease, transform 0.4s var(--ease-out);
 }
@@ -283,6 +282,62 @@
 
 .quick button[aria-pressed='true'] svg {
   color: var(--accent);
+}
+
+/* The one answer that is not a mood: a chance, drawn in dashes of brass, its die turning as the pointer comes near
+   and rolling over once when pressed, before the book it lands on opens. */
+.quick .quick-surprise {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  color: var(--accent);
+}
+
+.quick .quick-surprise:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.quick .die {
+  display: flex;
+  flex: none;
+  transition: transform 0.9s var(--ease-out);
+}
+
+.quick .quick-surprise svg,
+.quick .quick-surprise:hover svg {
+  color: var(--accent);
+  transform: none;
+}
+
+.quick .quick-surprise:hover .die {
+  transform: rotate(90deg);
+}
+
+.quick .die[data-rolled] {
+  animation: die-roll 0.65s var(--ease-out);
+}
+
+@keyframes die-roll {
+  from {
+    rotate: -360deg;
+    scale: 0.8;
+  }
+  to {
+    rotate: 0deg;
+    scale: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick .die,
+  .quick .die[data-rolled] {
+    transition: none;
+    animation: none;
+  }
+
+  .quick .quick-surprise:hover .die {
+    transform: none;
+  }
 }
 
 /* ── Mood sliders ─────────────────────────────────────────────────────────── */
@@ -453,7 +508,22 @@
   outline-offset: 0;
 }
 
-/* ── More filters ─────────────────────────────────────────────────────────── */
+/* ── Fine-tune ────────────────────────────────────────────────────────────── */
+
+.tune-part {
+  margin-top: 26px;
+}
+
+.tune-part + .tune-part {
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.panel h3 {
+  color: var(--text);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
 
 /* A row to press, drawn as one: the rest of the filters are behind it. */
 .more summary {
