@@ -28,7 +28,8 @@ const only = process.argv.slice(2).find((arg) => !arg.startsWith('--'));
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // The catalogue is TypeScript; all this script needs from it are the ids and the sources.
-const catalogue = await readFile(join(ROOT, 'src', 'data', 'books.ts'), 'utf8');
+// Its line ends are made plain first: a Windows checkout has them as CRLF.
+const catalogue = (await readFile(join(ROOT, 'src', 'data', 'books.ts'), 'utf8')).replaceAll('\r\n', '\n');
 const BOOKS = [...catalogue.matchAll(/\n    id: '([^']+)'[\s\S]*?(?=\n  \{\n    id:|\n\];)/g)]
   .map(([entry, id]) => ({
     id,
@@ -38,7 +39,7 @@ const BOOKS = [...catalogue.matchAll(/\n    id: '([^']+)'[\s\S]*?(?=\n  \{\n    
   .filter((book) => book.gutenberg);
 
 /** Where the story starts, for the books in which the guess below is wrong: a section index. */
-const OPENS_AT = { 'on-the-origin-of-species': 2, middlemarch: 1, 'noli-me-tangere': 6, 'the-red-and-the-black': 1, 'cyrano-de-bergerac': 2, bushido: 3, beowulf: 6, 'the-bhagavad-gita': 2, 'the-tale-of-genji': 2, steppenwolf: 0, 'the-rubaiyat-of-omar-khayyam': 1, 'extraordinary-popular-delusions': 4, 'reminiscences-of-a-stock-operator': 1, 'on-the-nature-of-things': 1, 'novum-organum': 2, 'the-interpretation-of-dreams': 5, 'microbe-hunters': 1, 'the-nature-of-the-physical-world': 2, 'the-principles-of-psychology': 1 };
+const OPENS_AT = { 'romance-of-the-three-kingdoms': 2, 'the-republic': 2, 'twelve-years-a-slave': 2, 'on-the-origin-of-species': 2, middlemarch: 1, 'noli-me-tangere': 6, 'the-red-and-the-black': 1, 'cyrano-de-bergerac': 2, bushido: 3, beowulf: 6, 'the-bhagavad-gita': 2, 'the-tale-of-genji': 2, steppenwolf: 0, 'the-rubaiyat-of-omar-khayyam': 1, 'extraordinary-popular-delusions': 4, 'reminiscences-of-a-stock-operator': 1, 'on-the-nature-of-things': 1, 'novum-organum': 2, 'the-interpretation-of-dreams': 5, 'microbe-hunters': 1, 'the-nature-of-the-physical-world': 2, 'the-principles-of-psychology': 1 };
 /**
  * Books whose chapters are made of many short numbered pieces (the Analects' sayings,
  * Nietzsche's aphorisms): each chapter is read as one section, every piece under its number,
@@ -329,6 +330,9 @@ async function page(book) {
   return null;
 }
 
+/** A heading set as a paragraph at the top of a section ("Contents", "PROEM", "I"): not yet the book's words. */
+const NOT_YET = /^(\[?contents\]?|introductory\.?|proem)$/i;
+
 /** The first lines of a section: whole paragraphs up to about a hundred words. */
 function opening(html) {
   const $ = cheerio.load(`<body>${html}</body>`);
@@ -343,9 +347,9 @@ function opening(html) {
     });
   });
   for (const element of $('body').children().toArray()) {
-    if (!['p', 'blockquote'].includes(element.name) || /lede|epigraph/.test(classes(element))) continue;
+    if (!['p', 'blockquote', 'pre'].includes(element.name) || /lede|epigraph/.test(classes(element))) continue;
     let text = plain($.html(element)).replace(/[ \t]+/g, ' ').replace(/ ?\n ?/g, '\n').trim();
-    if (!text) continue;
+    if (!text || (!lines.length && (NOT_YET.test(text) || !/[a-z]/.test(text)))) continue;
     const count = words(text);
     if (total + count > 150) {
       // A long paragraph is cut at the end of a sentence.

@@ -130,21 +130,10 @@ export const OPENINGS: Record<string, { section: number; lines: string[] }> = {
   ]
  },
  "romance-of-the-three-kingdoms": {
-  "section": 0,
+  "section": 2,
   "lines": [
-   "OR",
-   "ROMANCE OF THE THREE KINGDOMS",
-   "By C. H. BREWITT-TAYLOR\nlate of the Maritime Customs Service of China",
-   "AN ENGLISH VERSION OF",
-   "三國志演義",
-   "VOLUME I, WITH MAP",
-   "KELLY & WALSH, LIMITED\nSHANGHAI : HONGKONG : SINGAPORE\nMCMXXV",
-   "[Contents]",
-   "COPYRIGHT, 1925, BY C. H. BREWITT-TAYLOR.",
-   "First Printing, December, 1925.",
-   "Especially prepared for the use and education of the Chinese People.",
-   "用之民人國中為備專",
-   "Provisionally Registered in the Shanghai Bureau for the Registration of Trade Marks."
+   "Empires wax and wane; states cleave asunder and coalesce. When the rule of Chou weakened seven contending principalities sprang up, warring one with another till they settled down as Tsʻin and when its destiny had been fulfilled arose Chʻu and Han to contend for the mastery. And Han was the victor.",
+   "The rise of the fortunes of Han began with the slaughter of the White Serpent. In a short time the whole Empire was theirs and their magnificent heritage was handed down in successive generations till the days of Kuang-Wu, whose name stands in the middle of the long line of Han. This was in the first century of the western era and the dynasty had then already passed its zenith. A century later came to the Throne the Emperor Hsien, doomed to see the beginning of the division into three parts, known to history as The Three Kingdoms."
   ]
  },
  "the-odyssey": {
@@ -431,17 +420,9 @@ export const OPENINGS: Record<string, { section: number; lines: string[] }> = {
   ]
  },
  "the-republic": {
-  "section": 1,
+  "section": 2,
   "lines": [
-   "Socrates, who is the narrator.",
-   "Glaucon.",
-   "Adeimantus.",
-   "Polemarchus.",
-   "Cephalus.",
-   "Thrasymachus.",
-   "Cleitophon.",
-   "And others who are mute auditors.",
-   "The scene is laid in the house of Cephalus at the Piraeus; and the whole dialogue is narrated by Socrates the day after it actually took place to Timaeus, Hermocrates, Critias, and a nameless person, who are introduced in the Timaeus."
+   "I went down yesterday to the Piraeus with Glaucon the son of Ariston, that I might offer up my prayers to the goddess (Bendis, the Thracian Artemis.); and also because I wanted to see in what manner they would celebrate the festival, which was a new thing. I was delighted with the procession of the inhabitants; but that of the Thracians was equally, if not more, beautiful. When we had finished our prayers and viewed the spectacle, we turned in the direction of the city; and at that instant Polemarchus the son of Cephalus chanced to catch sight of us from a distance as we were starting on our way home, and told his servant to run and bid us wait for him. The servant took hold of me by the cloak behind, and said: Polemarchus desires you to wait."
   ]
  },
  "the-prince": {
@@ -704,15 +685,10 @@ export const OPENINGS: Record<string, { section: number; lines: string[] }> = {
   ]
  },
  "twelve-years-a-slave": {
-  "section": 0,
+  "section": 2,
   "lines": [
-   "NARRATIVE\nOF\nSOLOMON NORTHUP,\nA CITIZEN OF NEW-YORK,\nKIDNAPPED IN WASHINGTON CITY IN 1841,\nAND\nRESCUED IN 1853,",
-   "FROM A COTTON PLANTATION NEAR THE RED RIVER,\nIN LOUISIANA.",
-   "AUBURN:\nDERBY AND MILLER.",
-   "BUFFALO:\nDERBY, ORTON AND MULLIGAN.",
-   "LONDON:\nSAMPSON LOW, SON & COMPANY, 47 LUDGATE HILL.",
-   "1853.",
-   "Entered according to Act of Congress, in the year one thousand eight hundred and\nfifty-three, by\nDerby and Miller,\nIn the Clerk's Office of the District Court of the Northern District of New-York."
+   "Having been born a freeman, and for more than thirty years enjoyed the blessings of liberty in a free State—and having at the end of that time been kidnapped and sold into Slavery, where I remained, until happily rescued in the month of January, 1853, after a bondage of twelve years—it has been suggested that an account of my life and fortunes would not be uninteresting to the public.",
+   "Since my return to liberty, I have not failed to perceive the increasing interest throughout the Northern States, in regard to the subject of Slavery. Works of fiction, professing to portray its features in their more pleasing as well as more repugnant aspects, have been circulated to an extent unprecedented, and, as I understand, have created a fruitful topic of comment and discussion."
   ]
  },
  "white-fang": {
@@ -1111,7 +1087,6 @@ export const OPENINGS: Record<string, { section: number; lines: string[] }> = {
  "extraordinary-popular-delusions": {
   "section": 4,
   "lines": [
-   "Contents",
    "Some in clandestine companies combine;",
    "Erect new stocks to trade beyond the line;",
    "With air and empty names beguile the town,",
@@ -1130,7 +1105,6 @@ export const OPENINGS: Record<string, { section: number; lines: string[] }> = {
  "lombard-street": {
   "section": 0,
   "lines": [
-   "Introductory.",
    "I venture to call this Essay 'Lombard Street,' and not the 'Money Market,' or any such phrase, because I wish to deal, and to show that I mean to deal, with concrete realities. A notion prevails that the Money Market is something so impalpable that it can only be spoken of in very abstract words, and that therefore books on it must always be exceedingly difficult. But I maintain that the Money Market is as concrete and real as anything else; that it can be described in as plain words; that it is the writer's fault if what he says is not clear."
   ]
  },
@@ -1195,7 +1169,7 @@ export const OPENINGS: Record<string, { section: number; lines: string[] }> = {
  "on-the-nature-of-things": {
   "section": 1,
   "lines": [
-   "PROEM"
+   "Mother of Rome, delight of Gods and men,\nDear Venus that beneath the gliding stars\nMakest to teem the many-voyaged main\nAnd fruitful lands—for all of living things\nThrough thee alone are evermore conceived,\nThrough thee are risen to visit the great sun—\nBefore thee, Goddess, and thy coming on,\nFlee stormy wind and massy cloud away,\nFor thee the daedal Earth bears scented flowers,\nFor thee waters of the unvexed deep\nSmile, and the hollows of the serene sky\nGlow with diffused radiance for thee!"
   ]
  },
  "novum-organum": {
@@ -1226,7 +1200,6 @@ export const OPENINGS: Record<string, { section: number; lines: string[] }> = {
  "microbe-hunters": {
   "section": 1,
   "lines": [
-   "I",
    "Two hundred and fifty years ago an obscure man named Leeuwenhoek looked for the first time into a mysterious new world peopled with a thousand different kinds of tiny beings, some ferocious and deadly, others friendly and useful, many of them more important to mankind than any continent or archipelago.",
    "Leeuwenhoek, unsung and scarce remembered, is now almost as unknown as his strange little animals and plants were at the time he discovered them. This is the story of Leeuwenhoek, the first of the microbe hunters. It is the tale of the bold and persistent and curious explorers and fighters of death who came after him."
   ]
