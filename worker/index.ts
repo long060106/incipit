@@ -1931,12 +1931,12 @@ keywords: at most 3 of ${Object.entries(KEYWORDS)
   .join(', ')}.
 length: short (under 200 pages), medium (200 to 400), long (over 400).
 era: when it was written. pre1900, c20 (1900 to 1999), c21 (2000 on).
-level: how hard it is to read. easy, moderate, demanding.
+level: how hard it is to read. easy, moderate, demanding. Words such as "easy to read", "dễ đọc" or "facile à lire" mean easy.
 kind: learn (non-fiction, to learn something) or story (fiction).
 country: the ISO code of where the book is set, only when the reader names a place. One of ${SETTINGS.join(', ')}.
 freeOnly: true only when the reader wants a book that is free or can be read on the site.
-query: only when the reader asks for books by a named author or for a named title: that surname or title. A writer named as a comparison ("like Dostoevsky") is not a query: set the mood, genre, era and country that writer suggests instead.
-note: a few words, in the reader's language, saying what you understood.`;
+query: only when the reader asks for books by a named author or for a named title: that surname or title. With a query, set no other field but freeOnly. A writer named as a comparison ("like Dostoevsky") is not a query: set the mood, genre, era and country that writer suggests instead.
+note: at most eight words, in the reader's language, saying what you understood. Do not repeat the wish.`;
 
 const ASK_SCHEMA = {
   type: 'object',
