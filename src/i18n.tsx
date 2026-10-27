@@ -63,8 +63,8 @@ const STRINGS = {
   askResting: { en: 'The words are resting until tomorrow. The filters below still work.', fr: 'Les mots se reposent jusqu’à demain. Les filtres ci-dessous fonctionnent toujours.' },
   askFailed: { en: 'That did not go through. Try again in a moment.', fr: 'Cela n’a pas abouti. Réessayez dans un instant.' },
   askCredit: {
-    en: 'Read by an AI model, Built with Llama, at Cloudflare. It only sets the filters; the books are this site’s. What you type is not kept.',
-    fr: 'Lu par un modèle d’IA, Built with Llama, chez Cloudflare. Il ne règle que les filtres ; les livres sont ceux du site. Ce que vous tapez n’est pas gardé.',
+    en: 'Read by an AI model: Google Gemini, or Llama at Cloudflare (Built with Llama). It only sets the filters; the books are this site’s. Do not type anything personal.',
+    fr: 'Lu par un modèle d’IA : Google Gemini, ou Llama chez Cloudflare (Built with Llama). Il ne règle que les filtres ; les livres sont ceux du site. N’y tapez rien de personnel.',
   },
   mood: { en: 'Mood', fr: 'Ambiance' },
   aBookTo: { en: 'A book to…', fr: 'Un livre pour…' },

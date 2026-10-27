@@ -109,6 +109,8 @@ export interface Env {
   GOOGLE_DEV_KEYS?: string;
   /** Workers AI (wrangler.jsonc), which turns a reader's few words into filters (/api/ask). */
   AI?: Ai;
+  /** Google's key for Gemini, kept as a secret (`wrangler secret put GEMINI_API_KEY`). Absent, /api/ask uses Workers AI alone. */
+  GEMINI_API_KEY?: string;
   /** '1' on a development server only: /api/ask answers without the model, which runs only at Cloudflare. */
   ASK_DEV?: string;
 }
@@ -1882,7 +1884,8 @@ async function claim(request: Request, env: Env, card: Card): Promise<Response> 
 // Asking for a book in a few words (/api/ask)
 //
 // The reader writes what they would like to read ("something sad and short, set in Russia"),
-// and a model on Cloudflare's Workers AI turns it into the site's own filters. The model never
+// and a model turns it into the site's own filters: Google's Gemini when the site has a key and
+// the reader is where its free service may be used, otherwise Llama on Cloudflare's Workers AI. The model never
 // names a book: the books come from the catalogue, through the filters, as when the sliders are
 // moved by hand. What it answers is checked here, and anything not one of the site's own words
 // is dropped.
@@ -1901,7 +1904,19 @@ const SETTINGS = [...new Set(BOOKS.flatMap((book) => book.setting.countries))].s
 
 /** A development server (the tests): the model is stood in for by a fixed answer, since it only runs at Cloudflare. */
 const askDev = (request: Request, env: Env) => env.ASK_DEV === '1' && ['localhost', '127.0.0.1', '[::1]'].includes(new URL(request.url).hostname);
-const askReady = (request: Request, env: Env) => !!env.AI || askDev(request, env);
+const askReady = (request: Request, env: Env) => !!env.AI || !!env.GEMINI_API_KEY || askDev(request, env);
+
+/** Google's Gemini, when the keeper has given the site a key (`wrangler secret put GEMINI_API_KEY`). */
+const GEMINI_MODEL = 'gemini-3.5-flash-lite';
+/**
+ * Where Gemini's terms allow only its paid service (the European Economic Area, Switzerland, the
+ * United Kingdom): readers there are read by Workers AI, as is anyone whose country is not known.
+ */
+const PAID_ONLY = new Set(['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'CH', 'GB']);
+const geminiFor = (request: Request, env: Env) => {
+  const country = (request as { cf?: { country?: string } }).cf?.country;
+  return !!env.GEMINI_API_KEY && !!country && country !== 'XX' && !PAID_ONLY.has(country);
+};
 
 /** Counts a use of something from everyone today, and says whether it is still within `most`. */
 async function withinAll(env: Env, what: string, most: number): Promise<boolean> {
@@ -1989,6 +2004,23 @@ function wishFrom(raw: unknown): { filters: Record<string, unknown>; note: strin
   return { filters, note };
 }
 
+async function readByGemini(env: Env, wish: string): Promise<unknown> {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY! },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: `${ASK_PROMPT}\nAnswer with one JSON object holding only these fields.` }] },
+      contents: [{ role: 'user', parts: [{ text: wish }] }],
+      generationConfig: { responseMimeType: 'application/json', temperature: 0.2, maxOutputTokens: 400 },
+    }),
+    signal: AbortSignal.timeout(12000),
+  });
+  if (!response.ok) throw new Error(`Gemini ${response.status}`);
+  const body = (await response.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+  const text = body.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('') ?? '';
+  return JSON.parse(text);
+}
+
 async function askForBook(request: Request, env: Env): Promise<Response> {
   if (!askReady(request, env)) return refuse(503, 'not-ready');
   const body = await bodyOf(request);
@@ -2000,8 +2032,17 @@ async function askForBook(request: Request, env: Env): Promise<Response> {
     // Words of the site's own and words that are not, as a model might answer: the second kind is dropped.
     return json(wishFrom({ mood: { tone: 88, intensity: 140 }, length: 'short', keywords: ['war', 'not-a-theme'], genre: 'poetry', country: 'RU', note: `Dark and short: ${wish}` }));
   }
+  if (geminiFor(request, env)) {
+    try {
+      return json(wishFrom(await readByGemini(env, wish)));
+    } catch (error) {
+      // Its free allowance spent, or an answer that is not JSON: Workers AI reads the wish instead.
+      console.error('ask gemini', error);
+    }
+  }
+  if (!env.AI) return refuse(503, 'resting');
   try {
-    const answer = (await env.AI!.run(ASK_MODEL as never, {
+    const answer = (await env.AI.run(ASK_MODEL as never, {
       messages: [
         { role: 'system', content: ASK_PROMPT },
         { role: 'user', content: wish },
