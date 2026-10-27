@@ -13,10 +13,12 @@ export type MoodPresetId = 'feelgood' | 'edgy' | 'think' | 'emotional' | 'cosy' 
 /**
  * Moods to start from, each an answer to "A book to…": each sets the two or three sliders
  * that make it, and leaves the rest alone. The reader can move any slider afterwards.
+ * "Shake me up" is not a mood but what a book does to its reader, so it sets no slider and
+ * shows the books kept for it in `JOLTS` instead.
  */
-export const MOOD_PRESETS: { id: MoodPresetId; label: L; mood: Partial<Mood> }[] = [
+export const MOOD_PRESETS: { id: MoodPresetId; label: L; mood: Partial<Mood>; jolt?: true }[] = [
   { id: 'feelgood', label: { en: 'lift my spirits', fr: 'me remonter le moral' }, mood: { tone: 12, voice: 25, intensity: 22 } },
-  { id: 'edgy', label: { en: 'shake me up', fr: 'me bousculer' }, mood: { intensity: 82, pace: 66, strange: 70 } },
+  { id: 'edgy', label: { en: 'shake me up', fr: 'me bousculer' }, mood: {}, jolt: true },
   { id: 'think', label: { en: 'make me think', fr: 'me faire réfléchir' }, mood: { voice: 90, intensity: 40, pace: 22 } },
   { id: 'emotional', label: { en: 'move me', fr: 'm’émouvoir' }, mood: { tone: 62, voice: 80, intensity: 80 } },
   { id: 'cosy', label: { en: 'wrap me up warm', fr: 'me tenir au chaud' }, mood: { tone: 15, intensity: 12, pace: 35 } },

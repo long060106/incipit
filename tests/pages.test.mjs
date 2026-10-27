@@ -342,6 +342,27 @@ describe('a wish in a few words, in the filters', () => {
   });
 });
 
+describe('the answers to "A book to…"', () => {
+  test('"shake me up" shows only the books kept for it, and a mood lets it go', async () => {
+    const { page, problems, close } = await fresh();
+    await page.goto(BASE + '/', { waitUntil: 'load' });
+    await page.getByRole('button', { name: 'Browse the books' }).click();
+    await page.waitForFunction(() => !document.querySelector('.panel')?.inert);
+    const shake = page.getByRole('button', { name: 'shake me up' });
+    const dark = page.getByRole('button', { name: 'take me somewhere dark' });
+    await shake.click();
+    assert.equal(await shake.getAttribute('aria-pressed'), 'true');
+    // Before, it was a mood that let through a third of the catalogue, most of it the same as "dark".
+    const fit = Number((await page.locator('.panel-handle-figure').textContent()).match(/\d+/)[0]);
+    assert.ok(fit >= 20 && fit <= 60, `"shake me up" let ${fit} books through`);
+    await dark.click();
+    assert.equal(await shake.getAttribute('aria-pressed'), 'false');
+    assert.equal(await dark.getAttribute('aria-pressed'), 'true');
+    assert.deepEqual(problems, []);
+    await close();
+  });
+});
+
 describe('the load screen', () => {
   test('is shown when the home page is opened, and on no page inside', async () => {
     const { page, problems, close } = await fresh();

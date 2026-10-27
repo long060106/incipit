@@ -1,3 +1,4 @@
+import { JOLTS } from '../data/jolts';
 import { AXES, ELSEWHERE } from '../data/vocab';
 import type { AxisId, Book, GenreId, KeywordId, Mood } from '../data/types';
 
@@ -24,6 +25,8 @@ export interface Filters {
   freeOnly: boolean;
   /** Only books read to learn something ('learn'), only stories ('story'), or either (null). */
   kind: BookKind | null;
+  /** Only books that overturn how readers see something: the ones kept in `JOLTS`. */
+  jolt: boolean;
   /** The book the reader came from, left out of what is shown "like it, but…". */
   besides: string | null;
   sort: SortId;
@@ -41,6 +44,7 @@ export const EMPTY_FILTERS: Filters = {
   country: null,
   freeOnly: false,
   kind: null,
+  jolt: false,
   besides: null,
   sort: 'match',
 };
@@ -94,6 +98,7 @@ export function countActive(filters: Filters): number {
     (filters.country ? 1 : 0) +
     (filters.freeOnly ? 1 : 0) +
     (filters.kind ? 1 : 0) +
+    (filters.jolt ? 1 : 0) +
     (filters.sort !== 'match' ? 1 : 0)
   );
 }
@@ -126,6 +131,7 @@ function passesHardFilters(book: Book, filters: Filters, query: string): boolean
   if (filters.minRating && ratingOf(book) < filters.minRating) return false;
   if (filters.freeOnly && !book.free) return false;
   if (filters.kind && kindOf(book) !== filters.kind) return false;
+  if (filters.jolt && !JOLTS.has(book.id)) return false;
   if (filters.country) {
     const inCountry =
       filters.country === ELSEWHERE
@@ -168,7 +174,7 @@ export function matchBooks(books: Book[], filters: Filters): MatchResult {
 }
 
 /** What is let go first when filters asked for in a few words leave no book at all; the mood always stays. */
-const LOOSEN: (keyof Filters)[] = ['keywords', 'level', 'era', 'length', 'genre', 'country', 'kind', 'freeOnly', 'query'];
+const LOOSEN: (keyof Filters)[] = ['keywords', 'level', 'era', 'length', 'genre', 'country', 'kind', 'jolt', 'freeOnly', 'query'];
 
 /** The filters, loosened one by one in that order until at least one book fits them. */
 export function loosened(books: Book[], filters: Filters): Filters {

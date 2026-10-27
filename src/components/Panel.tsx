@@ -164,13 +164,13 @@ export function Panel({ active, filters, onChange, countLabel, open, onToggle, o
           </div>
           <div className="quick" role="group" aria-label={t('aBookTo')}>
             {MOOD_PRESETS.map((preset) => {
-              const on = sameMood(filters.mood, preset.mood);
+              const on = preset.jolt ? filters.jolt : !filters.jolt && sameMood(filters.mood, preset.mood);
               return (
                 <button
                   key={preset.id}
                   type="button"
                   aria-pressed={on}
-                  onClick={() => onChange({ ...filters, mood: on ? {} : { ...preset.mood }, kind: null })}
+                  onClick={() => onChange({ ...filters, mood: on ? {} : { ...preset.mood }, jolt: !on && Boolean(preset.jolt), kind: null })}
                 >
                   {PRESET_ICONS[preset.id]}
                   <span>{tl(preset.label)}</span>
@@ -180,7 +180,7 @@ export function Panel({ active, filters, onChange, countLabel, open, onToggle, o
             <button
               type="button"
               aria-pressed={filters.kind === 'learn'}
-              onClick={() => onChange({ ...filters, mood: {}, kind: filters.kind === 'learn' ? null : 'learn' })}
+              onClick={() => onChange({ ...filters, mood: {}, jolt: false, kind: filters.kind === 'learn' ? null : 'learn' })}
             >
               <BookIcon />
               <span>{t('teachMe')}</span>
