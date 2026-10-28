@@ -89,7 +89,7 @@
 */
 
 import { BOOKS } from '../src/data/books';
-import type { Book, L, Mood } from '../src/data/types';
+import { LANGS, type Book, type BookL, type L, type Lang, type Mood } from '../src/data/types';
 import { AXES, GENRES, KEYWORDS, LANGUAGES } from '../src/data/vocab';
 
 export interface Env {
@@ -536,23 +536,37 @@ async function send(env: Env, letter: Letter): Promise<void> {
   }
 }
 
-function resetLetter(link: string, name: string, lang: 'en' | 'fr'): Omit<Letter, 'to'> {
-  const words =
-    lang === 'fr'
-      ? {
-          subject: 'Un nouveau mot de passe pour Incipit',
-          hello: `Bonjour ${name},`,
-          why: 'Quelqu’un, vous sans doute, a demandé un nouveau mot de passe pour votre compte Incipit. Ouvrez ce lien pour le choisir. Il fonctionne une fois, pendant 30 minutes :',
-          button: 'Choisir un nouveau mot de passe',
-          ignore: 'Si vous n’avez rien demandé, ignorez ce message : votre mot de passe reste le même.',
-        }
-      : {
-          subject: 'A new password for Incipit',
-          hello: `Hello ${name},`,
-          why: 'Someone, we hope you, asked for a new password for your Incipit account. Open this link to choose one. It works once, for 30 minutes:',
-          button: 'Choose a new password',
-          ignore: 'If you did not ask, ignore this email: your password stays as it is.',
-        };
+function resetLetter(link: string, name: string, lang: Lang): Omit<Letter, 'to'> {
+  const words = {
+    en: {
+      subject: 'A new password for Incipit',
+      hello: `Hello ${name},`,
+      why: 'Someone, we hope you, asked for a new password for your Incipit account. Open this link to choose one. It works once, for 30 minutes:',
+      button: 'Choose a new password',
+      ignore: 'If you did not ask, ignore this email: your password stays as it is.',
+    },
+    fr: {
+      subject: 'Un nouveau mot de passe pour Incipit',
+      hello: `Bonjour ${name},`,
+      why: 'Quelqu’un, vous sans doute, a demandé un nouveau mot de passe pour votre compte Incipit. Ouvrez ce lien pour le choisir. Il fonctionne une fois, pendant 30 minutes :',
+      button: 'Choisir un nouveau mot de passe',
+      ignore: 'Si vous n’avez rien demandé, ignorez ce message : votre mot de passe reste le même.',
+    },
+    ru: {
+      subject: 'Новый пароль для Incipit',
+      hello: `Здравствуйте, ${name}!`,
+      why: 'Кто-то — надеемся, вы — попросил новый пароль для вашего аккаунта Incipit. Откройте эту ссылку, чтобы выбрать его. Она срабатывает один раз в течение 30 минут:',
+      button: 'Выбрать новый пароль',
+      ignore: 'Если вы ничего не просили, просто не обращайте внимания на это письмо: ваш пароль остаётся прежним.',
+    },
+    vi: {
+      subject: 'Mật khẩu mới cho Incipit',
+      hello: `Chào ${name},`,
+      why: 'Có người, mong là bạn, đã xin mật khẩu mới cho tài khoản Incipit của bạn. Mở đường dẫn này để chọn mật khẩu. Đường dẫn dùng được một lần, trong 30 phút:',
+      button: 'Chọn mật khẩu mới',
+      ignore: 'Nếu bạn không yêu cầu, hãy bỏ qua thư này: mật khẩu của bạn vẫn giữ nguyên.',
+    },
+  }[lang];
   const text = `${words.hello}\n\n${words.why}\n\n${link}\n\n${words.ignore}\n\nIncipit`;
   const html = `<div style="font-family:Georgia,serif;font-size:16px;line-height:1.6;color:#1b1a17;max-width:520px">
 <p>${inText(words.hello)}</p><p>${inText(words.why)}</p>
@@ -573,7 +587,7 @@ async function forgot(request: Request, env: Env, ctx: ExecutionContext): Promis
   if (!(await within(env, request, 'forgot', MAX_FORGOT_PER_DAY))) return refuse(429, 'too-many');
   const body = await bodyOf(request);
   const who = typeof body?.who === 'string' ? body.who.trim().toLowerCase() : '';
-  const lang = body?.lang === 'fr' ? 'fr' : 'en';
+  const lang = LANGS.find((known) => known === body?.lang) ?? 'en';
   const row = NAME.test(who)
     ? await env.DB.prepare('SELECT name, email FROM accounts WHERE name = ?1').bind(who).first<{ name: string; email: string | null }>()
     : EMAIL.test(who)
@@ -1565,7 +1579,7 @@ function bookFrom(value: unknown, id: string): Book | null {
     const clean = typeof text === 'string' ? text.trim() : '';
     return clean.length <= most && (clean || !needed) ? clean : null;
   };
-  const both = (text: unknown, most: number, needed = true): L | null => {
+  const both = (text: unknown, most: number, needed = true): BookL | null => {
     const en = line((text as L | undefined)?.en, most, needed);
     const fr = line((text as L | undefined)?.fr, most, false);
     return en === null || fr === null ? null : { en, fr: fr || en };

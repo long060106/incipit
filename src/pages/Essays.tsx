@@ -18,65 +18,73 @@ import './people.css';
 */
 
 export const ESSAY_TEXT = {
-  eyebrow: { en: 'Essays', fr: 'Essais' },
-  title: { en: 'What readers write', fr: 'Ce qu’écrivent les lecteurs' },
+  eyebrow: { en: 'Essays', fr: 'Essais', ru: 'Эссе', vi: 'Bài luận' },
+  title: { en: 'What readers write', fr: 'Ce qu’écrivent les lecteurs', ru: 'Что пишут читатели', vi: 'Bạn đọc viết gì' },
   lead: {
     en: 'Longer thoughts on the books of the wall, by readers of {site}. The keeper reads each one before it appears.',
     fr: 'Des pensées plus longues sur les livres du mur, par des lecteurs de {site}. Le gardien lit chacune avant qu’elle paraisse.',
+    ru: 'Размышления подлиннее о книгах со стены — от читателей {site}. Хранитель читает каждое, прежде чем оно появится.',
+    vi: 'Những suy nghĩ dài hơn về các cuốn sách trên tường, do bạn đọc của {site} viết. Người giữ sách đọc từng bài trước khi đăng.',
   },
-  write: { en: 'Write an essay', fr: 'Écrire un essai' },
-  on: { en: 'On {title}', fr: 'Sur {title}' },
-  all: { en: 'All essays', fr: 'Tous les essais' },
-  none: { en: 'No essay here yet. Yours could be the first.', fr: 'Aucun essai ici pour l’instant. Le vôtre pourrait être le premier.' },
-  more: { en: 'Older essays', fr: 'Essais plus anciens' },
-  read: { en: '{n} min read', fr: '{n} min de lecture' },
-  by: { en: 'by', fr: 'par' },
-  missing: { en: 'This essay is not here, or not yet.', fr: 'Cet essai n’est pas ici, ou pas encore.' },
+  write: { en: 'Write an essay', fr: 'Écrire un essai', ru: 'Написать эссе', vi: 'Viết bài luận' },
+  on: { en: 'On {title}', fr: 'Sur {title}', ru: 'О книге «{title}»', vi: 'Về {title}' },
+  all: { en: 'All essays', fr: 'Tous les essais', ru: 'Все эссе', vi: 'Mọi bài luận' },
+  none: { en: 'No essay here yet. Yours could be the first.', fr: 'Aucun essai ici pour l’instant. Le vôtre pourrait être le premier.', ru: 'Здесь пока нет эссе. Ваше может стать первым.', vi: 'Chưa có bài luận nào ở đây. Bài của bạn có thể là bài đầu tiên.' },
+  more: { en: 'Older essays', fr: 'Essais plus anciens', ru: 'Более ранние эссе', vi: 'Bài luận cũ hơn' },
+  read: { en: '{n} min read', fr: '{n} min de lecture', ru: '{n} мин чтения', vi: 'Đọc trong {n} phút' },
+  by: { en: 'by', fr: 'par', ru: 'автор:', vi: 'của' },
+  missing: { en: 'This essay is not here, or not yet.', fr: 'Cet essai n’est pas ici, ou pas encore.', ru: 'Этого эссе здесь нет — или пока нет.', vi: 'Bài luận này không có ở đây, hoặc chưa có.' },
   pending: {
     en: 'Waiting for the keeper. Until it is approved, only you can see it.',
     fr: 'En attente du gardien. Tant qu’il n’est pas approuvé, vous seul pouvez le voir.',
+    ru: 'Ждёт хранителя. Пока его не одобрят, видите его только вы.',
+    vi: 'Đang chờ người giữ sách. Khi chưa được duyệt, chỉ bạn thấy bài này.',
   },
-  rejected: { en: 'The keeper did not approve this essay.', fr: 'Le gardien n’a pas approuvé cet essai.' },
-  reason: { en: 'The keeper’s word:', fr: 'Le mot du gardien :' },
-  edit: { en: 'Edit', fr: 'Modifier' },
-  editAgain: { en: 'Edit and send again', fr: 'Modifier et renvoyer' },
-  remove: { en: 'Delete', fr: 'Supprimer' },
-  removeSure: { en: 'Yes, delete it', fr: 'Oui, le supprimer' },
-  cancel: { en: 'Cancel', fr: 'Annuler' },
-  report: { en: 'Report this essay', fr: 'Signaler cet essai' },
+  rejected: { en: 'The keeper did not approve this essay.', fr: 'Le gardien n’a pas approuvé cet essai.', ru: 'Хранитель не одобрил это эссе.', vi: 'Người giữ sách chưa duyệt bài luận này.' },
+  reason: { en: 'The keeper’s word:', fr: 'Le mot du gardien :', ru: 'Слово хранителя:', vi: 'Lời của người giữ sách:' },
+  edit: { en: 'Edit', fr: 'Modifier', ru: 'Изменить', vi: 'Sửa' },
+  editAgain: { en: 'Edit and send again', fr: 'Modifier et renvoyer', ru: 'Изменить и отправить снова', vi: 'Sửa và gửi lại' },
+  remove: { en: 'Delete', fr: 'Supprimer', ru: 'Удалить', vi: 'Xóa' },
+  removeSure: { en: 'Yes, delete it', fr: 'Oui, le supprimer', ru: 'Да, удалить', vi: 'Vâng, xóa đi' },
+  cancel: { en: 'Cancel', fr: 'Annuler', ru: 'Отмена', vi: 'Hủy' },
+  report: { en: 'Report this essay', fr: 'Signaler cet essai', ru: 'Пожаловаться на это эссе', vi: 'Báo cáo bài luận này' },
   reportSure: {
     en: 'Report it to the keeper, who will read it again?',
     fr: 'Le signaler au gardien, qui le relira ?',
+    ru: 'Сообщить хранителю, чтобы он перечитал его?',
+    vi: 'Báo cho người giữ sách để đọc lại bài này?',
   },
-  reportYes: { en: 'Report', fr: 'Signaler' },
-  reported: { en: 'Thank you. The keeper will read it again.', fr: 'Merci. Le gardien le relira.' },
+  reportYes: { en: 'Report', fr: 'Signaler', ru: 'Пожаловаться', vi: 'Báo cáo' },
+  reported: { en: 'Thank you. The keeper will read it again.', fr: 'Merci. Le gardien le relira.', ru: 'Спасибо. Хранитель перечитает его.', vi: 'Cảm ơn bạn. Người giữ sách sẽ đọc lại.' },
   editNote: {
     en: 'Changing it sends it back to the keeper; it is taken down until it is read again.',
     fr: 'Le modifier le renvoie au gardien ; il est retiré jusqu’à ce qu’il soit relu.',
+    ru: 'Изменение отправит его обратно хранителю; до повторной проверки оно будет снято.',
+    vi: 'Sửa bài sẽ gửi nó lại cho người giữ sách; bài sẽ được gỡ xuống cho đến khi được đọc lại.',
   },
-  offline: { en: 'The server could not be reached. Try again in a moment.', fr: 'Le serveur est injoignable. Réessayez dans un instant.' },
-  about: { en: 'About the books', fr: 'Les livres' },
-  readIt: { en: 'Read the essay', fr: 'Lire l’essai' },
-  latest: { en: 'Latest', fr: 'Le plus récent' },
-  deskSign: { en: 'Your essay could begin like this.', fr: 'Votre essai pourrait commencer ainsi.' },
-  comments: { en: '{n} replies', fr: '{n} réponses' },
-  oneComment: { en: '1 reply', fr: '1 réponse' },
+  offline: { en: 'The server could not be reached. Try again in a moment.', fr: 'Le serveur est injoignable. Réessayez dans un instant.', ru: 'Сервер недоступен. Попробуйте ещё раз чуть позже.', vi: 'Không kết nối được máy chủ. Thử lại sau giây lát.' },
+  about: { en: 'About the books', fr: 'Les livres', ru: 'О книгах', vi: 'Về các cuốn sách' },
+  readIt: { en: 'Read the essay', fr: 'Lire l’essai', ru: 'Читать эссе', vi: 'Đọc bài luận' },
+  latest: { en: 'Latest', fr: 'Le plus récent', ru: 'Новое', vi: 'Mới nhất' },
+  deskSign: { en: 'Your essay could begin like this.', fr: 'Votre essai pourrait commencer ainsi.', ru: 'Ваше эссе могло бы начаться так.', vi: 'Bài luận của bạn có thể bắt đầu như thế này.' },
+  comments: { en: '{n} replies', fr: '{n} réponses', ru: 'Ответов: {n}', vi: '{n} phản hồi' },
+  oneComment: { en: '1 reply', fr: '1 réponse', ru: '1 ответ', vi: '1 phản hồi' },
 } satisfies Record<string, L>;
 
 const COMMENT_TEXT = {
-  title: { en: 'Replies', fr: 'Réponses' },
-  none: { en: 'No reply yet. Say what it made you think.', fr: 'Pas encore de réponse. Dites ce qu’il vous a fait penser.' },
-  write: { en: 'Your reply…', fr: 'Votre réponse…' },
-  send: { en: 'Reply', fr: 'Répondre' },
-  signIn: { en: 'Sign in to reply', fr: 'Se connecter pour répondre' },
-  remove: { en: 'Remove', fr: 'Retirer' },
-  removeSure: { en: 'Yes, remove it', fr: 'Oui, la retirer' },
-  cancel: { en: 'Cancel', fr: 'Annuler' },
-  author: { en: 'Author', fr: 'Auteur' },
-  'too-short': { en: 'Write a little more.', fr: 'Écrivez un peu plus.' },
-  'too-long': { en: 'That is longer than 2,000 characters.', fr: 'C’est plus long que 2 000 caractères.' },
-  'too-many': { en: 'That is a great many replies for one day. Try again tomorrow.', fr: 'Cela fait beaucoup de réponses pour un jour. Réessayez demain.' },
-  failed: { en: 'That could not be sent. Try again in a moment.', fr: 'Cela n’a pas pu être envoyé. Réessayez dans un instant.' },
+  title: { en: 'Replies', fr: 'Réponses', ru: 'Ответы', vi: 'Phản hồi' },
+  none: { en: 'No reply yet. Say what it made you think.', fr: 'Pas encore de réponse. Dites ce qu’il vous a fait penser.', ru: 'Ответов пока нет. Скажите, о чём оно заставило вас задуматься.', vi: 'Chưa có phản hồi. Hãy nói bài này khiến bạn nghĩ gì.' },
+  write: { en: 'Your reply…', fr: 'Votre réponse…', ru: 'Ваш ответ…', vi: 'Phản hồi của bạn…' },
+  send: { en: 'Reply', fr: 'Répondre', ru: 'Ответить', vi: 'Trả lời' },
+  signIn: { en: 'Sign in to reply', fr: 'Se connecter pour répondre', ru: 'Войдите, чтобы ответить', vi: 'Đăng nhập để trả lời' },
+  remove: { en: 'Remove', fr: 'Retirer', ru: 'Убрать', vi: 'Gỡ' },
+  removeSure: { en: 'Yes, remove it', fr: 'Oui, la retirer', ru: 'Да, убрать', vi: 'Vâng, gỡ đi' },
+  cancel: { en: 'Cancel', fr: 'Annuler', ru: 'Отмена', vi: 'Hủy' },
+  author: { en: 'Author', fr: 'Auteur', ru: 'Автор', vi: 'Tác giả' },
+  'too-short': { en: 'Write a little more.', fr: 'Écrivez un peu plus.', ru: 'Напишите чуть больше.', vi: 'Viết thêm chút nữa nhé.' },
+  'too-long': { en: 'That is longer than 2,000 characters.', fr: 'C’est plus long que 2 000 caractères.', ru: 'Это длиннее 2000 знаков.', vi: 'Đoạn này dài hơn 2.000 ký tự.' },
+  'too-many': { en: 'That is a great many replies for one day. Try again tomorrow.', fr: 'Cela fait beaucoup de réponses pour un jour. Réessayez demain.', ru: 'Для одного дня ответов очень много. Попробуйте завтра.', vi: 'Một ngày như vậy là quá nhiều phản hồi. Mai hãy thử lại.' },
+  failed: { en: 'That could not be sent. Try again in a moment.', fr: 'Cela n’a pas pu être envoyé. Réessayez dans un instant.', ru: 'Не удалось отправить. Попробуйте ещё раз чуть позже.', vi: 'Chưa gửi được. Thử lại sau giây lát.' },
 } satisfies Record<string, L>;
 
 /** First lines typed out on the empty desk, one after another, as examples of a way in. */
@@ -92,6 +100,18 @@ const DESK_LINES = {
     'Personne ne vous prévient que Moby Dick est drôle.',
     'J’ai lu L’Odyssée trois fois, et chaque fois un autre homme rentrait chez lui.',
     'Ce qui m’a fait peur dans Frankenstein, ce n’était pas la créature.',
+  ],
+  ru: [
+    'Впервые «Джейн Эйр» попала мне в руки, когда мне было столько же лет, сколько ей в красной комнате…',
+    'Никто не предупреждает, что «Моби Дик» — смешная книга.',
+    '«Одиссея» прочитана мной трижды, и каждый раз домой возвращался другой человек.',
+    'Во «Франкенштейне» меня пугало вовсе не чудовище.',
+  ],
+  vi: [
+    'Lần đầu đọc Jane Eyre, tôi bằng tuổi cô bé trong căn phòng đỏ…',
+    'Chẳng ai báo trước rằng Moby-Dick buồn cười.',
+    'Tôi đã đọc Odyssey ba lần, và mỗi lần lại có một người đàn ông khác trở về nhà.',
+    'Điều làm tôi sợ trong Frankenstein không phải là con quái vật.',
   ],
 };
 
@@ -237,7 +257,7 @@ const STILL = () => window.matchMedia('(prefers-reduced-motion: reduce)').matche
  */
 function WritingDesk() {
   const { tl, lang } = useI18n();
-  const lines = DESK_LINES[lang === 'fr' ? 'fr' : 'en'];
+  const lines = DESK_LINES[lang];
   const [typed, setTyped] = useState(() => (STILL() ? lines[0] : ''));
   useEffect(() => {
     if (STILL()) return setTyped(lines[0]);

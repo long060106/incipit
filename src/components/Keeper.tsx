@@ -10,17 +10,17 @@ import { decide, deskKey, useDecided } from '../lib/keeper';
 */
 
 const TEXT = {
-  title: { en: 'Keeper', fr: 'Gardien' },
-  note: { en: 'Only you see this. Changes show for every reader at once.', fr: 'Vous seul voyez ceci. Les changements valent aussitôt pour tous les lecteurs.' },
-  download: { en: 'Offer the PDF download', fr: 'Proposer le téléchargement du PDF' },
-  articles: { en: 'Articles beside this book', fr: 'Articles autour de ce livre' },
-  articleTitle: { en: 'Title of the article', fr: 'Titre de l’article' },
-  articleUrl: { en: 'https://…', fr: 'https://…' },
-  add: { en: 'Add', fr: 'Ajouter' },
-  remove: { en: 'Remove', fr: 'Retirer' },
-  failed: { en: 'Not saved. Check the address and try again.', fr: 'Non enregistré. Vérifiez l’adresse et réessayez.' },
-  locked: { en: 'The desk is locked. Changing a book needs its password.', fr: 'Le bureau est verrouillé. Modifier un livre demande son mot de passe.' },
-  unlock: { en: 'Unlock the desk', fr: 'Déverrouiller le bureau' },
+  title: { en: 'Keeper', fr: 'Gardien', ru: 'Хранитель', vi: 'Người giữ sách' },
+  note: { en: 'Only you see this. Changes show for every reader at once.', fr: 'Vous seul voyez ceci. Les changements valent aussitôt pour tous les lecteurs.', ru: 'Это видите только вы. Изменения сразу видны всем читателям.', vi: 'Chỉ bạn thấy phần này. Thay đổi hiện ngay cho mọi bạn đọc.' },
+  download: { en: 'Offer the PDF download', fr: 'Proposer le téléchargement du PDF', ru: 'Предлагать скачать PDF', vi: 'Cho tải bản PDF' },
+  articles: { en: 'Articles beside this book', fr: 'Articles autour de ce livre', ru: 'Статьи рядом с этой книгой', vi: 'Bài viết bên cạnh cuốn sách này' },
+  articleTitle: { en: 'Title of the article', fr: 'Titre de l’article', ru: 'Название статьи', vi: 'Tên bài viết' },
+  articleUrl: { en: 'https://…', fr: 'https://…', ru: 'https://…', vi: 'https://…' },
+  add: { en: 'Add', fr: 'Ajouter', ru: 'Добавить', vi: 'Thêm' },
+  remove: { en: 'Remove', fr: 'Retirer', ru: 'Убрать', vi: 'Gỡ' },
+  failed: { en: 'Not saved. Check the address and try again.', fr: 'Non enregistré. Vérifiez l’adresse et réessayez.', ru: 'Не сохранено. Проверьте адрес и попробуйте снова.', vi: 'Chưa lưu được. Hãy kiểm tra địa chỉ rồi thử lại.' },
+  locked: { en: 'The desk is locked. Changing a book needs its password.', fr: 'Le bureau est verrouillé. Modifier un livre demande son mot de passe.', ru: 'Стол заперт. Чтобы изменить книгу, нужен пароль.', vi: 'Bàn làm việc đang khóa. Muốn sửa sách cần có mật khẩu.' },
+  unlock: { en: 'Unlock the desk', fr: 'Déverrouiller le bureau', ru: 'Открыть стол', vi: 'Mở khóa bàn làm việc' },
 } satisfies Record<string, L>;
 
 export function Keeper({ bookId, hasPdf }: { bookId: string; hasPdf: boolean }) {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BOOKS } from '../data/books';
-import type { AxisId, Book, GenreId, KeywordId, L, LanguageId, Mood } from '../data/types';
+import type { AxisId, Book, BookL, GenreId, KeywordId, L, LanguageId, Mood } from '../data/types';
 import { AXES, GENRES, KEYWORDS, LANGUAGES } from '../data/vocab';
 import { useI18n } from '../i18n';
 import { shelve, unshelve } from '../lib/added';
@@ -14,36 +14,36 @@ import { withCard } from '../lib/keeper';
 */
 
 const TEXT = {
-  add: { en: 'Add a book', fr: 'Ajouter un livre' },
-  edit: { en: 'Edit this book', fr: 'Modifier ce livre' },
-  title: { en: 'Title', fr: 'Titre' },
-  original: { en: 'Title in the original language (if translated)', fr: 'Titre original (si traduit)' },
-  author: { en: 'Author', fr: 'Auteur' },
-  year: { en: 'Year', fr: 'Année' },
-  pages: { en: 'Pages', fr: 'Pages' },
-  language: { en: 'Written in', fr: 'Langue d’origine' },
-  difficulty: { en: 'Level (1 easy, 5 demanding)', fr: 'Niveau (1 facile, 5 exigeant)' },
-  genres: { en: 'Genres (one to four)', fr: 'Genres (un à quatre)' },
-  keywords: { en: 'Themes (up to eight)', fr: 'Thèmes (huit au plus)' },
-  place: { en: 'Where it is set', fr: 'Lieu de l’histoire' },
-  countries: { en: 'Countries, as two-letter codes (GB, FR) for the globe', fr: 'Pays, en codes à deux lettres (GB, FR) pour le globe' },
-  mood: { en: 'Mood', fr: 'Ambiance' },
-  descriptionEn: { en: 'Description (English)', fr: 'Description (anglais)' },
-  descriptionFr: { en: 'Description (French, optional)', fr: 'Description (français, facultatif)' },
-  pace: { en: 'Pace (optional)', fr: 'Rythme (facultatif)' },
-  headsUp: { en: 'Heads-up (optional)', fr: 'À savoir (facultatif)' },
-  readIf: { en: 'Read it if… (optional)', fr: 'À lire si… (facultatif)' },
-  skipIf: { en: 'Skip it if… (optional)', fr: 'À éviter si… (facultatif)' },
-  cover: { en: 'Cover', fr: 'Couverture' },
-  chooseCover: { en: 'Choose a picture', fr: 'Choisir une image' },
-  coverNote: { en: 'With no picture, a plain cover is made from the title.', fr: 'Sans image, une couverture simple est composée avec le titre.' },
-  save: { en: 'Save the book', fr: 'Enregistrer le livre' },
-  saving: { en: 'Saving…', fr: 'Enregistrement…' },
-  cancel: { en: 'Cancel', fr: 'Annuler' },
-  remove: { en: 'Remove this book from the site', fr: 'Retirer ce livre du site' },
-  sure: { en: 'Remove it, with its cover and its file?', fr: 'Le retirer, avec sa couverture et son fichier ?' },
-  failed: { en: 'Not saved. Check the fields (a genre is needed) and try again.', fr: 'Non enregistré. Vérifiez les champs (il faut un genre) et réessayez.' },
-  fileNext: { en: 'Once saved, open the book in the list below to put a file beside it.', fr: 'Une fois enregistré, ouvrez le livre dans la liste ci-dessous pour y joindre un fichier.' },
+  add: { en: 'Add a book', fr: 'Ajouter un livre', ru: 'Добавить книгу', vi: 'Thêm sách' },
+  edit: { en: 'Edit this book', fr: 'Modifier ce livre', ru: 'Изменить эту книгу', vi: 'Sửa cuốn sách này' },
+  title: { en: 'Title', fr: 'Titre', ru: 'Название', vi: 'Tên sách' },
+  original: { en: 'Title in the original language (if translated)', fr: 'Titre original (si traduit)', ru: 'Название на языке оригинала (если это перевод)', vi: 'Tên theo ngôn ngữ gốc (nếu là sách dịch)' },
+  author: { en: 'Author', fr: 'Auteur', ru: 'Автор', vi: 'Tác giả' },
+  year: { en: 'Year', fr: 'Année', ru: 'Год', vi: 'Năm' },
+  pages: { en: 'Pages', fr: 'Pages', ru: 'Страниц', vi: 'Số trang' },
+  language: { en: 'Written in', fr: 'Langue d’origine', ru: 'Язык оригинала', vi: 'Ngôn ngữ gốc' },
+  difficulty: { en: 'Level (1 easy, 5 demanding)', fr: 'Niveau (1 facile, 5 exigeant)', ru: 'Сложность (1 — легко, 5 — требует усилий)', vi: 'Độ khó (1 dễ, 5 cần chú tâm)' },
+  genres: { en: 'Genres (one to four)', fr: 'Genres (un à quatre)', ru: 'Жанры (от одного до четырёх)', vi: 'Thể loại (một đến bốn)' },
+  keywords: { en: 'Themes (up to eight)', fr: 'Thèmes (huit au plus)', ru: 'Темы (до восьми)', vi: 'Chủ đề (tối đa tám)' },
+  place: { en: 'Where it is set', fr: 'Lieu de l’histoire', ru: 'Место действия', vi: 'Bối cảnh' },
+  countries: { en: 'Countries, as two-letter codes (GB, FR) for the globe', fr: 'Pays, en codes à deux lettres (GB, FR) pour le globe', ru: 'Страны, двухбуквенными кодами (GB, FR), для глобуса', vi: 'Các nước, theo mã hai chữ cái (GB, FR), cho quả địa cầu' },
+  mood: { en: 'Mood', fr: 'Ambiance', ru: 'Настроение', vi: 'Tâm trạng' },
+  descriptionEn: { en: 'Description (English)', fr: 'Description (anglais)', ru: 'Описание (английский)', vi: 'Mô tả (tiếng Anh)' },
+  descriptionFr: { en: 'Description (French, optional)', fr: 'Description (français, facultatif)', ru: 'Описание (французский, необязательно)', vi: 'Mô tả (tiếng Pháp, không bắt buộc)' },
+  pace: { en: 'Pace (optional)', fr: 'Rythme (facultatif)', ru: 'Темп (необязательно)', vi: 'Nhịp truyện (không bắt buộc)' },
+  headsUp: { en: 'Heads-up (optional)', fr: 'À savoir (facultatif)', ru: 'Имейте в виду (необязательно)', vi: 'Lưu ý (không bắt buộc)' },
+  readIf: { en: 'Read it if… (optional)', fr: 'À lire si… (facultatif)', ru: 'Читайте, если… (необязательно)', vi: 'Hãy đọc nếu… (không bắt buộc)' },
+  skipIf: { en: 'Skip it if… (optional)', fr: 'À éviter si… (facultatif)', ru: 'Пропустите, если… (необязательно)', vi: 'Bỏ qua nếu… (không bắt buộc)' },
+  cover: { en: 'Cover', fr: 'Couverture', ru: 'Обложка', vi: 'Bìa' },
+  chooseCover: { en: 'Choose a picture', fr: 'Choisir une image', ru: 'Выбрать картинку', vi: 'Chọn ảnh' },
+  coverNote: { en: 'With no picture, a plain cover is made from the title.', fr: 'Sans image, une couverture simple est composée avec le titre.', ru: 'Без картинки обложка будет простой, из названия.', vi: 'Nếu không có ảnh, một bìa trơn sẽ được làm từ tên sách.' },
+  save: { en: 'Save the book', fr: 'Enregistrer le livre', ru: 'Сохранить книгу', vi: 'Lưu sách' },
+  saving: { en: 'Saving…', fr: 'Enregistrement…', ru: 'Сохранение…', vi: 'Đang lưu…' },
+  cancel: { en: 'Cancel', fr: 'Annuler', ru: 'Отмена', vi: 'Hủy' },
+  remove: { en: 'Remove this book from the site', fr: 'Retirer ce livre du site', ru: 'Убрать эту книгу с сайта', vi: 'Gỡ cuốn sách này khỏi trang' },
+  sure: { en: 'Remove it, with its cover and its file?', fr: 'Le retirer, avec sa couverture et son fichier ?', ru: 'Убрать её вместе с обложкой и файлом?', vi: 'Gỡ đi, cùng với bìa và tệp của nó?' },
+  failed: { en: 'Not saved. Check the fields (a genre is needed) and try again.', fr: 'Non enregistré. Vérifiez les champs (il faut un genre) et réessayez.', ru: 'Не сохранено. Проверьте поля (нужен жанр) и попробуйте снова.', vi: 'Chưa lưu được. Hãy kiểm tra các ô (cần một thể loại) rồi thử lại.' },
+  fileNext: { en: 'Once saved, open the book in the list below to put a file beside it.', fr: 'Une fois enregistré, ouvrez le livre dans la liste ci-dessous pour y joindre un fichier.', ru: 'После сохранения откройте книгу в списке ниже, чтобы положить рядом файл.', vi: 'Lưu xong, hãy mở cuốn sách trong danh sách bên dưới để đặt tệp bên cạnh.' },
 } satisfies Record<string, L>;
 
 const API = `${import.meta.env.BASE_URL}api`;
@@ -126,7 +126,7 @@ export function BookForm({ code, book, onDone, onCancel }: { code: string; book?
     try {
       const id = book?.id ?? slug(title, author);
       // French is left to follow the English wherever the keeper wrote none.
-      const said = (text: string, before?: L) => ({ en: text.trim(), fr: before && before.en === text.trim() ? before.fr : '' });
+      const said = (text: string, before?: BookL) => ({ en: text.trim(), fr: before && before.en === text.trim() ? before.fr : '' });
       const entry = {
         title,
         originalTitle: original,

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type MouseEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from 'react';
+import { LANGS } from '../data/types';
 import { SITE_NAME, useI18n } from '../i18n';
 import { useCard } from '../lib/card';
 import { PAGE_LINKS, pageUrl } from '../pages/PageHeader';
@@ -18,9 +19,33 @@ interface HeaderProps {
 export function Header({ theme, showHome, onToggleTheme, onOpenIndex, onHome }: HeaderProps) {
   const { t, lang, setLang } = useI18n();
   const { card: mine } = useCard();
-  // On a narrow screen the links to the other pages fold into one menu.
+  // When the links to the other pages do not fit beside the name, they fold into one menu.
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLElement>(null);
+  // The width the bar needs to show every link. Each language has its own, measured with the
+  // links out before the page is drawn, and again once the typefaces have come.
+  const [need, setNeed] = useState(0);
+  const [measuring, setMeasuring] = useState(true);
+  const [width, setWidth] = useState(() => window.innerWidth);
+  const folded = !measuring && width < need;
+
+  useLayoutEffect(() => setMeasuring(true), [lang, mine?.name]);
+  useLayoutEffect(() => {
+    const bar = barRef.current;
+    if (!measuring || !bar) return;
+    const actions = bar.querySelector('.header-actions')!;
+    const mark = bar.querySelector('.wordmark')!;
+    const style = getComputedStyle(bar);
+    setNeed(actions.scrollWidth + mark.getBoundingClientRect().width + parseFloat(style.paddingLeft) + parseFloat(style.paddingRight) + 16);
+    setMeasuring(false);
+  }, [measuring]);
+  useEffect(() => {
+    const resize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', resize);
+    void document.fonts?.ready.then(() => setMeasuring(true));
+    return () => window.removeEventListener('resize', resize);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -59,7 +84,7 @@ export function Header({ theme, showHome, onToggleTheme, onOpenIndex, onHome }: 
   );
 
   return (
-    <header className="header">
+    <header className="header" ref={barRef} data-folded={folded || undefined}>
       <button type="button" className="wordmark" onClick={onHome} aria-label={t('backToIntro')} inert={!showHome}>
         {SITE_NAME}
       </button>
@@ -72,12 +97,11 @@ export function Header({ theme, showHome, onToggleTheme, onOpenIndex, onHome }: 
           {menuOpen && <div className="header-menu-list">{links}</div>}
         </div>
         <div className="lang" role="group" aria-label={t('language')} data-lang={lang}>
-          <button type="button" lang="en" aria-pressed={lang === 'en'} onClick={() => setLang('en')}>
-            EN
-          </button>
-          <button type="button" lang="fr" aria-pressed={lang === 'fr'} onClick={() => setLang('fr')}>
-            FR
-          </button>
+          {LANGS.map((code) => (
+            <button key={code} type="button" lang={code} aria-pressed={lang === code} onClick={() => setLang(code)}>
+              {code.toUpperCase()}
+            </button>
+          ))}
         </div>
         <button
           type="button"

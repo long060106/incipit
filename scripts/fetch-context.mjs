@@ -69,7 +69,8 @@ const BY = {
 const DATE = /^(\d{1,4}s?( BC)?|\d{1,2}(st|nd|rd|th) century( BC)?|(january|february|march|april|may|june|july|august|september|october|november|december) \d{4})$/i;
 const BROAD = new Set(['love', 'friendship', 'death', 'orphan', 'anguish', 'murder', 'divorce', 'dream', 'prince', 'sea', 'tea', 'history', 'philosophy', 'ethics', 'nature', 'adolescence', 'childhood', 'biography', 'politics', 'psychology', 'self-discovery', 'social class', 'human rights', 'racism', 'diaspora', 'hell', 'heaven', 'purgatory', 'time travel', 'far future', "children's game", 'hypochondriasis', 'feral child', 'dinosaur', 'strike', 'human migration', 'genocide', 'class struggle', 'caste', 'political science']);
 
-const catalogue = await readFile(join(ROOT, 'src', 'data', 'books.ts'), 'utf8');
+// Line ends as Git on Windows writes them (\r\n) are read as \n.
+const catalogue = (await readFile(join(ROOT, 'src', 'data', 'books.ts'), 'utf8')).replaceAll('\r\n', '\n');
 const BOOKS = [...catalogue.matchAll(/\n    id: '([^']+)'[\s\S]*?(?=\n  \{\n    id:|\n\];)/g)].map(([entry, id]) => ({
   id,
   title: /\n    title: (['"])(.*?)\1,\n/.exec(entry)[2].replaceAll("\\'", "'"),
@@ -97,7 +98,7 @@ async function entities(ids, props) {
   const found = {};
   const list = [...new Set(ids)];
   for (let at = 0; at < list.length; at += 50) {
-    const data = await ask('www.wikidata.org', { action: 'wbgetentities', ids: list.slice(at, at + 50).join('|'), props, languages: 'en|fr|mul', sitefilter: 'enwiki|frwiki' });
+    const data = await ask('www.wikidata.org', { action: 'wbgetentities', ids: list.slice(at, at + 50).join('|'), props, languages: 'en|fr|ru|vi|mul', sitefilter: 'enwiki|frwiki|ruwiki|viwiki' });
     if (data.error) console.warn(`  Wikidata refused a batch: ${data.error.code} ${data.error.info}`);
     Object.assign(found, data.entities ?? {});
     await pause(500);
@@ -108,10 +109,11 @@ async function entities(ids, props) {
 const targets = (entity, property) =>
   (entity?.claims?.[property] ?? []).map((claim) => claim.mainsnak?.datavalue?.value?.id).filter(Boolean);
 
+const LANGS = ['en', 'fr', 'ru', 'vi'];
+
 const pages = (entity) => {
-  const en = entity?.sitelinks?.enwiki?.title;
-  const fr = entity?.sitelinks?.frwiki?.title;
-  return en || fr ? { ...(en ? { en } : {}), ...(fr ? { fr } : {}) } : null;
+  const found = Object.fromEntries(LANGS.map((lang) => [lang, entity?.sitelinks?.[`${lang}wiki`]?.title]).filter(([, title]) => title));
+  return found.en || found.fr ? found : null;
 };
 
 // --- 1. Wikidata
@@ -166,7 +168,13 @@ const wanted = [...new Set([...Object.values(TOPICS).flat(), ...Object.values(OW
 const wiki = new Map();
 for (let at = 0; at < wanted.length; at += 40) {
   const batch = wanted.slice(at, at + 40);
-  const data = await ask('en.wikipedia.org', { action: 'query', titles: batch.join('|'), redirects: '1', prop: 'langlinks|pageprops', ppprop: 'disambiguation', lllang: 'fr', lllimit: '500' });
+  const data = await ask('en.wikipedia.org', { action: 'query', titles: batch.join('|'), redirects: '1', prop: 'pageprops', ppprop: 'disambiguation' });
+  // The same article in the other languages, one language at a time (Wikipedia gives one per question).
+  const other = {};
+  for (const lang of LANGS.slice(1)) {
+    const links = await ask('en.wikipedia.org', { action: 'query', titles: batch.join('|'), redirects: '1', prop: 'langlinks', lllang: lang, lllimit: '500' });
+    for (const page of links.query.pages) if (page.langlinks?.[0]) (other[page.title] ??= {})[lang] = page.langlinks[0].title;
+  }
   const renamed = new Map([...(data.query.normalized ?? []), ...(data.query.redirects ?? [])].map((step) => [step.from, step.to]));
   const found = new Map(data.query.pages.map((page) => [page.title, page]));
   for (const title of batch) {
@@ -177,8 +185,7 @@ for (let at = 0; at < wanted.length; at += 40) {
       console.warn(`  left out, not an article on Wikipedia: "${title}"`);
       continue;
     }
-    const fr = page.langlinks?.[0]?.title;
-    wiki.set(title, { en: page.title, ...(fr ? { fr } : {}) });
+    wiki.set(title, { en: page.title, ...other[page.title] });
   }
   await pause(500);
 }
@@ -205,7 +212,7 @@ for (const book of BOOKS) {
   };
   for (const title of TOPICS[book.id] ?? []) {
     const page = wiki.get(title);
-    if (page) add({ en: plain(page.en), fr: plain(page.fr ?? page.en) }, page);
+    if (page) add(Object.fromEntries(LANGS.map((lang) => [lang, plain(page[lang] ?? page.en)])), page);
   }
   // Where the editorial list says little, Wikidata adds the period and at most two places.
   // Its "main subjects" are left alone: too many are words like "happiness".
@@ -218,7 +225,7 @@ for (const book of BOOKS) {
       const en = labels.en?.value ?? labels.mul?.value ?? labels.fr?.value;
       if (!page || !en || DATE.test(en) || BROAD.has(en.toLowerCase())) continue;
       if (property === 'P840' && (places += 1) > 2) continue;
-      add({ en: en[0].toUpperCase() + en.slice(1), fr: (labels.fr?.value ?? en).replace(/^./, (letter) => letter.toUpperCase()) }, page);
+      add(Object.fromEntries(LANGS.map((lang) => [lang, (labels[lang]?.value ?? en).replace(/^./, (letter) => letter.toUpperCase())])), page);
     }
   }
   if (setting.length) entry.setting = setting;
@@ -230,13 +237,15 @@ await writeFile(
   `// Written by scripts/fetch-context.mjs. Do not edit by hand.
 //
 // Wikipedia articles around each book: the book, its author, and the history and places
-// behind the story. \`en\` and \`fr\` are article titles.
+// behind the story. \`en\`, \`fr\`, \`ru\` and \`vi\` are article titles.
 
 import type { L } from './types';
 
 export interface WikiPage {
   en?: string;
   fr?: string;
+  ru?: string;
+  vi?: string;
 }
 
 export interface Around {

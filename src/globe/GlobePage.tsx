@@ -17,21 +17,23 @@ import './globe.css';
 */
 
 const TEXT = {
-  title: { en: 'Where shall we read?', fr: 'Où lire, ce soir ?' },
+  title: { en: 'Where shall we read?', fr: 'Où lire, ce soir ?', ru: 'Где сегодня почитаем?', vi: 'Tối nay ta đọc ở đâu?' },
   lead: {
     en: '{books} books set in {countries} countries. Turn the globe and choose one, or move through time below.',
     fr: '{books} livres situés dans {countries} pays. Tournez le globe et choisissez, ou parcourez le temps ci-dessous.',
+    ru: 'Книг: {books}, их действие происходит в странах: {countries}. Поверните глобус и выберите одну или пройдите сквозь время ниже.',
+    vi: '{books} cuốn sách lấy bối cảnh ở {countries} quốc gia. Xoay quả địa cầu và chọn một nơi, hoặc đi xuyên thời gian ở bên dưới.',
   },
-  eraLead: { en: '{books} books set in {countries} countries.', fr: '{books} livres situés dans {countries} pays.' },
-  most: { en: 'Most books', fr: 'Les mieux garnis' },
-  one: { en: '1 book set here', fr: '1 livre situé ici' },
-  many: { en: '{n} books set here', fr: '{n} livres situés ici' },
-  none: { en: 'No book here yet', fr: 'Aucun livre ici pour le moment' },
-  noneThen: { en: 'No book set here in these years', fr: 'Aucun livre situé ici à cette époque' },
-  back: { en: 'The whole globe', fr: 'Tout le globe' },
-  allTime: { en: 'All time', fr: 'Toutes les époques' },
-  time: { en: 'When the story is set', fr: 'L’époque du récit' },
-  hint: { en: 'Drag to turn · scroll to come closer', fr: 'Glissez pour tourner · défilez pour approcher' },
+  eraLead: { en: '{books} books set in {countries} countries.', fr: '{books} livres situés dans {countries} pays.', ru: 'Книг: {books}, стран: {countries}.', vi: '{books} cuốn sách lấy bối cảnh ở {countries} quốc gia.' },
+  most: { en: 'Most books', fr: 'Les mieux garnis', ru: 'Больше всего книг', vi: 'Nhiều sách nhất' },
+  one: { en: '1 book set here', fr: '1 livre situé ici', ru: 'Здесь происходит 1 книга', vi: '1 cuốn sách lấy bối cảnh ở đây' },
+  many: { en: '{n} books set here', fr: '{n} livres situés ici', ru: 'Книг, действие которых здесь: {n}', vi: '{n} cuốn sách lấy bối cảnh ở đây' },
+  none: { en: 'No book here yet', fr: 'Aucun livre ici pour le moment', ru: 'Здесь пока нет книг', vi: 'Chưa có cuốn sách nào ở đây' },
+  noneThen: { en: 'No book set here in these years', fr: 'Aucun livre situé ici à cette époque', ru: 'В эти годы здесь не происходит ни одна книга', vi: 'Chưa có cuốn sách nào lấy bối cảnh ở đây vào những năm này' },
+  back: { en: 'The whole globe', fr: 'Tout le globe', ru: 'Весь глобус', vi: 'Cả quả địa cầu' },
+  allTime: { en: 'All time', fr: 'Toutes les époques', ru: 'Все времена', vi: 'Mọi thời' },
+  time: { en: 'When the story is set', fr: 'L’époque du récit', ru: 'Когда происходит действие', vi: 'Thời điểm câu chuyện diễn ra' },
+  hint: { en: 'Drag to turn · scroll to come closer', fr: 'Glissez pour tourner · défilez pour approcher', ru: 'Тяните, чтобы вращать · прокручивайте, чтобы приблизить', vi: 'Kéo để xoay · cuộn để lại gần' },
 } satisfies Record<string, L>;
 
 const PLACED = BOOKS.filter((book) => book.setting.countries.length);

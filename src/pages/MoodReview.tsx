@@ -14,21 +14,23 @@ import { bookUrl, coverUrl } from '../lib/links';
 */
 
 const TEXT = {
-  title: { en: 'Look the moods over', fr: 'Revoir les ambiances' },
+  title: { en: 'Look the moods over', fr: 'Revoir les ambiances', ru: 'Просмотреть настроения', vi: 'Xem lại các tâm trạng' },
   note: {
     en: 'Move a slider where a book’s mood is wrong, then mark it looked over. The books not yet looked over come first.',
     fr: 'Déplacez un curseur là où l’ambiance d’un livre est fausse, puis marquez-le comme revu. Les livres pas encore revus viennent en premier.',
+    ru: 'Сдвиньте ползунок там, где настроение книги неверно, затем отметьте её как просмотренную. Непросмотренные книги идут первыми.',
+    vi: 'Kéo một thanh nếu tâm trạng của sách chưa đúng, rồi đánh dấu là đã xem. Những cuốn chưa xem đứng trước.',
   },
-  progress: { en: '{done} of {all} looked over', fr: '{done} sur {all} revus' },
-  onlyLeft: { en: 'Only those not yet looked over', fr: 'Seulement ceux pas encore revus' },
-  save: { en: 'Save, looked over', fr: 'Enregistrer, revu' },
-  saved: { en: 'Looked over', fr: 'Revu' },
-  back: { en: 'Back to the catalogue’s', fr: 'Revenir à celle du catalogue' },
-  failed: { en: 'Not saved. Is the desk still open?', fr: 'Non enregistré. Le bureau est-il encore ouvert ?' },
-  more: { en: 'Show more', fr: 'Afficher plus' },
-  done: { en: 'Every book has been looked over.', fr: 'Tous les livres ont été revus.' },
-  close: { en: 'Close', fr: 'Fermer' },
-  open: { en: 'Open its page', fr: 'Ouvrir sa page' },
+  progress: { en: '{done} of {all} looked over', fr: '{done} sur {all} revus', ru: 'Просмотрено: {done} из {all}', vi: 'Đã xem {done} trên {all}' },
+  onlyLeft: { en: 'Only those not yet looked over', fr: 'Seulement ceux pas encore revus', ru: 'Только непросмотренные', vi: 'Chỉ những cuốn chưa xem' },
+  save: { en: 'Save, looked over', fr: 'Enregistrer, revu', ru: 'Сохранить как просмотренную', vi: 'Lưu, đã xem' },
+  saved: { en: 'Looked over', fr: 'Revu', ru: 'Просмотрено', vi: 'Đã xem' },
+  back: { en: 'Back to the catalogue’s', fr: 'Revenir à celle du catalogue', ru: 'Вернуть настроение каталога', vi: 'Trở về tâm trạng của danh mục' },
+  failed: { en: 'Not saved. Is the desk still open?', fr: 'Non enregistré. Le bureau est-il encore ouvert ?', ru: 'Не сохранено. Стол ещё открыт?', vi: 'Chưa lưu được. Bàn làm việc còn mở không?' },
+  more: { en: 'Show more', fr: 'Afficher plus', ru: 'Показать ещё', vi: 'Xem thêm' },
+  done: { en: 'Every book has been looked over.', fr: 'Tous les livres ont été revus.', ru: 'Все книги просмотрены.', vi: 'Mọi cuốn sách đều đã được xem.' },
+  close: { en: 'Close', fr: 'Fermer', ru: 'Закрыть', vi: 'Đóng' },
+  open: { en: 'Open its page', fr: 'Ouvrir sa page', ru: 'Открыть его страницу', vi: 'Mở trang của bài' },
 } satisfies Record<string, L>;
 
 const STEP = 20;

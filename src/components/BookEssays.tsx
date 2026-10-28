@@ -12,10 +12,10 @@ import { Avatar } from './Avatar';
 */
 
 const TEXT = {
-  title: { en: 'Essays', fr: 'Essais' },
-  none: { en: 'No reader has written an essay on this book yet.', fr: 'Aucun lecteur n’a encore écrit d’essai sur ce livre.' },
-  write: { en: 'Write about this book', fr: 'Écrire sur ce livre' },
-  all: { en: 'Every essay on this book', fr: 'Tous les essais sur ce livre' },
+  title: { en: 'Essays', fr: 'Essais', ru: 'Эссе', vi: 'Bài luận' },
+  none: { en: 'No reader has written an essay on this book yet.', fr: 'Aucun lecteur n’a encore écrit d’essai sur ce livre.', ru: 'Об этой книге ещё никто не написал эссе.', vi: 'Chưa có bạn đọc nào viết bài luận về cuốn sách này.' },
+  write: { en: 'Write about this book', fr: 'Écrire sur ce livre', ru: 'Написать об этой книге', vi: 'Viết về cuốn sách này' },
+  all: { en: 'Every essay on this book', fr: 'Tous les essais sur ce livre', ru: 'Все эссе об этой книге', vi: 'Mọi bài luận về cuốn sách này' },
 } satisfies Record<string, L>;
 
 const SHOWN = 3;

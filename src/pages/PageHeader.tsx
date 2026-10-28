@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
+import { LANGS } from '../data/types';
 import { SITE_NAME, useI18n } from '../i18n';
 import { useCard } from '../lib/card';
 import { runLoader } from '../lib/loader';
@@ -49,12 +50,11 @@ export function PageHeader({ here, children }: { here?: PageId; children?: React
         </a>
         {children}
         <div className="lang" role="group" aria-label={t('language')} data-lang={lang}>
-          <button type="button" lang="en" aria-pressed={lang === 'en'} onClick={() => setLang('en')}>
-            EN
-          </button>
-          <button type="button" lang="fr" aria-pressed={lang === 'fr'} onClick={() => setLang('fr')}>
-            FR
-          </button>
+          {LANGS.map((code) => (
+            <button key={code} type="button" lang={code} aria-pressed={lang === code} onClick={() => setLang(code)}>
+              {code.toUpperCase()}
+            </button>
+          ))}
         </div>
       </nav>
     </header>

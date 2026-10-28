@@ -1,7 +1,17 @@
-export type Lang = 'en' | 'fr';
+export type Lang = 'en' | 'fr' | 'ru' | 'vi';
+
+/** The interface languages, in the order the switch shows them. */
+export const LANGS: readonly Lang[] = ['en', 'fr', 'ru', 'vi'];
 
 /** A string in every interface language. */
 export type L = Record<Lang, string>;
+
+/**
+ * Words written for one book. English and French are written with the book; Russian and
+ * Vietnamese come from books.ru.ts and books.vi.ts once one of them is loaded, and English
+ * stands in for a book they do not cover.
+ */
+export type BookL = Pick<L, 'en' | 'fr'> & Partial<L>;
 
 export type AxisId = 'tone' | 'voice' | 'intensity' | 'pace' | 'strange';
 
@@ -97,7 +107,7 @@ export interface Book {
   genres: GenreId[];
   keywords: KeywordId[];
   setting: {
-    place: L;
+    place: BookL;
     /** ISO country codes; empty when the book is set nowhere on Earth in particular. */
     countries: string[];
   };
@@ -120,9 +130,9 @@ export interface Book {
     /** Path of the Standard Ebooks edition, when there is one. */
     standardEbooks?: string;
     /** Said beside the download when the free edition is not the whole book. */
-    note?: L;
+    note?: BookL;
     /** Other free editions worth pointing to: the original language, another translation. */
-    also?: { label: L; url: string }[];
+    also?: { label: BookL; url: string }[];
   };
   /** Internet Archive id of an English copy that can be borrowed online, when there is one. */
   borrow?: string;
@@ -130,16 +140,16 @@ export interface Book {
    * For an old book whose English translation is still in copyright: free legal texts in
    * the language it was written in.
    */
-  original?: { label: L; url: string }[];
+  original?: { label: BookL; url: string }[];
   /** Set on a book the keeper added from the desk (/admin) rather than one of the catalogue's. */
   added?: true;
   /** For an added book: when its cover was last kept, to tell one cover's address from the next. */
   coverAt?: number;
-  description: L;
+  description: BookL;
   advice: {
-    pace: L;
-    headsUp: L;
-    readIf: L;
-    skipIf: L;
+    pace: BookL;
+    headsUp: BookL;
+    readIf: BookL;
+    skipIf: BookL;
   };
 }

@@ -15,28 +15,34 @@ import './first-pages.css';
 */
 
 const TEXT = {
-  eyebrow: { en: 'A first page', fr: 'Une première page' },
-  turn: { en: 'Turn it over', fr: 'Retourner la page' },
-  another: { en: 'Another voice', fr: 'Une autre voix' },
-  readOn: { en: 'Read on', fr: 'Lire la suite' },
-  about: { en: 'About this book', fr: 'À propos du livre' },
-  introTitle: { en: 'Choose a book by its voice', fr: 'Choisir un livre à sa voix' },
+  eyebrow: { en: 'A first page', fr: 'Une première page', ru: 'Первая страница', vi: 'Một trang đầu' },
+  turn: { en: 'Turn it over', fr: 'Retourner la page', ru: 'Перевернуть', vi: 'Lật trang' },
+  another: { en: 'Another voice', fr: 'Une autre voix', ru: 'Другой голос', vi: 'Một giọng khác' },
+  readOn: { en: 'Read on', fr: 'Lire la suite', ru: 'Читать дальше', vi: 'Đọc tiếp' },
+  about: { en: 'About this book', fr: 'À propos du livre', ru: 'Об этой книге', vi: 'Về cuốn sách này' },
+  introTitle: { en: 'Choose a book by its voice', fr: 'Choisir un livre à sa voix', ru: 'Выбрать книгу по голосу', vi: 'Chọn sách qua giọng văn' },
   introLead: {
     en: 'A cover and a famous name decide for you before you have read a word. Here you meet a book the other way round: by its first lines alone, drawn at random.',
     fr: 'Une couverture et un nom célèbre décident à votre place avant que vous ayez lu un mot. Ici, on rencontre un livre à l’envers : par ses seules premières lignes, tirées au hasard.',
+    ru: 'Обложка и громкое имя решают за вас ещё до того, как вы прочли хоть слово. Здесь вы знакомитесь с книгой наоборот: только по её первым строкам, выпавшим случайно.',
+    vi: 'Một tấm bìa và một cái tên nổi tiếng quyết định thay bạn trước khi bạn đọc chữ nào. Ở đây bạn gặp cuốn sách theo chiều ngược lại: chỉ qua những dòng đầu tiên, rút ngẫu nhiên.',
   },
-  step1: { en: 'Read the first lines. Nothing tells you what the book is.', fr: 'Lisez les premières lignes. Rien ne dit de quel livre il s’agit.' },
-  step2: { en: 'If the voice does not hold you, ask for another.', fr: 'Si la voix ne vous retient pas, demandez-en une autre.' },
+  step1: { en: 'Read the first lines. Nothing tells you what the book is.', fr: 'Lisez les premières lignes. Rien ne dit de quel livre il s’agit.', ru: 'Прочитайте первые строки. Ничто не подскажет, что это за книга.', vi: 'Đọc những dòng đầu. Không gì cho bạn biết đó là sách nào.' },
+  step2: { en: 'If the voice does not hold you, ask for another.', fr: 'Si la voix ne vous retient pas, demandez-en une autre.', ru: 'Если голос вас не держит, попросите другой.', vi: 'Nếu giọng văn không giữ được bạn, hãy xin một giọng khác.' },
   step3: {
     en: 'If it does, turn the page over to see the book, and read on from the very next line.',
     fr: 'Si elle vous retient, retournez la page pour découvrir le livre, et lisez la suite dès la ligne suivante.',
+    ru: 'Если держит — переверните страницу, чтобы увидеть книгу, и читайте дальше с той самой следующей строки.',
+    vi: 'Nếu giữ được, hãy lật trang để xem đó là cuốn nào, rồi đọc tiếp ngay từ dòng kế tiếp.',
   },
-  introNote: { en: '{n} books to meet, all free to read here.', fr: '{n} livres à rencontrer, tous en lecture libre ici.' },
-  begin: { en: 'Show me a first page', fr: 'Montrez-moi une première page' },
-  how: { en: 'How this works', fr: 'Comment ça marche' },
+  introNote: { en: '{n} books to meet, all free to read here.', fr: '{n} livres à rencontrer, tous en lecture libre ici.', ru: 'Книг для знакомства: {n}, все бесплатно читаются здесь.', vi: '{n} cuốn sách để làm quen, tất cả đều đọc miễn phí ở đây.' },
+  begin: { en: 'Show me a first page', fr: 'Montrez-moi une première page', ru: 'Покажите первую страницу', vi: 'Cho tôi xem một trang đầu' },
+  how: { en: 'How this works', fr: 'Comment ça marche', ru: 'Как это устроено', vi: 'Cách hoạt động' },
   hint: {
     en: 'No cover, no name. If the voice holds you, turn the page over.',
     fr: 'Ni couverture, ni nom. Si la voix vous retient, retournez la page.',
+    ru: 'Ни обложки, ни имени. Если голос вас держит, переверните страницу.',
+    vi: 'Không bìa, không tên. Nếu giọng văn giữ được bạn, hãy lật trang.',
   },
 } satisfies Record<string, L>;
 

@@ -10,21 +10,25 @@ import { withCard } from '../lib/keeper';
 */
 
 const TEXT = {
-  title: { en: 'Readers’ accounts', fr: 'Comptes des lecteurs' },
-  none: { en: 'No reader has made an account yet.', fr: 'Aucun lecteur n’a encore créé de compte.' },
+  title: { en: 'Readers’ accounts', fr: 'Comptes des lecteurs', ru: 'Аккаунты читателей', vi: 'Tài khoản bạn đọc' },
+  none: { en: 'No reader has made an account yet.', fr: 'Aucun lecteur n’a encore créé de compte.', ru: 'Пока ни один читатель не создал аккаунт.', vi: 'Chưa có bạn đọc nào tạo tài khoản.' },
   note: {
     en: 'A reader who has forgotten their password can be given a new one. Their notebook is kept; their devices are signed out.',
     fr: 'Un lecteur qui a oublié son mot de passe peut en recevoir un nouveau. Son carnet est conservé ; ses appareils sont déconnectés.',
+    ru: 'Читателю, забывшему пароль, можно выдать новый. Его блокнот сохранится; на его устройствах будет выполнен выход.',
+    vi: 'Bạn đọc quên mật khẩu có thể được cấp mật khẩu mới. Sổ tay của họ vẫn còn; các thiết bị của họ sẽ bị đăng xuất.',
   },
-  reset: { en: 'Give a new password', fr: 'Donner un nouveau mot de passe' },
-  sure: { en: 'Yes, reset', fr: 'Oui, redéfinir' },
-  cancel: { en: 'Cancel', fr: 'Annuler' },
+  reset: { en: 'Give a new password', fr: 'Donner un nouveau mot de passe', ru: 'Выдать новый пароль', vi: 'Cấp mật khẩu mới' },
+  sure: { en: 'Yes, reset', fr: 'Oui, redéfinir', ru: 'Да, сбросить', vi: 'Vâng, đặt lại' },
+  cancel: { en: 'Cancel', fr: 'Annuler', ru: 'Отмена', vi: 'Hủy' },
   made: {
     en: 'New password for {name}, shown once. Send it to the reader:',
     fr: 'Nouveau mot de passe pour {name}, montré une seule fois. Transmettez-le au lecteur :',
+    ru: 'Новый пароль для {name}, показывается один раз. Отправьте его читателю:',
+    vi: 'Mật khẩu mới cho {name}, chỉ hiện một lần. Hãy gửi cho bạn đọc:',
   },
-  failed: { en: 'That could not be done.', fr: 'Cela n’a pas pu être fait.' },
-  close: { en: 'Close', fr: 'Fermer' },
+  failed: { en: 'That could not be done.', fr: 'Cela n’a pas pu être fait.', ru: 'Не получилось.', vi: 'Không làm được.' },
+  close: { en: 'Close', fr: 'Fermer', ru: 'Закрыть', vi: 'Đóng' },
 } satisfies Record<string, L>;
 
 const API = `${import.meta.env.BASE_URL}api`;

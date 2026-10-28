@@ -6,9 +6,10 @@
   try {
     var theme = localStorage.getItem('incipit:theme');
     if (theme === 'day' || theme === 'night') root.dataset.theme = theme;
+    var langs = ['en', 'fr', 'ru', 'vi'];
     var lang = localStorage.getItem('incipit:lang');
-    if (!lang) lang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
-    root.lang = lang === 'fr' ? 'fr' : 'en';
+    if (!lang) lang = (navigator.language || 'en').toLowerCase().slice(0, 2);
+    root.lang = langs.indexOf(lang) >= 0 ? lang : 'en';
   } catch (e) {}
   // The load screen is for opening the home page from outside: by its address, a link, or a reload.
   // Not on the pages inside, and not on coming back to the home page from one of them (the same

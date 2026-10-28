@@ -90,15 +90,15 @@ export const settingYear = (book: Book) => SET_IN[book.id] ?? book.year;
 
 /** The stops of the globe's timeline: each runs from the one before it up to `until`. */
 export const ERAS: { until: number; label: L }[] = [
-  { until: 500, label: { en: 'Antiquity', fr: 'Antiquité' } },
-  { until: 1500, label: { en: 'Middle Ages', fr: 'Moyen Âge' } },
-  { until: 1700, label: { en: '1500–1700', fr: '1500–1700' } },
-  { until: 1800, label: { en: '1700–1800', fr: '1700–1800' } },
-  { until: 1850, label: { en: '1800–1850', fr: '1800–1850' } },
-  { until: 1900, label: { en: '1850–1900', fr: '1850–1900' } },
-  { until: 1945, label: { en: '1900–1945', fr: '1900–1945' } },
-  { until: 2000, label: { en: '1945–2000', fr: '1945–2000' } },
-  { until: Infinity, label: { en: '2000–today', fr: '2000–aujourd’hui' } },
+  { until: 500, label: { en: 'Antiquity', fr: 'Antiquité', ru: 'Античность', vi: 'Thời cổ đại' } },
+  { until: 1500, label: { en: 'Middle Ages', fr: 'Moyen Âge', ru: 'Средние века', vi: 'Trung cổ' } },
+  { until: 1700, label: { en: '1500–1700', fr: '1500–1700', ru: '1500–1700', vi: '1500–1700' } },
+  { until: 1800, label: { en: '1700–1800', fr: '1700–1800', ru: '1700–1800', vi: '1700–1800' } },
+  { until: 1850, label: { en: '1800–1850', fr: '1800–1850', ru: '1800–1850', vi: '1800–1850' } },
+  { until: 1900, label: { en: '1850–1900', fr: '1850–1900', ru: '1850–1900', vi: '1850–1900' } },
+  { until: 1945, label: { en: '1900–1945', fr: '1900–1945', ru: '1900–1945', vi: '1900–1945' } },
+  { until: 2000, label: { en: '1945–2000', fr: '1945–2000', ru: '1945–2000', vi: '1945–2000' } },
+  { until: Infinity, label: { en: '2000–today', fr: '2000–aujourd’hui', ru: '2000–наши дни', vi: '2000–nay' } },
 ];
 
 export const eraOf = (book: Book) => ERAS.findIndex((era) => settingYear(book) < era.until);

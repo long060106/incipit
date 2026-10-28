@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { BOOKS } from '../data/books';
-import type { Book, KeywordId, Mood } from '../data/types';
+import type { Book, KeywordId, Lang, Mood } from '../data/types';
 import { AXES, DIFFICULTY, GENRES, KEYWORDS, LANGUAGES } from '../data/vocab';
 import { useI18n } from '../i18n';
 import { READABLE } from '../data/texts';
@@ -18,6 +18,9 @@ import { BookEssays } from './BookEssays';
 import { Readers } from './Readers';
 import { CloseIcon, DownloadIcon, ExternalIcon } from './Icons';
 import { Roll } from './Roll';
+
+/** How numbers are written in each interface language. */
+const LOCALES: Record<Lang, string> = { en: 'en-GB', fr: 'fr-FR', ru: 'ru-RU', vi: 'vi-VN' };
 
 interface BookSheetProps {
   book: Book;
@@ -124,7 +127,7 @@ export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMoo
     // Deliberately keyed on the book alone: `origin` is read as it was when that book opened.
   }, [book.id]);
 
-  const locale = lang === 'fr' ? 'fr-FR' : 'en-GB';
+  const locale = LOCALES[lang];
   const number = (n: number) => n.toLocaleString(locale);
   const year =
     book.year < 0

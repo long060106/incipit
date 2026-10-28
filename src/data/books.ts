@@ -8,7 +8,12 @@ import type { Book, L } from './types';
 // nor a link to one.
 
 const wikisource = (lang: string, title: string) => `https://${lang}.wikisource.org/wiki/${encodeURIComponent(title.replaceAll(' ', '_'))}`;
-const IN_FRENCH: L = { en: 'In French: the original text (Wikisource)', fr: 'En français : le texte original (Wikisource)' };
+const IN_FRENCH: L = {
+  en: 'In French: the original text (Wikisource)',
+  fr: 'En français : le texte original (Wikisource)',
+  ru: 'На французском: оригинальный текст (Wikisource)',
+  vi: 'Bằng tiếng Pháp: nguyên bản (Wikisource)',
+};
 
 export const BOOKS: Book[] = [
   {

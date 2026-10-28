@@ -855,6 +855,7 @@
 .header-link {
   padding: 0.5rem 0.75rem;
   font-size: 0.9375rem;
+  white-space: nowrap;
 }
 
 .header-link:hover {
@@ -872,7 +873,7 @@ a.header-link {
   gap: 0.25rem;
 }
 
-/* On a narrow screen the same links hang from one button. */
+/* When they do not fit beside the name (Header.tsx measures), the same links hang from one button. */
 .header-menu {
   position: relative;
   display: none;
@@ -904,14 +905,12 @@ a.header-link {
   }
 }
 
-@media (max-width: 860px) {
-  .header-links {
-    display: none;
-  }
+.header[data-folded] .header-links {
+  display: none;
+}
 
-  .header-menu {
-    display: block;
-  }
+.header[data-folded] .header-menu {
+  display: block;
 }
 
 .lang {
@@ -936,7 +935,7 @@ a.header-link {
   color: var(--text);
 }
 
-/* One underline that slides between the two languages. */
+/* One underline that slides between the languages. */
 .lang::after {
   content: '';
   position: absolute;
@@ -950,6 +949,14 @@ a.header-link {
 
 .lang[data-lang='fr']::after {
   transform: translateX(var(--lang-w));
+}
+
+.lang[data-lang='ru']::after {
+  transform: translateX(calc(var(--lang-w) * 2));
+}
+
+.lang[data-lang='vi']::after {
+  transform: translateX(calc(var(--lang-w) * 3));
 }
 
 /* The sun or moon turns into place when the room changes. */

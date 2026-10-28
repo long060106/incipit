@@ -25,6 +25,21 @@
   --display-tracking: 0;
 }
 
+/*
+  Instrument Serif has no Russian and no Vietnamese letters: a title in those languages would be
+  set in two faces at once. There the titles keep Brygada 1918, which has both, at its own sizes.
+*/
+:root[data-type='plate']:not([data-keep]):is(:lang(ru), :lang(vi)) {
+  --font-display: 'Brygada 1918', Georgia, 'Times New Roman', serif;
+  --display-scale: 0.9;
+  --display-tracking: -0.015em;
+}
+
+/* Nor has Hanken Grotesk the Russian letters: in Russian the plain text is the system's own sans. */
+:root:lang(ru) {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
 :root[data-type='plate'] {
   --font-label: 'Geist Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
 }
