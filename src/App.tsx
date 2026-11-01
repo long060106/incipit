@@ -11,7 +11,6 @@ import { BOOKS, BOOKS_BY_ID } from './data/books';
 import type { KeywordId, Mood } from './data/types';
 import { useI18n } from './i18n';
 import { Light } from './lib/light';
-import { runLoader } from './lib/loader';
 import { bookUrl } from './lib/links';
 import { EMPTY_FILTERS, matchBooks, type Filters } from './lib/match';
 import type { CellState, CoverOrigin } from './lib/wall';
@@ -40,10 +39,14 @@ const cameFromInside = () => {
 
 /** How long the glide between the hero and the gallery takes over its full distance. */
 const TRAVEL_MS = 5200;
+/** The same glide when the reader has said what they want from the first page, and is waiting for it. */
+const WISH_TRAVEL_MS = 2000;
 /** How long the page takes to open itself on arrival, if the reader does not scroll first. */
 const OPENING_MS = 2000;
-/** How soon after the load screen it starts. */
+/** How soon after the first screen is ready it starts. */
 const OPENING_DELAY_MS = 250;
+/** The most the page waits for the display face and the two hands before it opens with what it has. */
+const FIRST_SCREEN_MS = 1200;
 /** How many screens of scroll the opening takes (the scroll track in base.css is this much taller). */
 const OPENING_SCREENS = 3;
 /**
@@ -307,8 +310,8 @@ export default function App() {
     return () => NARROW.removeEventListener('change', reset);
   }, []);
 
-  // Hold the opening sequence until the load screen has counted in the display face and the
-  // pictures of the first screen, so the name rises in its real letterforms.
+  // Hold the opening sequence for the display face and the two hands, so the name rises in its
+  // real letterforms between them, but never for long: the page does not make the reader wait.
   useEffect(() => {
     let cancelled = false;
     let selfOpen = 0;
@@ -334,10 +337,11 @@ export default function App() {
         };
       }, OPENING_DELAY_MS);
     };
-    const stopLoader = runLoader(start);
+    const hands = [...document.querySelectorAll<HTMLImageElement>('.hand img')];
+    const firstScreen = Promise.all([document.fonts.ready, ...hands.map((hand) => hand.decode().catch(() => {}))]);
+    void Promise.race([firstScreen, new Promise((done) => window.setTimeout(done, FIRST_SCREEN_MS))]).then(start);
     return () => {
       cancelled = true;
-      stopLoader();
       window.clearTimeout(selfOpen);
     };
   }, [opening]);
@@ -538,7 +542,7 @@ export default function App() {
   const scrollPage = useCallback((dy: number) => window.scrollBy(0, dy), []);
 
   /** Glides the page to `to`, taking time in proportion to the distance. */
-  const travelTo = useCallback((to: number) => {
+  const travelTo = useCallback((to: number, fullDistanceMs = TRAVEL_MS) => {
     const max = maxScroll();
     const distance = Math.abs(to - window.scrollY);
     if (prefersReducedMotion() || max <= 1 || distance < 2) {
@@ -549,7 +553,7 @@ export default function App() {
       from: window.scrollY,
       to,
       start: performance.now(),
-      duration: Math.max(1100, TRAVEL_MS * (distance / max)),
+      duration: Math.max(1100, fullDistanceMs * (distance / max)),
     };
   }, []);
 
@@ -608,6 +612,15 @@ export default function App() {
 
   const resetFilters = useCallback(() => setFilters(EMPTY_FILTERS), []);
 
+  // A wish made on the first page: the wall answers it, and the page goes there.
+  const wish = useCallback(
+    (wanted: Partial<Filters>) => {
+      setFilters({ ...EMPTY_FILTERS, ...wanted });
+      travelTo(maxScroll(), WISH_TRAVEL_MS);
+    },
+    [travelTo],
+  );
+
   return (
     <>
       <div className="scroll-track" data-opening={opening ? 'window' : undefined} aria-hidden="true" />
@@ -635,7 +648,13 @@ export default function App() {
           onOpen={openBook}
           onPageScroll={scrollPage}
         />
-        <Intro active={inHero && opened && !dialogOpen} onBrowse={goToGallery} wordRef={wordRef} />
+        <Intro
+          active={inHero && opened && !dialogOpen}
+          onBrowse={goToGallery}
+          onWish={wish}
+          onSurprise={surprise}
+          wordRef={wordRef}
+        />
         <Header
           theme={theme}
           showHome={!inHero}

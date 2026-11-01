@@ -18,7 +18,6 @@ html:not(.is-reading)::-webkit-scrollbar {
   display: none;
 }
 
-html.is-loading,
 html.is-locked {
   overflow: hidden;
 }

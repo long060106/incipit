@@ -7,7 +7,7 @@ import { useCard } from '../lib/card';
 import { bookUrl, coverUrl } from '../lib/links';
 import { essays, essayUrl, isProblem, MAX_COMMENT, minutes, personUrl, writeUrl, type Comment, type Essay, type EssaySummary } from '../lib/people';
 import { Prose } from '../lib/prose';
-import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { PageHeader, pageUrl } from './PageHeader';
 import './people.css';
 
 /*
@@ -122,7 +122,6 @@ const day = (time: number, lang: string) => new Date(time).toLocaleDateString(la
 
 export default function Essays() {
   const id = location.pathname.split('/')[2];
-  useQuickLoader();
   return (
     <div className="people-page">
       <PageHeader here="essays" />

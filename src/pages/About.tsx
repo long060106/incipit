@@ -5,7 +5,7 @@ import type { L } from '../data/types';
 import { SITE_NAME, useI18n } from '../i18n';
 import { portraitUrl, useProfile } from '../lib/profile';
 import { installIncipits } from './incipits';
-import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { PageHeader, pageUrl } from './PageHeader';
 import './about.css';
 
 /*
@@ -94,7 +94,6 @@ const paragraphs = (text: string) =>
 
 export default function About() {
   const { t, tl } = useI18n();
-  useQuickLoader();
   const [{ profile, portraitAt }] = useProfile();
   const why = paragraphs(profile.why);
   const about = paragraphs(profile.about);

@@ -4,7 +4,7 @@ import { useI18n } from '../i18n';
 import { card, useCard } from '../lib/card';
 import { personUrl, writeUrl } from '../lib/people';
 import { CardPanel } from '../notes/CardPanel';
-import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { PageHeader, pageUrl } from './PageHeader';
 import { installThreads } from './threads';
 import '../notes/notes.css';
 import './signin.css';
@@ -152,7 +152,6 @@ const nameFromEmail = (email: string) =>
 export default function SignIn() {
   const { tl } = useI18n();
   const { card: mine } = useCard();
-  useQuickLoader();
   const claiming = location.hash.startsWith('#claim=');
   const [resetToken, setResetToken] = useState(() => /^#reset=([0-9a-f]{64})$/.exec(location.hash)?.[1] ?? null);
   const [justReset, setJustReset] = useState(false);

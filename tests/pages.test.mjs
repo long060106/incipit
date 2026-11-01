@@ -348,8 +348,8 @@ describe('the answers to "A book to…"', () => {
     await page.goto(BASE + '/', { waitUntil: 'load' });
     await page.getByRole('button', { name: 'Browse the books' }).click();
     await page.waitForFunction(() => !document.querySelector('.panel')?.inert);
-    const shake = page.getByRole('button', { name: 'shake me up' });
-    const dark = page.getByRole('button', { name: 'take me somewhere dark' });
+    const shake = page.locator('.panel').getByRole('button', { name: 'shake me up' });
+    const dark = page.locator('.panel').getByRole('button', { name: 'take me somewhere dark' });
     await shake.click();
     assert.equal(await shake.getAttribute('aria-pressed'), 'true');
     // Before, it was a mood that let through a third of the catalogue, most of it the same as "dark".
@@ -363,30 +363,26 @@ describe('the answers to "A book to…"', () => {
   });
 });
 
-describe('the load screen', () => {
-  test('is shown when the home page is opened, and on no page inside', async () => {
+describe('the first page', () => {
+  test('has no load screen, on arrival or on any page inside', async () => {
     const { page, problems, close } = await fresh();
-    const shown = () =>
-      page.evaluate(() => {
-        const loader = document.getElementById('loader');
-        return !!loader && getComputedStyle(loader).display !== 'none';
-      });
-    // The home page, opened by its address.
-    await page.goto(BASE + '/', { waitUntil: 'commit' });
-    await page.waitForSelector('#loader', { state: 'attached' });
-    assert.equal(await shown(), true, 'the home page had no load screen');
-    // A page inside, opened by its address: none.
-    await page.goto(BASE + '/about', { waitUntil: 'domcontentloaded' });
-    assert.equal(await shown(), false, 'an inner page showed the load screen');
-    // Back to the home page from inside: none.
-    await page.locator('.page-wordmark').click();
-    await page.waitForURL(BASE + '/');
-    await page.waitForSelector('#root > *');
-    assert.equal(await shown(), false, 'coming back home showed the load screen');
-    // The home page opened by its address again: shown again, as at any arrival.
-    await page.goto(BASE + '/', { waitUntil: 'commit' });
-    await page.waitForSelector('#loader', { state: 'attached' });
-    assert.equal(await shown(), true, 'the load screen was gone on a second arrival');
+    for (const path of ['/', '/about']) {
+      await page.goto(BASE + path, { waitUntil: 'commit' });
+      await page.waitForSelector('#root > *');
+      assert.equal(await page.locator('#loader').count(), 0, `${path} had a load screen`);
+    }
+    assert.deepEqual(problems, []);
+    await close();
+  });
+
+  test('a mood pressed under the name goes to the wall with that mood set', async () => {
+    const { page, problems, close } = await fresh();
+    await page.goto(BASE + '/', { waitUntil: 'load' });
+    const mood = page.locator('.hero-quick button').first();
+    await mood.click({ timeout: 15000 });
+    await page.waitForFunction(() => document.querySelector('.stage').dataset.gallery === 'true', null, { timeout: 8000 });
+    const panel = page.locator('.panel .quick').getByRole('button', { name: await mood.textContent() });
+    assert.equal(await panel.getAttribute('aria-pressed'), 'true');
     assert.deepEqual(problems, []);
     await close();
   });

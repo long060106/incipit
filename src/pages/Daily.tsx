@@ -6,7 +6,7 @@ import { SITE_NAME, useI18n } from '../i18n';
 import { DAILY_BOOKS, drawCard, isOver, isWon, loadGame, saveGame, shareText, splitOpening, squares, streak, todayNumber, TRIES, type DayGame } from '../lib/daily';
 import { bookUrl, coverUrl } from '../lib/links';
 import { fold } from '../lib/match';
-import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { PageHeader, pageUrl } from './PageHeader';
 import './first-pages.css';
 import './daily.css';
 
@@ -70,7 +70,6 @@ const yearOf = (book: Book) => (book.year < 0 ? `${-book.year} BC` : String(book
 
 export default function Daily() {
   const { tl } = useI18n();
-  useQuickLoader();
   const no = useMemo(() => todayNumber(), []);
   const [game, setGame] = useState<DayGame>(() => loadGame(no));
   const book = BY_ID.get(game.book)!;

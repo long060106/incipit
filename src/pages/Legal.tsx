@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { L } from '../data/types';
 import { useI18n } from '../i18n';
-import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { PageHeader, pageUrl } from './PageHeader';
 import './legal.css';
 
 /*
@@ -256,7 +256,6 @@ const TERMS: Doc = {
 
 function Legal({ doc, other }: { doc: Doc; other: { id: 'privacy' | 'terms'; label: L } }) {
   const { tl } = useI18n();
-  useQuickLoader();
   const para = (text: L, key: number): ReactNode => <p key={key}>{tl(text)}</p>;
   return (
     <div className="legal">

@@ -10,7 +10,7 @@ import { isProblem, MAX_BIO, people, TONES, toneOf, writeUrl, type EssayStatus, 
 import type { Mark } from '../lib/shelf';
 import { MarkStars } from '../notes/MarkStars';
 import { EssayCard } from './Essays';
-import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { PageHeader, pageUrl } from './PageHeader';
 import '../notes/notes.css';
 import './people.css';
 
@@ -64,7 +64,6 @@ const BY_ID = new Map(BOOKS.map((book) => [book.id, book]));
 export default function Person() {
   const { t, tl } = useI18n();
   const { card: mine } = useCard();
-  useQuickLoader();
   const name = decodeURIComponent(location.pathname.split('/')[2] ?? '').toLowerCase();
   const [person, setPerson] = useState<PersonData | null | 'missing' | 'offline'>(null);
 

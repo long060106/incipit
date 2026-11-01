@@ -34,7 +34,7 @@ const SORTS: { id: Exclude<SortId, 'match'>; label: StringKey }[] = [
   { id: 'rating', label: 'sortRating' },
   { id: 'popular', label: 'sortPopular' },
 ];
-const PRESET_ICONS: Record<MoodPresetId, ReactNode> = {
+export const PRESET_ICONS: Record<MoodPresetId, ReactNode> = {
   feelgood: <SunIcon />,
   edgy: <BoltIcon />,
   think: <BulbIcon />,
@@ -48,6 +48,24 @@ const sameMood = (a: Partial<Mood>, b: Partial<Mood>) => {
   const keys = Object.keys(a) as AxisId[];
   return keys.length === Object.keys(b).length && keys.every((axis) => a[axis] === b[axis]);
 };
+
+/** "Surprise me": each press rolls the die once, and the book opens as it comes to rest. */
+export function SurpriseButton({ onSurprise }: { onSurprise: () => void }) {
+  const { t } = useI18n();
+  const [rolls, setRolls] = useState(0);
+  const surprise = () => {
+    setRolls((n) => n + 1);
+    window.setTimeout(onSurprise, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : ROLL_MS);
+  };
+  return (
+    <button type="button" className="quick-surprise" onClick={surprise}>
+      <span className="die" key={rolls} data-rolled={rolls > 0 || undefined}>
+        <DiceIcon />
+      </span>
+      <span>{t('surpriseMe')}</span>
+    </button>
+  );
+}
 
 interface PanelProps {
   /** False during the intro, when the panel is still invisible and must not take focus. */
@@ -68,12 +86,6 @@ interface PanelProps {
 export function Panel({ active, filters, onChange, countLabel, open, onToggle, onSurprise }: PanelProps) {
   const { t, tl, lang } = useI18n();
   const [allThemes, setAllThemes] = useState(false);
-  // Each press of "surprise me" rolls the die once, and the book opens as it comes to rest.
-  const [rolls, setRolls] = useState(0);
-  const surprise = () => {
-    setRolls((n) => n + 1);
-    window.setTimeout(onSurprise, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : ROLL_MS);
-  };
   const activeCount = countActive(filters);
 
   // Fine-tuning opens by itself when something set elsewhere (a book's mood, a theme, a nudge)
@@ -185,12 +197,7 @@ export function Panel({ active, filters, onChange, countLabel, open, onToggle, o
               <BookIcon />
               <span>{t('teachMe')}</span>
             </button>
-            <button type="button" className="quick-surprise" onClick={surprise}>
-              <span className="die" key={rolls} data-rolled={rolls > 0 || undefined}>
-                <DiceIcon />
-              </span>
-              <span>{t('surpriseMe')}</span>
-            </button>
+            <SurpriseButton onSurprise={onSurprise} />
           </div>
           <label className="check">
             <input type="checkbox" checked={filters.freeOnly} onChange={(event) => set('freeOnly', event.target.checked)} />

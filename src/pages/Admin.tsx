@@ -28,7 +28,7 @@ import { reads } from '../lib/kepttext';
 import { bookLinks, bookUrl } from '../lib/links';
 import { fold } from '../lib/match';
 import { BookForm } from './BookForm';
-import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { PageHeader, pageUrl } from './PageHeader';
 import { AccountsDesk } from './AccountsDesk';
 import { EssayDesk } from './EssayDesk';
 import { MoodReview } from './MoodReview';
@@ -244,7 +244,6 @@ function Door({ code, choosing, changingFrom, onOpen, onCancel }: { code: string
 export default function Admin() {
   const { tl } = useI18n();
   const { card } = useCard();
-  useQuickLoader();
   useDecided();
   const [files, setFiles] = useState<Record<string, KeptFile>>({});
   const [query, setQuery] = useState('');

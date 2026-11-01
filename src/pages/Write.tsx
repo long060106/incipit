@@ -8,7 +8,7 @@ import { fold } from '../lib/match';
 import { essays, essayUrl, isProblem, MAX_ESSAY, MAX_QUOTED, MAX_TITLE, MIN_ESSAY, personUrl, quotedLength, type Essay, type Problem } from '../lib/people';
 import { Prose } from '../lib/prose';
 import { booksOf } from './Essays';
-import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { PageHeader, pageUrl } from './PageHeader';
 import '../notes/notes.css';
 import './people.css';
 
@@ -100,7 +100,6 @@ const readDraft = (): Draft | null => {
 export default function Write() {
   const { tl } = useI18n();
   const { card: mine } = useCard();
-  useQuickLoader();
   const asked = new URLSearchParams(location.search);
   const id = asked.get('id');
 

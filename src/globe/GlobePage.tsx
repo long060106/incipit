@@ -5,7 +5,7 @@ import type { Book, L } from '../data/types';
 import { countryName } from '../data/vocab';
 import { useI18n } from '../i18n';
 import { bookUrl, coverUrl } from '../lib/links';
-import { PageHeader, useQuickLoader } from '../pages/PageHeader';
+import { PageHeader } from '../pages/PageHeader';
 import { createGlobe, type GlobeHandle } from './globe';
 import { installSky } from './sky';
 import './globe.css';
@@ -44,7 +44,6 @@ const year = (book: Book) => {
 
 export default function GlobePage() {
   const { lang, tl } = useI18n();
-  useQuickLoader();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<GlobeHandle | null>(null);

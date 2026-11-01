@@ -9,7 +9,7 @@ import { useShelf, type Mark } from '../lib/shelf';
 import { fileIdOf, fileMarks, LOOSE, type Folder } from '../notes/folders';
 import { MarkStars } from '../notes/MarkStars';
 import { bookOf, markLine, markUrl, NOTE_TEXT, NoteEntry } from '../notes/notes';
-import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { PageHeader, pageUrl } from './PageHeader';
 import './notebook.css';
 
 /*
@@ -76,7 +76,6 @@ const count = (template: string, values: Record<string, number>) => Object.entri
 export default function Notebook() {
   const { tl } = useI18n();
   const shelf = useShelf();
-  useQuickLoader();
 
   const marks = shelf.marks();
   const looseName = tl(NOTE_TEXT.thoughts);

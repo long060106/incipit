@@ -2,7 +2,6 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { LANGS } from '../data/types';
 import { SITE_NAME, useI18n } from '../i18n';
 import { useCard } from '../lib/card';
-import { runLoader } from '../lib/loader';
 import './pages.css';
 
 export type PageId = 'first-pages' | 'daily' | 'globe' | 'notebook' | 'essays' | 'about' | 'signin';
@@ -17,11 +16,6 @@ export const PAGE_LINKS: { id: Exclude<PageId, 'signin'>; label: 'navFirst' | 'n
 ];
 
 export const pageUrl = (id: PageId | 'privacy' | 'terms' | '') => `${import.meta.env.BASE_URL}${id}`;
-
-/** The load screen of index.html is not shown on the inner pages: this takes it off at once. */
-export function useQuickLoader() {
-  useEffect(() => runLoader(() => undefined), []);
-}
 
 /** The bar across the top of the inner pages: the name leads home, then the other pages. */
 export function PageHeader({ here, children }: { here?: PageId; children?: ReactNode }) {

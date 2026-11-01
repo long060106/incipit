@@ -4,7 +4,7 @@ import { OPENINGS } from '../data/openings';
 import type { L } from '../data/types';
 import { useI18n } from '../i18n';
 import { bookUrl, coverUrl } from '../lib/links';
-import { PageHeader, pageUrl, useQuickLoader } from './PageHeader';
+import { PageHeader, pageUrl } from './PageHeader';
 import './first-pages.css';
 
 /*
@@ -60,7 +60,6 @@ function shuffled<T>(list: T[]): T[] {
 
 export default function FirstPages() {
   const { tl } = useI18n();
-  useQuickLoader();
   const order = useMemo(() => shuffled(Object.keys(OPENINGS).filter((id) => BY_ID.has(id) && OPENINGS[id].lines.length)), []);
   const [at, setAt] = useState(0);
   const [turned, setTurned] = useState(false);

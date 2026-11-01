@@ -37,69 +37,17 @@
       rel="stylesheet"
     />
     <style>
-      /* The load screen. It is here, not in the stylesheet, so it paints before anything else arrives. */
-      #loader {
-        position: fixed;
-        inset: 0;
-        z-index: 100;
-        display: grid;
-        place-content: center;
-        justify-items: center;
-        gap: 16px;
+      /* The page's own colour, here and not in the stylesheet: the stylesheet comes with the site's code. */
+      html {
         background: #0c0c0d;
-        color: #ece8df;
-        transition: opacity 0.9s ease, visibility 0s 0.9s;
       }
-      html.no-loader #loader {
-        display: none;
-      }
-      [data-theme='day'] #loader {
+      [data-theme='day'] {
         background: #f4f0e8;
-        color: #1b1a17;
-      }
-      #loader[data-done] {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-      }
-      .loader-figure {
-        font: 400 1.25rem / 1 'Brygada 1918', Georgia, serif;
-        font-variant-numeric: tabular-nums lining-nums;
-        letter-spacing: 0.04em;
-        opacity: 0.82;
-      }
-      .loader-unit {
-        margin-left: 0.2em;
-        font-size: 0.62em;
-        vertical-align: 0.38em;
-        opacity: 0.6;
-      }
-      .loader-bar {
-        position: relative;
-        width: min(620px, 72vw);
-        height: 1px;
-        background: color-mix(in srgb, currentColor 16%, transparent);
-      }
-      .loader-bar::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: #c9a45c;
-        transform: scaleX(var(--loaded, 0));
-        transform-origin: left;
-      }
-      [data-theme='day'] .loader-bar::after {
-        background: #7a1f2b;
       }
     </style>
     <script src="/boot/theme.js"></script>
   </head>
   <body>
-    <div id="loader" role="status" aria-label="Loading">
-      <span class="loader-figure" aria-hidden="true"><span class="loader-count">0</span><span class="loader-unit">%</span></span>
-      <span class="loader-bar" aria-hidden="true"></span>
-    </div>
-    <script src="/boot/loader.js"></script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

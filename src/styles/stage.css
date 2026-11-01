@@ -572,11 +572,11 @@
 
 .hero-def {
   max-width: 46rem;
-  /* The word's tight line box lets its descender hang below; leave room for it. */
-  margin-top: calc(var(--hero-size) * 0.14 + 0.75rem);
+  margin-top: clamp(1rem, 2.4vh, 1.75rem);
+  color: var(--muted);
   font-family: var(--font-display);
   font-weight: var(--display-weight);
-  font-size: calc(clamp(1.2rem, 1.9vw, 1.7rem) * var(--display-scale));
+  font-size: calc(clamp(1.05rem, 1.5vw, 1.35rem) * var(--display-scale));
   line-height: 1.2;
 }
 
@@ -600,9 +600,34 @@
 
 .hero-actions {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 50rem);
+  /* The word's tight line box lets its descender hang below; leave room for it. */
+  margin-top: calc(var(--hero-size) * 0.14 + 0.75rem);
+}
+
+.hero-ask {
+  margin: 0 0 0.625rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.quick.hero-quick {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+}
+
+/* The answers stand over the covers and the arms, so each carries a little of the page behind it. */
+.hero-quick button {
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+}
+
+.hero-browse {
+  display: flex;
   align-items: center;
   gap: 1rem;
-  margin-top: clamp(2rem, 4vw, 3.25rem);
+  margin-top: clamp(0.875rem, 2vh, 1.25rem);
 }
 
 .stage[data-scene='hero'] .hero-actions {
@@ -612,6 +637,12 @@
 .hero-hint {
   color: var(--muted);
   font-size: 0.9375rem;
+}
+
+@media (max-width: 640px) {
+  .quick.hero-quick {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* The line of credit at the foot of the first page. */
@@ -729,11 +760,11 @@
   }
 }
 
-.stage[data-ready] .hero-def {
+.stage[data-ready] .hero-actions {
   animation: settle-in 1s var(--ease-out) 0.85s backwards;
 }
 
-.stage[data-ready] .hero-actions {
+.stage[data-ready] .hero-def {
   animation: settle-in 1s var(--ease-out) 1.05s backwards;
 }
 
@@ -1418,7 +1449,7 @@ a.header-link {
     --h: 42vh;
   }
 
-  .hero-actions {
+  .hero-browse {
     flex-direction: column;
     gap: 0.75rem;
   }

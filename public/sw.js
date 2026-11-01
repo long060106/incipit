@@ -14,8 +14,8 @@
 const VERSION = 'incipit-1';
 const KEPT = ['/assets/', '/covers/', '/cursors/', '/hero/', '/geo/', '/icons/', '/texts/'];
 const FONTS = ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'];
-/** The two small scripts every page runs before its code (public/boot): they may change under the same name. */
-const BOOT = ['/boot/theme.js', '/boot/loader.js'];
+/** The small script every page runs before its code (public/boot): it may change under the same name. */
+const BOOT = ['/boot/theme.js'];
 /** The built code and styles of every page. The build writes the list in (vite.config.ts). */
 const BUILT = /*BUILT*/ [];
 /** The covers of the catalogue, written in the same way. */

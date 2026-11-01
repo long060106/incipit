@@ -10,7 +10,7 @@ import { fileMarks } from '../notes/folders';
 import { bookOf, markLine, markUrl, NOTE_TEXT, NoteEntry, TiePicker } from '../notes/notes';
 import type { Mark } from '../lib/shelf';
 import { bookUrl } from '../lib/links';
-import { pageUrl, useQuickLoader } from '../pages/PageHeader';
+import { pageUrl } from '../pages/PageHeader';
 import { installAmbience } from './ambience';
 import { installConstellation, type Constellation } from './constellation';
 import { sceneOf } from './scenes';
@@ -106,7 +106,6 @@ const hashPlace = () => {
 export default function ReaderPage() {
   const { tl } = useI18n();
   const shelf = useShelf();
-  useQuickLoader();
   // Elsewhere the site hides the page's scrollbar; a book needs one to take hold of.
   useEffect(() => {
     document.documentElement.classList.add('is-reading');
