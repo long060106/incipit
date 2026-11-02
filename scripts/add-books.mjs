@@ -29,6 +29,7 @@ const BETWEEN_BOOKS = 4500; // milliseconds: under Gemini's free limit for a min
 const BETWEEN_SEARCHES = 1100; // milliseconds: Open Library asks for a request a second at most
 const LONGEST_RUN = 40 * 60 * 1000; // milliseconds
 const FROM_EACH_SHELF = 8; // books taken from one shelf before going on to the next
+const MOST_BY_ONE_AUTHOR = 2; // books in one run: the first run was a third Murakami
 const FAILURES_IN_A_ROW = 5; // then something is wrong that the next book will not cure
 
 /** A book's entry is asked for only if this many readers have rated and logged it. */
@@ -104,6 +105,7 @@ const SHELVES = [...AFAR, ...NEAR];
 const NOT_A_BOOK = /box(ed)? set|omnibus|anthology|collection|collected|^the complete|complete (works|novels|stories)|trilogy|\bseries\b|\bbooks? \d|\bvolumes?\b|\bvol\.|summary of|study guide|sparknotes|cliffs ?notes|workbook|\bset\b/i;
 const PRAISE = /masterpiece|must[- ]read|unforgettable|timeless|tour de force|chef-d'œuvre/i;
 const AXES = ['tone', 'voice', 'intensity', 'pace', 'strange'];
+const FOR_GOOD = ['unknown', 'adult', 'held'];
 
 const PROMPT = `You write one entry for Incipit, a site where readers find their next book by how they want to feel. You are given a book and the facts about it. Answer with one JSON object holding only the fields below. Write only what you are sure is true of this book. If you do not know it well enough to do so, answer {"unknown":true}. If it is mainly erotica, answer {"adult":true}.
 
@@ -181,7 +183,7 @@ export function entryFrom(given, doc) {
   const keywords = among(given.keywords, KEYWORDS, 5);
   const description = both(given.description, 500);
   const place = both(given.setting?.place, 120);
-  const advice = { pace: both(given.advice?.pace, 300), headsUp: both(given.advice?.headsUp, 300), readIf: both(given.advice?.readIf, 300), skipIf: both(given.advice?.skipIf, 300) };
+  const advice = { pace: both(given.advice?.pace, 600), headsUp: both(given.advice?.headsUp, 600), readIf: both(given.advice?.readIf, 600), skipIf: both(given.advice?.skipIf, 600) };
   const countries = given.setting?.countries;
   const mood = given.mood ?? {};
   if (!genres.length) return { reason: 'genres' };
@@ -279,12 +281,14 @@ async function search(shelf, page) {
 
 /** The next books to ask about, a few from each shelf in turn. */
 async function* candidates(held, state) {
+  const byAuthor = new Map();
   let empty = 0;
   while (empty < SHELVES.length) {
     const shelf = SHELVES[state.turn % SHELVES.length];
     state.turn = (state.turn + 1) % SHELVES.length;
     let taken = 0;
-    while (state.pages[shelf] !== 'done' && taken < FROM_EACH_SHELF) {
+    let crowded = false;
+    while (state.pages[shelf] !== 'done' && taken < FROM_EACH_SHELF && !crowded) {
       const page = state.pages[shelf] ?? 1;
       const docs = await search(shelf, page);
       await wait(BETWEEN_SEARCHES);
@@ -292,12 +296,20 @@ async function* candidates(held, state) {
         if (taken >= FROM_EACH_SHELF) break;
         const name = fit(doc) ? sameBook(doc.title, doc.author_name[0]) : null;
         if (!name || held.keys.has(doc.key) || held.names.has(name)) continue;
+        const author = surname(doc.author_name[0]);
+        const written = byAuthor.get(author) ?? 0;
+        if (written >= MOST_BY_ONE_AUTHOR) {
+          crowded = true;
+          continue;
+        }
+        byAuthor.set(author, written + 1);
         held.keys.add(doc.key);
         held.names.add(name);
         taken++;
         yield doc;
       }
-      if (taken < FROM_EACH_SHELF) state.pages[shelf] = docs.length < 100 ? 'done' : page + 1;
+      // A page with books left for another day is read again then.
+      if (taken < FROM_EACH_SHELF && !crowded) state.pages[shelf] = docs.length < 100 ? 'done' : page + 1;
     }
     empty = taken ? 0 : empty + 1;
   }
@@ -416,11 +428,13 @@ async function main() {
         } else {
           reasons[reason] = (reasons[reason] ?? 0) + 1;
           // Not asked again: a model that does not know a book today is no surer of it tomorrow.
-          state.refused.push(doc.key);
+          // An entry badly written is only that, and the book is asked about another day.
+          if (FOR_GOOD.includes(reason)) state.refused.push(doc.key);
           console.log(`Left out (${reason}): ${doc.title}`);
         }
       } catch (error) {
         if (error instanceof Stop) throw error;
+        console.log(`No answer: ${doc.title}`);
         if (++failures >= FAILURES_IN_A_ROW) throw new Stop('Too many failures in a row.');
       }
       await wait(BETWEEN_BOOKS);
