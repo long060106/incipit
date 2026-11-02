@@ -434,9 +434,28 @@
   text-align: center;
   opacity: var(--hero);
   transform: scale(calc(1 + (1 - var(--hero)) * 0.16));
+  transition: translate 0.6s var(--ease-out);
+}
+
+/* The open tab takes the left of the page: the name and the answers move over and stay whole. */
+@media (min-width: 900px) {
+  .stage[data-tab='open'] .hero {
+    translate: calc((var(--panel-w) + var(--gutter)) / 2) 0;
+  }
+
+  .stage[data-tab='open'] .hero-actions {
+    width: min(100%, 50rem, 100vw - var(--panel-w) - 3 * var(--gutter));
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1150px) {
+  .stage[data-tab='open'] .hero-word {
+    scale: 0.8;
+  }
 }
 
 .hero-word {
+  transition: scale 0.6s var(--ease-out);
   /* Positioned so each letter can be measured against it (lib/light.ts). */
   position: relative;
   font-family: var(--font-hero);
@@ -679,6 +698,29 @@
   pointer-events: auto;
 }
 
+/* On a phone the tab lies along the foot of the page, so the line stands above it, and above its hint. */
+@media (max-width: 899px) {
+  .stage[data-tab] .hero-credit {
+    bottom: calc(var(--handle-h) + 1rem);
+  }
+
+  .stage:has(.tab-hint) .hero-credit {
+    bottom: calc(var(--handle-h) + 4.5rem);
+  }
+}
+
+/* Short as well: the word's meaning waits, the way in lies flat, and the line waits for the hint to go. */
+@media (max-width: 899px) and (max-height: 760px) {
+  .hero-def,
+  .stage:has(.tab-hint) .hero-credit {
+    display: none;
+  }
+
+  .hero-browse.hero-browse {
+    flex-direction: row;
+  }
+}
+
 .line {
   max-width: 17ch;
   font-family: var(--font-display);
@@ -739,6 +781,7 @@
 .stage:not([data-ready]) .glow,
 .stage:not([data-ready]) .hero,
 .stage:not([data-ready]) .header,
+.stage:not([data-ready]) .panel,
 .stage:not([data-ready]) .wall-plane {
   visibility: hidden;
 }

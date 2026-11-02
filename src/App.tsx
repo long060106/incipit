@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { flushSync } from 'react-dom';
 import { BookSheet } from './components/BookSheet';
 import { Header, type Theme } from './components/Header';
+import { DiceIcon } from './components/Icons';
 import { IndexDialog } from './components/IndexDialog';
 import { Intro } from './components/Intro';
 import { Panel } from './components/Panel';
@@ -16,6 +17,7 @@ import { EMPTY_FILTERS, matchBooks, type Filters } from './lib/match';
 import type { CellState, CoverOrigin } from './lib/wall';
 
 const GUIDE_KEY = 'incipit:wall-guide';
+const TAB_HINT_KEY = 'incipit:tab-hint';
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 /** Progress of `p` through the window [from, to], clamped to 0–1. */
@@ -39,7 +41,7 @@ const cameFromInside = () => {
 
 /** How long the glide between the hero and the gallery takes over its full distance. */
 const TRAVEL_MS = 5200;
-/** The same glide when the reader has said what they want from the first page, and is waiting for it. */
+/** The same glide from the first page, when the reader has chosen and is waiting for the books. */
 const WISH_TRAVEL_MS = 2000;
 /** How long the page takes to open itself on arrival, if the reader does not scroll first. */
 const OPENING_MS = 2000;
@@ -228,6 +230,8 @@ export default function App() {
   // On a wide screen the panel starts open and can be minimised to its title bar; on a
   // narrow one it starts as a closed sheet.
   const [panelOpen, setPanelOpen] = useState(() => !NARROW.matches);
+  // On the first page the panel is a closed tab, whatever the width: the page stays clear until it is asked for.
+  const [tabOpen, setTabOpen] = useState(false);
   // On a wide screen the page opens through a small window over its first stretch of scroll.
   // Not when the visit starts on a book, or the reader has asked for less motion.
   const [opening] = useState(() => !NARROW.matches && !bookFromHash() && !prefersReducedMotion() && !cameFromInside());
@@ -612,14 +616,55 @@ export default function App() {
 
   const resetFilters = useCallback(() => setFilters(EMPTY_FILTERS), []);
 
-  // A wish made on the first page: the wall answers it, and the page goes there.
+  // A wish made on the first page takes the place of any other, keeps what has been set in
+  // the tab, and the page goes to the wall that answers it.
   const wish = useCallback(
     (wanted: Partial<Filters>) => {
-      setFilters({ ...EMPTY_FILTERS, ...wanted });
+      setFilters((now) => ({ ...now, mood: {}, jolt: false, kind: null, ...wanted }));
+      setTabOpen(false);
       travelTo(maxScroll(), WISH_TRAVEL_MS);
     },
     [travelTo],
   );
+
+  const onTab = inHero && opened;
+
+  // The word beside the tab, until the reader has opened it once.
+  const [tabHint, setTabHint] = useState(() => {
+    try {
+      return !localStorage.getItem(TAB_HINT_KEY);
+    } catch {
+      return true;
+    }
+  });
+  const openTab = useCallback(() => {
+    setTabOpen(true);
+    setTabHint(false);
+    try {
+      localStorage.setItem(TAB_HINT_KEY, '1');
+    } catch {
+      // Nowhere to remember it: the hint comes back on the next visit.
+    }
+  }, []);
+
+  // The tab closes when the first page is left, and with Escape.
+  useEffect(() => {
+    if (!inHero) setTabOpen(false);
+    if (!tabOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setTabOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [inHero, tabOpen]);
+
+  // From the tab this goes on to the wall; beside the wall, on a phone, it lowers the sheet.
+  const showBooks = useCallback(() => {
+    setPanelOpen(!NARROW.matches);
+    if (!live.current.inHero) return;
+    if (NARROW.matches) setTabOpen(false);
+    travelTo(maxScroll(), WISH_TRAVEL_MS);
+  }, [travelTo]);
 
   return (
     <>
@@ -631,6 +676,7 @@ export default function App() {
         data-scene="hero"
         data-gallery={inGallery}
         data-opening={opening ? 'window' : undefined}
+        data-tab={onTab ? (tabOpen ? 'open' : 'closed') : undefined}
       >
         {/* The light of the opening page: behind the covers, which stand out against it. */}
         <div className="glow" ref={glowRef} aria-hidden="true">
@@ -664,14 +710,24 @@ export default function App() {
         />
 
         <Panel
-          active={inGallery}
+          active={inGallery || (onTab && !dialogOpen)}
           filters={filters}
           onChange={setFilters}
           countLabel={countLabel}
-          open={panelOpen}
-          onToggle={() => setPanelOpen((value) => !value)}
+          open={inHero ? tabOpen : panelOpen}
+          onToggle={() => {
+            if (onTab && !tabOpen) openTab();
+            else (onTab ? setTabOpen : setPanelOpen)((value) => !value);
+          }}
+          onShow={showBooks}
           onSurprise={surprise}
         />
+        {onTab && !tabOpen && tabHint && !dialogOpen && (
+          <button type="button" className="tab-hint" onClick={openTab}>
+            <DiceIcon />
+            <span>{t('tabHint')}</span>
+          </button>
+        )}
         <Tray
           active={inGallery}
           result={result}

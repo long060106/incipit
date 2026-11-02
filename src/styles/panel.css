@@ -25,6 +25,83 @@
   pointer-events: auto;
 }
 
+/* On the first page the panel is a tab at the foot of the page. Off the wall it comes and goes by itself. */
+.stage:not([data-gallery='true']) .panel {
+  transition: height 0.6s var(--ease-out), opacity 0.4s ease, transform 0.5s var(--ease-out);
+}
+
+.stage[data-tab] .panel {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* The small card that points at the closed tab, until the reader has opened it once. */
+.tab-hint {
+  position: absolute;
+  left: var(--gutter);
+  bottom: calc(var(--gutter) + var(--handle-h) + 14px);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(19rem, calc(100% - 2 * var(--gutter)));
+  padding: 9px 13px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  text-align: left;
+  animation: hint-rise 0.7s var(--ease-out) 0.6s backwards;
+}
+
+.tab-hint svg {
+  flex: none;
+}
+
+/* Its point, down at the tab. */
+.tab-hint::after {
+  content: '';
+  position: absolute;
+  left: 26px;
+  bottom: -5px;
+  width: 11px;
+  height: 11px;
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+@keyframes hint-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-hint {
+    animation: none;
+  }
+}
+
+/* Short and narrow, it keeps to the corner, clear of the way in. */
+@media (max-width: 899px) and (max-height: 760px) {
+  .tab-hint {
+    max-width: 14rem;
+  }
+}
+
+.stage[data-tab] .panel-foot {
+  flex-wrap: wrap;
+}
+
+.stage[data-tab] .panel-show {
+  display: inline-flex;
+  flex: 1 0 100%;
+  justify-content: center;
+}
+
 /* The title bar. It is all that is left of a closed panel, and it opens and closes it. */
 .panel-handle {
   display: flex;
@@ -78,6 +155,12 @@
     height: calc(var(--handle-h) + 2px);
   }
 
+  /* Open it reaches as high as it does beside the wall, so nothing moves on the way there. */
+  .stage[data-tab] .panel {
+    top: auto;
+    bottom: var(--gutter);
+  }
+
   .panel-handle {
     border-bottom: 1px solid transparent;
     transition: border-color 0.3s ease;
@@ -102,6 +185,15 @@
 
   .panel.is-open .panel-handle-count svg {
     transform: rotate(180deg);
+  }
+
+  /* From the foot of the page the tab opens upwards. */
+  .stage[data-tab='closed'] .panel-handle-count svg {
+    transform: rotate(180deg);
+  }
+
+  .stage[data-tab='open'] .panel-handle-count svg {
+    transform: none;
   }
 
   .panel-body,
@@ -508,7 +600,7 @@
   outline-offset: 0;
 }
 
-/* ── Fine-tune ────────────────────────────────────────────────────────────── */
+/* ── The parts below the answers ──────────────────────────────────────────── */
 
 .tune-part {
   margin-top: 26px;
@@ -519,60 +611,6 @@
   border-top: 1px solid var(--line);
 }
 
-.panel h3 {
-  color: var(--text);
-  font-size: 0.9375rem;
-  font-weight: 500;
-}
-
-/* A row to press, drawn as one: the rest of the filters are behind it. */
-.more summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  border: 1px solid var(--line-strong);
-  border-radius: 3px;
-  cursor: var(--cursor-press);
-  list-style: none;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
-}
-
-.more summary:hover,
-.more[open] summary {
-  border-color: var(--accent);
-}
-
-.more summary:hover {
-  background: var(--faint);
-}
-
-.more summary svg {
-  color: var(--accent);
-}
-
-.more summary::-webkit-details-marker {
-  display: none;
-}
-
-.more summary svg {
-  transition: transform 0.45s var(--ease-out);
-}
-
-/* Opens and closes with a glide where the browser can animate to `auto`. */
-.more::details-content {
-  block-size: 0;
-  overflow: clip;
-  transition: block-size 0.5s var(--ease-out), content-visibility 0.5s allow-discrete;
-}
-
-.more[open]::details-content {
-  block-size: auto;
-}
-
-.more[open] summary svg {
-  transform: rotate(180deg);
-}
 
 .field {
   margin-top: 16px;
@@ -765,7 +803,16 @@
     transition: transform 0.5s var(--ease-out);
   }
 
-  .panel.is-open {
+  .stage[data-tab] .panel {
+    transform: translateY(calc(100% - var(--handle-h)));
+  }
+
+  .tab-hint {
+    bottom: calc(var(--handle-h) + 12px);
+  }
+
+  .panel.is-open,
+  .stage[data-tab] .panel.is-open {
     transform: translateY(0);
   }
 

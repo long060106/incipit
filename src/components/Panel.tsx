@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { BOOKS } from '../data/books';
 import type { AxisId, GenreId, KeywordId, Mood } from '../data/types';
 import { AXES, countryName, ELSEWHERE, GENRES, KEYWORDS, MOOD_PRESETS, type MoodPresetId } from '../data/vocab';
@@ -79,27 +79,16 @@ interface PanelProps {
    */
   open: boolean;
   onToggle: () => void;
+  /** Takes the reader to the books the filters let through. */
+  onShow: () => void;
   /** Opens a book picked at random from those the filters let through. */
   onSurprise: () => void;
 }
 
-export function Panel({ active, filters, onChange, countLabel, open, onToggle, onSurprise }: PanelProps) {
+export function Panel({ active, filters, onChange, countLabel, open, onToggle, onShow, onSurprise }: PanelProps) {
   const { t, tl, lang } = useI18n();
   const [allThemes, setAllThemes] = useState(false);
   const activeCount = countActive(filters);
-
-  // Fine-tuning opens by itself when something set elsewhere (a book's mood, a theme, a nudge)
-  // lives behind it, so the reader can see what is shaping the wall.
-  const [tuneOpen, setTuneOpen] = useState(false);
-  const moodSet = Object.keys(filters.mood).length > 0;
-  const tuned =
-    (moodSet && !MOOD_PRESETS.some((preset) => sameMood(filters.mood, preset.mood))) ||
-    filters.keywords.length > 0 ||
-    filters.sort !== 'match' ||
-    Boolean(filters.country || filters.genre || filters.length || filters.era || filters.level || filters.minRating);
-  useEffect(() => {
-    if (tuned) setTuneOpen(true);
-  }, [tuned]);
 
   // Themes ordered by how many books carry them, so the short list is the useful one.
   const themes = useMemo(() => {
@@ -205,101 +194,93 @@ export function Panel({ active, filters, onChange, countLabel, open, onToggle, o
           </label>
         </section>
 
-        {/* Everything else: the sliders, themes, order and the rest, for a reader who wants them. */}
-        <details className="panel-section more" open={tuneOpen} onToggle={(event) => setTuneOpen(event.currentTarget.open)}>
-          <summary>
-            <h2>{t('fineTune')}</h2>
-            <ChevronIcon />
-          </summary>
+        <section className="tune-part">
+          <div className="panel-heading">
+            <h2>{t('mood')}</h2>
+            <p>{t('moodHint')}</p>
+          </div>
+          {AXES.map((axis) => (
+            <MoodSlider
+              key={axis.id}
+              low={tl(axis.low)}
+              high={tl(axis.high)}
+              value={filters.mood[axis.id]}
+              onChange={(value) => setMood(axis.id, value)}
+            />
+          ))}
+        </section>
 
-          <section className="tune-part">
-            <div className="panel-heading">
-              <h3>{t('mood')}</h3>
-              <p>{t('moodHint')}</p>
-            </div>
-            {AXES.map((axis) => (
-              <MoodSlider
-                key={axis.id}
-                low={tl(axis.low)}
-                high={tl(axis.high)}
-                value={filters.mood[axis.id]}
-                onChange={(value) => setMood(axis.id, value)}
-              />
+        <section className="tune-part">
+          <div className="panel-heading">
+            <h2>{t('themes')}</h2>
+          </div>
+          <div className="chips">
+            {shownThemes.map((id) => (
+              <button
+                key={id}
+                type="button"
+                className="chip"
+                aria-pressed={filters.keywords.includes(id)}
+                onClick={() => toggleTheme(id)}
+              >
+                {tl(KEYWORDS[id])}
+              </button>
             ))}
-          </section>
+            <button type="button" className="chip chip-more" onClick={() => setAllThemes((value) => !value)}>
+              {allThemes ? t('fewerThemes') : t('moreThemes')}
+            </button>
+          </div>
+        </section>
 
-          <section className="tune-part">
-            <div className="panel-heading">
-              <h3>{t('themes')}</h3>
-            </div>
-            <div className="chips">
-              {shownThemes.map((id) => (
+        <section className="tune-part panel-order">
+          <Segmented
+            label={t('sortBy')}
+            options={SORTS}
+            value={filters.sort === 'match' ? null : filters.sort}
+            onChange={(v) => set('sort', v ?? 'match')}
+          />
+          <CountryField label={t('setting')} options={countries} value={filters.country} onChange={(code) => set('country', code)} />
+        </section>
+
+        <section className="tune-part">
+          <div className="field">
+            <label htmlFor="filter-genre">{t('genre')}</label>
+            <select
+              id="filter-genre"
+              value={filters.genre ?? ''}
+              onChange={(event) => set('genre', (event.target.value || null) as GenreId | null)}
+            >
+              <option value="">{t('anyGenre')}</option>
+              {genres.map((id) => (
+                <option key={id} value={id}>
+                  {tl(GENRES[id])}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <Segmented label={t('length')} options={LENGTHS} value={filters.length} onChange={(v) => set('length', v)} />
+          <Segmented label={t('era')} options={ERAS} value={filters.era} onChange={(v) => set('era', v)} />
+          <Segmented label={t('readingLevel')} options={LEVELS} value={filters.level} onChange={(v) => set('level', v)} />
+
+          <div className="field">
+            <span className="field-label" id="filter-rating">
+              {t('rating')}
+            </span>
+            <div className="segmented" role="group" aria-labelledby="filter-rating">
+              {RATINGS.map((n) => (
                 <button
-                  key={id}
+                  key={n}
                   type="button"
-                  className="chip"
-                  aria-pressed={filters.keywords.includes(id)}
-                  onClick={() => toggleTheme(id)}
+                  aria-pressed={filters.minRating === n}
+                  onClick={() => set('minRating', filters.minRating === n ? null : n)}
                 >
-                  {tl(KEYWORDS[id])}
+                  {t('ratingAtLeast', { n: n.toFixed(1) })}
                 </button>
               ))}
-              <button type="button" className="chip chip-more" onClick={() => setAllThemes((value) => !value)}>
-                {allThemes ? t('fewerThemes') : t('moreThemes')}
-              </button>
             </div>
-          </section>
-
-          <section className="tune-part panel-order">
-            <Segmented
-              label={t('sortBy')}
-              options={SORTS}
-              value={filters.sort === 'match' ? null : filters.sort}
-              onChange={(v) => set('sort', v ?? 'match')}
-            />
-            <CountryField label={t('setting')} options={countries} value={filters.country} onChange={(code) => set('country', code)} />
-          </section>
-
-          <section className="tune-part">
-            <div className="field">
-              <label htmlFor="filter-genre">{t('genre')}</label>
-              <select
-                id="filter-genre"
-                value={filters.genre ?? ''}
-                onChange={(event) => set('genre', (event.target.value || null) as GenreId | null)}
-              >
-                <option value="">{t('anyGenre')}</option>
-                {genres.map((id) => (
-                  <option key={id} value={id}>
-                    {tl(GENRES[id])}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <Segmented label={t('length')} options={LENGTHS} value={filters.length} onChange={(v) => set('length', v)} />
-            <Segmented label={t('era')} options={ERAS} value={filters.era} onChange={(v) => set('era', v)} />
-            <Segmented label={t('readingLevel')} options={LEVELS} value={filters.level} onChange={(v) => set('level', v)} />
-
-            <div className="field">
-              <span className="field-label" id="filter-rating">
-                {t('rating')}
-              </span>
-              <div className="segmented" role="group" aria-labelledby="filter-rating">
-                {RATINGS.map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    aria-pressed={filters.minRating === n}
-                    onClick={() => set('minRating', filters.minRating === n ? null : n)}
-                  >
-                    {t('ratingAtLeast', { n: n.toFixed(1) })}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
-        </details>
+          </div>
+        </section>
       </div>
 
       <div className="panel-foot">
@@ -310,7 +291,7 @@ export function Panel({ active, filters, onChange, countLabel, open, onToggle, o
         <button type="button" className="text-button" disabled={activeCount === 0} onClick={() => onChange(EMPTY_FILTERS)}>
           <span className="u">{t('reset')}</span>
         </button>
-        <button type="button" className="button panel-show" onClick={onToggle}>
+        <button type="button" className="button panel-show" onClick={onShow}>
           <Roll>{t('showBooks')}</Roll>
         </button>
       </div>

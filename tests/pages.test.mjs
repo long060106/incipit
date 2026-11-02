@@ -386,6 +386,32 @@ describe('the first page', () => {
     assert.deepEqual(problems, []);
     await close();
   });
+
+  test('keeps everything in one tab, which opens, closes and goes on to the wall', async () => {
+    const { page, problems, close } = await fresh();
+    await page.goto(BASE + '/', { waitUntil: 'load' });
+    const panel = page.locator('.panel');
+    const handle = page.locator('.panel-handle');
+    assert.equal(await page.locator('.panel details').count(), 0, 'part of the panel is folded away');
+    await handle.waitFor({ state: 'visible', timeout: 15000 });
+    assert.equal(await handle.getAttribute('aria-expanded'), 'false', 'the tab did not start closed');
+    await page.locator('.tab-hint').click({ timeout: 15000 });
+    assert.equal(await handle.getAttribute('aria-expanded'), 'true');
+    assert.equal(await page.locator('.tab-hint').count(), 0, 'the hint stayed once the tab was open');
+    assert.ok(await panel.getByRole('button', { name: 'lift my spirits' }).isVisible());
+    assert.ok(await panel.getByRole('button', { name: 'surprise me' }).isVisible());
+    assert.equal(await panel.locator('input[type=range]').count(), 5);
+    await page.keyboard.press('Escape');
+    assert.equal(await handle.getAttribute('aria-expanded'), 'false');
+    await handle.click();
+    await panel.getByRole('button', { name: 'Under 200 pages' }).click();
+    await page.locator('.panel-show').click();
+    await page.waitForFunction(() => document.querySelector('.stage').dataset.gallery === 'true', null, { timeout: 8000 });
+    assert.equal(await page.locator('.panel-handle .badge').textContent(), '1');
+    assert.equal(await handle.getAttribute('aria-expanded'), 'true');
+    assert.deepEqual(problems, []);
+    await close();
+  });
 });
 
 describe('the opening of the home page', () => {
