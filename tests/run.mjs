@@ -11,8 +11,9 @@
 // The pages are opened in Microsoft Edge (BROWSER_CHANNEL=chrome for Chrome).
 import { generateKeyPairSync } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
-import { readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { partOf } from '../src/data/stacks.ts';
 
 const PORT = 8790;
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -37,6 +38,32 @@ try {
   console.error(`\n${STATE} is held by something else: is a test server from an earlier run still open? Close it and run again.`);
   process.exit(1);
 }
+
+// One book of the stacks for the tests to ask about, in the build only: the site's own files stay as they are.
+const stacked = {
+  id: 'a-book-of-the-stacks',
+  title: 'A Book of the Stacks',
+  author: 'Test Writer',
+  year: 1999,
+  pages: 200,
+  language: 'en',
+  genres: ['literary'],
+  keywords: ['love', 'family'],
+  setting: { place: { en: 'Lyon', fr: 'Lyon' }, countries: ['FR'] },
+  mood: { tone: 50, voice: 50, intensity: 50, pace: 50, strange: 50 },
+  difficulty: 2,
+  rating: { value: 4, count: 10 },
+  cover: 1000,
+  olKey: '/works/OL1W',
+  description: { en: 'A book that only the tests know.', fr: 'Un livre que seuls les tests connaissent.' },
+  advice: { pace: { en: 'Quick.', fr: 'Rapide.' }, headsUp: { en: 'Nothing.', fr: 'Rien.' }, readIf: { en: 'You want a test.', fr: 'Vous voulez un test.' }, skipIf: { en: 'You want a book.', fr: 'Vous voulez un livre.' } },
+};
+const partFile = join('dist', 'stacks', 'parts', `${partOf(stacked.id)}.json`);
+const part = existsSync(partFile) ? JSON.parse(readFileSync(partFile, 'utf8')) : {};
+mkdirSync(dirname(partFile), { recursive: true });
+writeFileSync(partFile, JSON.stringify({ ...part, [stacked.id]: stacked }));
+appendFileSync(join('dist', 'stacks', 'ids.txt'), `${stacked.id}\n`);
+
 step('A new database', `npx wrangler d1 migrations apply incipit --local --persist-to ${STATE}`);
 step('Its essays', `npx wrangler d1 execute incipit --local --persist-to ${STATE} --file tests/seed.sql`);
 

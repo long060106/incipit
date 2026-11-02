@@ -145,6 +145,8 @@ export interface Book {
   added?: true;
   /** For an added book: when its cover was last kept, to tell one cover's address from the next. */
   coverAt?: number;
+  /** Set on a book of the stacks (src/data/stacks.ts): `description` and `advice` are empty until src/lib/stacks.ts fills them. */
+  stacks?: true;
   description: BookL;
   advice: {
     pace: BookL;

@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { generateKeyPairSync } from 'node:crypto';
+import { entryFrom, fit } from '../scripts/add-books.mjs';
 import { ask, BASE, googleToken, nameFor, reader, secret } from './helpers.mjs';
 
 const ESSAY = 'seedessay001';
@@ -284,6 +285,86 @@ describe('passages on a reader’s page', () => {
     assert.equal((await put([{ id: 'abcd1234', book: 'frankenstein', quote: 'I was benevolent and good; misery made me a fiend.' }])).status, 200);
     const page = await ask(`/api/people/${hal.name}`);
     assert.equal(page.body.quotes?.length ?? page.body.person?.quotes?.length, 1);
+  });
+});
+
+describe('the stacks', () => {
+  test('a book of the stacks has a page of its own, with its cover at Open Library', async () => {
+    const response = await fetch(`${BASE}/book/a-book-of-the-stacks`);
+    assert.equal(response.status, 200);
+    const page = await response.text();
+    assert.match(page, /A Book of the Stacks by Test Writer/);
+    assert.match(page, /A book that only the tests know/);
+    assert.match(page, /covers\.openlibrary\.org\/b\/id\/1000-L\.jpg/);
+  });
+
+  test('the rules let its cover be shown, wherever Open Library sends for it', async () => {
+    const rules = (await fetch(`${BASE}/`)).headers.get('content-security-policy');
+    for (const host of ['https://covers.openlibrary.org', 'https://archive.org', 'https://*.archive.org']) assert.ok(rules.includes(host), host);
+  });
+
+  test('a book in no file is still no book', async () => {
+    assert.equal((await fetch(`${BASE}/book/no-such-book-anywhere`)).status, 404);
+    assert.equal((await fetch(`${BASE}/book/constructor`)).status, 404);
+  });
+
+  test('the sitemap lists it', async () => {
+    assert.match(await (await fetch(`${BASE}/sitemap.xml`)).text(), /\/book\/a-book-of-the-stacks</);
+  });
+
+  test('readers can review it', async () => {
+    const { code } = await someone();
+    const said = await ask('/api/reviews/a-book-of-the-stacks', { method: 'PUT', code, body: { stars: 4, text: 'It held up well for something only the tests know.' } });
+    assert.equal(said.status, 200);
+  });
+});
+
+describe('what the model writes for the stacks', () => {
+  const doc = { key: '/works/OL1W', title: 'Преступление', author_name: ['Фёдор Достоевский'], first_publish_year: 1956, number_of_pages_median: 300, cover_i: 12, ratings_average: 4.2, ratings_count: 40 };
+  const line = (en) => ({ en, fr: en });
+  const good = {
+    title: 'A Crime',
+    author: 'Fyodor Dostoevsky',
+    year: 1866,
+    originalTitle: 'Преступление',
+    language: 'ru',
+    genres: ['literary', 'not-a-genre'],
+    keywords: ['love', 'family', 'nothing-here'],
+    setting: { place: line('St Petersburg'), countries: ['RU'] },
+    mood: { tone: 80, voice: 90, intensity: 70, pace: 40, strange: 20 },
+    difficulty: 4,
+    description: line('A student in St Petersburg kills a pawnbroker.'),
+    advice: { pace: line('Slow.'), headsUp: line('Murder.'), readIf: line('You want a guilty mind.'), skipIf: line('You need comfort.') },
+  };
+
+  test('takes the English name and the right year from it, and only words of the site', () => {
+    const { book } = entryFrom(good, doc);
+    assert.equal(book.title, 'A Crime');
+    assert.equal(book.author, 'Fyodor Dostoevsky');
+    assert.equal(book.year, 1866);
+    assert.deepEqual(book.genres, ['literary']);
+    assert.deepEqual(book.keywords, ['love', 'family']);
+    assert.equal(book.olKey, '/works/OL1W');
+    assert.deepEqual(book.rating, { value: 4.2, count: 40 });
+  });
+
+  const refused = {
+    unknown: { unknown: true },
+    adult: { adult: true },
+    genres: { ...good, genres: ['not-a-genre'] },
+    language: { ...good, language: 'xx' },
+    mood: { ...good, mood: { ...good.mood, tone: 101 } },
+    'read-if': { ...good, advice: { ...good.advice, readIf: line('For those who like Russians.') } },
+    praise: { ...good, description: line('A masterpiece of guilt.') },
+  };
+  for (const [reason, given] of Object.entries(refused)) test(`refuses it: ${reason}`, () => assert.equal(entryFrom(given, doc).reason, reason));
+
+  test('asks only about one book by a named author, with a cover', () => {
+    assert.ok(fit(doc));
+    assert.ok(!fit({ ...doc, cover_i: undefined }));
+    assert.ok(!fit({ ...doc, ratings_average: 3 }));
+    assert.ok(!fit({ ...doc, title: 'The Complete Sherlock Holmes' }));
+    assert.ok(!fit({ ...doc, title: 'Bible', author_name: ['Bible'] }));
   });
 });
 

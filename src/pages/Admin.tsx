@@ -43,6 +43,9 @@ import './admin.css';
   keeper's own, and the server gives it to no other card.
 */
 
+/** How many books the list shows: thousands of rows would be slow, and the search finds the rest. */
+const MOST_SHOWN = 300;
+
 const TEXT = {
   title: { en: 'Keeper’s desk', fr: 'Bureau du gardien', ru: 'Стол хранителя', vi: 'Bàn của người giữ sách' },
   profile: { en: 'Your profile and the About page', fr: 'Votre profil et la page À propos', ru: 'Ваш профиль и страница «О сайте»', vi: 'Hồ sơ của bạn và trang Giới thiệu' },
@@ -403,7 +406,7 @@ export default function Admin() {
         )}
 
         <ul className="admin-list">
-          {shown.map((book) => {
+          {shown.slice(0, MOST_SHOWN).map((book) => {
             const file = files[book.id];
             return (
               <li key={book.id} data-open={open === book.id || undefined}>

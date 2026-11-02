@@ -9,6 +9,7 @@ import { reads } from '../lib/kepttext';
 import { bookLinks, coverUrl } from '../lib/links';
 import { blendedMood, blendedRating, useReviews } from '../lib/reviews';
 import { useShelf } from '../lib/shelf';
+import { useFilled } from '../lib/stacks';
 import { likeThis, MIN_RATINGS, nudgesFor, similarBooks, type Filters } from '../lib/match';
 import { coverOrigin, type CoverOrigin } from '../lib/wall';
 import { Around } from './Around';
@@ -51,6 +52,7 @@ interface BookSheetProps {
 export function BookSheet({ book, leaving, origin, onClose, onOpenBook, onUseMood, onLikeThis, onPickTheme }: BookSheetProps) {
   const { t, tl, lang } = useI18n();
   const shelf = useShelf();
+  useFilled(book);
   // The keeper of the site can switch a book's download off (src/lib/keeper.ts).
   const decided = useDecided()[book.id];
   const whole = bookLinks(book);

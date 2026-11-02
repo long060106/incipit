@@ -1,0 +1,48 @@
+# Adds books to the stacks every day (scripts/add-books.mjs). The commit it makes deploys the
+# site, as any push to main does. Needs one secret: GEMINI_API_KEY, in the repository's settings.
+#
+# Run by hand from the Actions tab, it can try for more books, or take books out by id.
+name: Add books
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      batch:
+        description: How many books to add
+        default: '50'
+      remove:
+        description: Ids of books to take out, separated by commas (adds none)
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: add-books
+
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node scripts/add-books.mjs
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          BATCH: ${{ inputs.batch || '50' }}
+          REMOVE: ${{ inputs.remove }}
+      - name: Keep what was written
+        if: always()
+        run: |
+          git add public/stacks scripts/stacks-state.json
+          git diff --cached --quiet && exit 0
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Add books to the stacks'
+          git pull --rebase origin main
+          git push origin HEAD:main

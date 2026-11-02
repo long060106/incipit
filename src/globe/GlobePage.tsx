@@ -37,6 +37,8 @@ const TEXT = {
 } satisfies Record<string, L>;
 
 const PLACED = BOOKS.filter((book) => book.setting.countries.length);
+/** How many books a list on this page shows: one country can hold thousands. */
+const MOST = 200;
 const year = (book: Book) => {
   const when = settingYear(book);
   return when < 0 ? `${-when} BC` : String(when);
@@ -59,7 +61,11 @@ export default function GlobePage() {
   const byCountry = useMemo(() => {
     const map = new Map<string, Book[]>();
     for (const book of books) {
-      for (const code of book.setting.countries) map.set(code, [...(map.get(code) ?? []), book]);
+      for (const code of book.setting.countries) {
+        const here = map.get(code);
+        if (here) here.push(book);
+        else map.set(code, [book]);
+      }
     }
     return map;
   }, [books]);
@@ -102,7 +108,7 @@ export default function GlobePage() {
 
   const list = (entries: Book[]) => (
     <ul className="globe-books">
-      {entries.map((book) => (
+      {entries.slice(0, MOST).map((book) => (
         <li key={book.id}>
           <a className="globe-book" href={bookUrl(book.id)}>
             <img src={coverUrl(book, 'sm')} alt="" width={54} height={81} loading="lazy" />

@@ -16,6 +16,7 @@ Designed and developed by **Long Nguyen**.
 
 **289 books** from 61 countries in 27 languages: 181 out of copyright (readable on the site and
 downloadable as PDF) and 108 still in copyright (described, with links to libraries and bookshops only).
+Around them, the stacks grow by themselves every day (see [About the book data](#about-the-book-data)).
 
 ## What is in it
 
@@ -46,8 +47,8 @@ downloadable as PDF) and 108 still in copyright (described, with links to librar
 src/            the site: pages, the wall, the reader, styles
 src/data/       the catalogue
 worker/         the server and its database migrations
-public/         covers, texts of books out of copyright, icons, the service worker
-scripts/        the scripts that fetched the catalogue, covers and texts
+public/         covers, texts of books out of copyright, the stacks, icons, the service worker
+scripts/        the scripts that fetched the catalogue, covers and texts, and the one that adds books
 ```
 
 ## About the book data
@@ -57,6 +58,13 @@ help of AI, not taken from a published source. The ratings come from Open Librar
 added on 2026-10-10 (104 books), 2026-10-19 (30 books) and 2026-10-26 (50 books, on money,
 markets, science and the mind) have not yet been reviewed by hand, so treat the mood scores of
 those books as a first draft.
+
+**The stacks** are the books added since, in `public/stacks`, and none of their entries is reviewed
+by hand. Every day a GitHub Action (`.github/workflows/add-books.yml`, `scripts/add-books.mjs`) takes
+books from Open Library in order of how many readers have logged them, and Gemini's free tier
+writes each entry, or says it does not know the book well enough. They are described, never
+offered to download, and their covers are shown from Open Library. To take a book out, run the
+action by hand from the Actions tab with the book's id: it is then never added again.
 
 ## Running it
 

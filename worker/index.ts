@@ -43,6 +43,8 @@
     PUT    /api/covers/<id>          its cover, as an image                 (keeper only)
     GET    /api/covers/<id>          the cover, for everyone
 
+  The books of the stacks are files of the site (src/data/stacks.ts), which no one writes here.
+
   And the keeper writes the page about who made the site (/about).
 
     GET    /api/profile              the maker's words, for everyone
@@ -89,6 +91,7 @@
 */
 
 import { BOOKS } from '../src/data/books';
+import { partOf } from '../src/data/stacks';
 import { LANGS, type Book, type BookL, type L, type Lang, type Mood } from '../src/data/types';
 import { AXES, GENRES, KEYWORDS, LANGUAGES } from '../src/data/vocab';
 
@@ -160,9 +163,22 @@ const MAX_COVER = 400_000; // bytes
 const MAX_ADDED = 500; // books
 const COVER_TYPES = ['image/webp', 'image/jpeg', 'image/png'];
 
-/** Whether a book is the catalogue's or one the keeper has added. */
+/** A book of the stacks: a file of the site, not a row of the database (src/data/stacks.ts). */
+async function fromStacks(env: Env, id: string): Promise<Book | null> {
+  try {
+    const file = await env.ASSETS.fetch(new Request(`https://incipit/stacks/parts/${partOf(id)}.json`));
+    // An address with no file answers with the site's own page.
+    if (!file.ok || !file.headers.get('content-type')?.includes('json')) return null;
+    const part = (await file.json()) as Record<string, Book>;
+    return Object.hasOwn(part, id) ? { ...part[id], stacks: true } : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Whether a book is the catalogue's, one of the stacks or one the keeper has added. */
 async function known(env: Env, book: string): Promise<boolean> {
-  return KNOWN.has(book) || !!(await env.DB.prepare('SELECT 1 FROM added_books WHERE id = ?1').bind(book).first());
+  return KNOWN.has(book) || !!(await fromStacks(env, book)) || !!(await env.DB.prepare('SELECT 1 FROM added_books WHERE id = ?1').bind(book).first());
 }
 // Crockford's alphabet: no I, L, O or U, so a code survives being read aloud or copied by hand.
 const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
@@ -1305,7 +1321,7 @@ const shortened = (text: string, most: number) => (text.length <= most ? text : 
 
 /** A book as readers see it: the catalogue's entry or one the keeper added, with the keeper's corrections. */
 async function entryOf(env: Env, id: string): Promise<Book | null> {
-  let book = BY_ID.get(id) ?? null;
+  let book = BY_ID.get(id) ?? (await fromStacks(env, id));
   if (!book) {
     const row = await env.DB.prepare('SELECT data FROM added_books WHERE id = ?1').bind(id).first<{ data: string }>();
     book = row ? (JSON.parse(row.data) as Book) : null;
@@ -1330,7 +1346,7 @@ async function bookPage(request: Request, env: Env, id: string): Promise<Respons
   const title = `${book.title} by ${book.author} · Incipit`;
   const description = shortened(book.description.en, 220);
   const page = `${origin}/book/${book.id}`;
-  const image = KNOWN.has(book.id) ? `${origin}/covers/${book.id}-md.webp` : `${origin}/api/covers/${book.id}`;
+  const image = KNOWN.has(book.id) ? `${origin}/covers/${book.id}-md.webp` : book.stacks ? `https://covers.openlibrary.org/b/id/${book.cover}-L.jpg` : `${origin}/api/covers/${book.id}`;
   const facts = {
     '@context': 'https://schema.org',
     '@type': 'Book',
@@ -1441,6 +1457,8 @@ async function sitemap(request: Request, env: Env): Promise<Response> {
     env.DB.prepare('SELECT id FROM added_books'),
     env.DB.prepare("SELECT id FROM essays WHERE status = 'approved' ORDER BY decided DESC LIMIT 5000"),
   ]);
+  const stacked = await env.ASSETS.fetch(new Request(`${origin}/stacks/ids.txt`));
+  const shelved = stacked.ok && stacked.headers.get('content-type')?.startsWith('text/plain') ? (await stacked.text()).split('\n').filter((id) => BOOK.test(id)) : [];
   const paths = [
     '',
     'globe',
@@ -1452,6 +1470,7 @@ async function sitemap(request: Request, env: Env): Promise<Response> {
     'terms',
     ...BOOKS.map((book) => `book/${book.id}`),
     ...added.results.map((row) => `book/${row.id}`),
+    ...shelved.map((id) => `book/${id}`),
     ...written.results.map((row) => `essays/${row.id}`),
   ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${paths.map((path) => `  <url><loc>${origin}/${path}</loc></url>`).join('\n')}\n</urlset>\n`;
@@ -2210,7 +2229,7 @@ async function api(request: Request, env: Env, path: string, ctx: ExecutionConte
  */
 const SECURITY: Record<string, string> = {
   'content-security-policy':
-    "default-src 'self'; script-src 'self' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://accounts.google.com/gsi/; frame-src https://accounts.google.com/gsi/; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+    "default-src 'self'; script-src 'self' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://covers.openlibrary.org https://archive.org https://*.archive.org; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://accounts.google.com/gsi/; frame-src https://accounts.google.com/gsi/; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
   'x-content-type-options': 'nosniff',
   'x-frame-options': 'DENY',
   'referrer-policy': 'strict-origin-when-cross-origin',

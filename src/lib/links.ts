@@ -5,12 +5,22 @@ import type { Book } from '../data/types';
 export const COVER_WIDTHS = { sm: 180, md: 320 } as const;
 export type CoverSize = keyof typeof COVER_WIDTHS;
 
-/** A catalogue book's cover is a file of the site; an added book's is kept by the server, in one size. */
 /** A book's own page: the wall with that book open over it (src/App.tsx, worker/index.ts). */
 export const bookUrl = (id: string) => `${import.meta.env.BASE_URL}book/${id}`;
 
-export const coverUrl = (book: Book, size: CoverSize) =>
-  book.added ? `${import.meta.env.BASE_URL}api/covers/${book.id}?v=${book.coverAt ?? 0}` : `${import.meta.env.BASE_URL}covers/${book.id}-${size}.webp`;
+/** The nearest of Open Library's sizes to each of ours. */
+const OPEN_LIBRARY: Record<CoverSize, string> = { sm: 'M', md: 'L' };
+
+/**
+ * A catalogue book's cover is a file of the site; an added book's is kept by the server, in one
+ * size; the covers of the stacks are too many to keep, and shown from Open Library, which asks
+ * for them to be linked to in this way. `default=false` answers 404 for a missing cover, so that
+ * the drawn one stays.
+ */
+export const coverUrl = (book: Book, size: CoverSize) => {
+  if (book.stacks) return `https://covers.openlibrary.org/b/id/${book.cover}-${OPEN_LIBRARY[size]}.jpg?default=false`;
+  return book.added ? `${import.meta.env.BASE_URL}api/covers/${book.id}?v=${book.coverAt ?? 0}` : `${import.meta.env.BASE_URL}covers/${book.id}-${size}.webp`;
+};
 
 const search = (book: Book) => encodeURIComponent(`${book.title} ${book.author}`);
 

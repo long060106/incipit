@@ -6,7 +6,8 @@
     only when the network does not answer;
   - the site's own files, which never change under the same name (the built code in /assets,
     covers, cursors, the pictures of the first page): kept on first use and served from here after;
-  - the text of a book once it has been opened, so a book begun can be read on with no network.
+  - the text of a book once it has been opened, so a book begun can be read on with no network;
+  - the files of the stacks, which change under the same name: asked of the network first too.
 
   Anything under /api is never touched: cards, notebooks and the keeper's desk always go to
   the server. Nor are the PDFs under /books, which are downloads and far too large to keep.
@@ -88,6 +89,8 @@ const networkFirst = async (request) => {
   }
 };
 
+const freshFirst = (request) => fetch(request).then((response) => keep(request, response)).catch(async () => (await caches.match(request, SAME)) ?? Response.error());
+
 const keptWhileFresher = async (request) => {
   const kept = await caches.match(request, SAME);
   const fresh = fetch(request)
@@ -105,5 +108,6 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
   if (request.mode === 'navigate') return event.respondWith(networkFirst(request));
   if (BOOT.includes(url.pathname)) return event.respondWith(keptWhileFresher(request));
+  if (url.pathname.startsWith('/stacks/')) return event.respondWith(freshFirst(request));
   if (KEPT.some((prefix) => url.pathname.startsWith(prefix))) return event.respondWith(keptFirst(request));
 });

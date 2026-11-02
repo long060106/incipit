@@ -4,6 +4,9 @@ import { useRef, useState, type CSSProperties, type PointerEvent as ReactPointer
 import type { MatchResult } from '../lib/match';
 import { coverOrigin, type CoverOrigin } from '../lib/wall';
 
+/** The best of the books that fit: the page stays quick when thousands do. */
+const MOST = 200;
+
 interface TrayProps {
   /** False during the intro, when the tray is invisible and must not take focus. */
   active: boolean;
@@ -144,7 +147,7 @@ export function Tray({ active, result, label, order, onOpenBook, onReset }: Tray
           }}
           onDragStart={(event) => event.preventDefault()}
         >
-          {result.fits.map(({ book }, index) => (
+          {result.fits.slice(0, MOST).map(({ book }, index) => (
             <li key={book.id} style={{ '--i': Math.min(index, 14) } as CSSProperties}>
               <button type="button" onClick={(event) => onOpenBook(book.id, coverOrigin(event.currentTarget))} title={`${book.title}, ${book.author}`}>
                 <img src={coverUrl(book, 'sm')} alt={`${book.title}, ${book.author}`} loading="lazy" />
