@@ -1,5 +1,9 @@
 {
- "turn": 3,
- "pages": {},
- "refused": []
+ "turn": 7,
+ "pages": {
+  "latin american fiction": "done"
+ },
+ "refused": [
+  "/works/OL6658317W"
+ ]
 }
