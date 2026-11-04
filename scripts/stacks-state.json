@@ -1,9 +1,27 @@
 {
- "turn": 7,
+ "turn": 19,
  "pages": {
-  "latin american fiction": "done"
+  "latin american fiction": "done",
+  "korean fiction": "done",
+  "arabic fiction": "done",
+  "indian literature": "done",
+  "turkish fiction": "done",
+  "polish literature": "done",
+  "brazilian fiction": "done",
+  "swedish fiction": "done"
  },
  "refused": [
-  "/works/OL6658317W"
+  "/works/OL6658317W",
+  "/works/OL3773934W",
+  "/works/OL3467511W",
+  "/works/OL17090752W",
+  "/works/OL3773929W",
+  "/works/OL8061279W",
+  "/works/OL15171854W",
+  "/works/OL3519213W",
+  "/works/OL4233112W",
+  "/works/OL10640705W",
+  "/works/OL10419081W",
+  "/works/OL17615537W"
  ]
 }
