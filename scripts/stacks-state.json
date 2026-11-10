@@ -1,5 +1,5 @@
 {
- "turn": 33,
+ "turn": 42,
  "pages": {
   "latin american fiction": "done",
   "korean fiction": "done",
@@ -21,7 +21,8 @@
   "african literature": "done",
   "chinese fiction": "done",
   "russian fiction": "done",
-  "african fiction": "done"
+  "african fiction": "done",
+  "gothic fiction": "done"
  },
  "refused": [
   "/works/OL6658317W",
@@ -76,6 +77,12 @@
   "/works/OL32504126W",
   "/works/OL66501W",
   "/works/OL10328829W",
-  "/works/OL15187506W"
+  "/works/OL15187506W",
+  "/works/OL81591W",
+  "/works/OL695408W",
+  "/works/OL13754370W",
+  "/works/OL15845722W",
+  "/works/OL17184556W",
+  "/works/OL58235W"
  ]
 }
