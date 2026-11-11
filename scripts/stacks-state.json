@@ -1,5 +1,5 @@
 {
- "turn": 42,
+ "turn": 51,
  "pages": {
   "latin american fiction": "done",
   "korean fiction": "done",
@@ -83,6 +83,15 @@
   "/works/OL13754370W",
   "/works/OL15845722W",
   "/works/OL17184556W",
-  "/works/OL58235W"
+  "/works/OL58235W",
+  "/works/OL15839737W",
+  "/works/OL17793648W",
+  "/works/OL7973273W",
+  "/works/OL1737320W",
+  "/works/OL157040W",
+  "/works/OL15314568W",
+  "/works/OL28708075W",
+  "/works/OL28128736W",
+  "/works/OL19754878W"
  ]
 }
