@@ -11,6 +11,7 @@ a-clockwork-orange
 a-connecticut-yankee-in-king-arthurs-court
 a-fine-balance
 a-good-girls-guide-to-murder
+a-grief-observed
 a-happy-death
 a-history-of-western-philosophy
 a-little-life
@@ -18,6 +19,7 @@ a-man-of-the-people
 a-mans-head
 a-pale-view-of-hills
 a-passage-to-india
+a-peoples-history-of-the-united-states
 a-princess-of-mars
 a-room-of-ones-own
 a-study-in-scarlet
@@ -29,6 +31,7 @@ a-wild-sheep-chase
 a-wizard-of-earthsea
 a-woman-in-berlin
 a-wrinkle-in-time
+abraham-lincoln-the-prairie-years
 ada-or-ardor-a-family-chronicle
 african-short-stories
 against-nature
@@ -62,6 +65,7 @@ aura
 autobiography-of-a-yogi
 babbitt
 back-to-eden
+bad-feminist
 baudolino
 being-and-nothingness
 being-and-time
@@ -72,8 +76,10 @@ beware-of-pity
 black-notice
 bleak-house
 bonjour-tristesse
+borderlands-la-frontera
 braiding-sweetgrass
 breakfast-of-champions
+bridge-to-terabithia
 brief-answers-to-the-big-questions
 cant-hurt-me
 capital
@@ -125,12 +131,14 @@ death-on-the-nile
 deep-work
 demian
 democracy-in-america
+demon-slayer-kimetsu-no-yaiba-vol-1
 demons
 despair
 destroy-me
 diary-of-a-country-priest
 diary-of-a-wimpy-kid
 different-seasons
+discipline-and-punish
 disclosure
 divergent
 do-androids-dream-of-electric-sheep
@@ -153,6 +161,7 @@ enders-game
 eragon
 eros-the-bittersweet
 esperanza-rising
+essays
 eugene-onegin
 eugenie-grandet
 eva-luna
@@ -166,6 +175,7 @@ faust
 fear-and-trembling
 fear-no-evil
 fight-club
+finding-me
 flowers-for-algernon
 flowers-in-the-attic
 for-whom-the-bell-tolls
@@ -174,12 +184,17 @@ foundation
 foundation-and-empire
 fox-in-socks
 friends-lovers-and-the-big-terrible-thing
+fun-home
 galapagos
 games-people-play
+gathering-blue
+gender-queer
 georges-marvelous-medicine
 giovannis-room
 go-tell-it-on-the-mountain
 godel-escher-bach-an-eternal-golden-braid
+going-solo
+golden-son
 gone-girl
 gone-with-the-wind
 good-girl-bad-blood
@@ -202,6 +217,7 @@ history-of-the-peloponnesian-war
 homo-deus-a-brief-history-of-tomorrow
 hopscotch
 house-of-leaves
+how-to-be-an-antiracist
 how-to-win-friends-and-influence-people
 human-acts
 hyperion
@@ -324,6 +340,7 @@ of-love-and-shadows
 of-mice-and-men
 on-the-road
 on-the-social-contract
+on-tyranny
 on-writing
 once-upon-a-broken-heart
 one-day-in-the-life-of-ivan-denisovich
@@ -357,6 +374,8 @@ please-look-after-mom
 poems
 poetics
 politics
+pretties
+prince-caspian
 project-hail-mary
 prometheus-bound
 punk-57
@@ -386,6 +405,7 @@ shall-we-tell-the-president
 shatter-me
 shoe-dog
 shogun
+sister-outsider
 six-of-crows
 skeleton-crew
 slammed
@@ -415,6 +435,7 @@ tender-is-the-night
 the-4-hour-workweek
 the-48-laws-of-power
 the-5-am-club
+the-5th-wave
 the-a-b-c-murders
 the-adolescent
 the-aeneid
@@ -575,6 +596,7 @@ the-mysterious-affair-at-styles
 the-mysterious-island
 the-mystery-of-the-blue-train
 the-myth-of-sisyphus
+the-mythical-man-month
 the-name-of-the-wind
 the-new-jim-crow
 the-nightingale
@@ -582,6 +604,7 @@ the-ocean-at-the-end-of-the-lane
 the-origins-of-totalitarianism
 the-outsiders
 the-paket
+the-palace-of-illusions
 the-passage
 the-passion
 the-people-in-the-trees
@@ -605,6 +628,7 @@ the-rebel
 the-return-of-sherlock-holmes
 the-return-of-the-king
 the-rise-and-fall-of-the-third-reich
+the-running-man
 the-satanic-verses
 the-scorch-trials
 the-screwtape-letters
@@ -677,6 +701,7 @@ twilight
 two-little-girls-in-blue
 uglies
 ugly-love
+unbroken
 uncle-vanya
 unravel-me
 voices-from-chernobyl
@@ -690,6 +715,7 @@ welcome-to-dead-house
 well-always-have-summer
 what-if
 when-breath-becomes-air
+when-i-was-puerto-rican
 when-the-body-says-no
 when-the-sleeper-awakes
 where-the-red-fern-grows
@@ -701,6 +727,7 @@ wicked
 woman-at-point-zero
 women-in-love
 wonder
+wool
 world-war-z
 wyrd-sisters
 yellowface
