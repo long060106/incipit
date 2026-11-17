@@ -1,7 +1,8 @@
 # Adds books to the stacks every day (scripts/add-books.mjs). The commit it makes deploys the
 # site, as any push to main does. Needs one secret: GEMINI_API_KEY, in the repository's settings.
 #
-# Run by hand from the Actions tab, it can try for more books, or take books out by id.
+# Run by hand from the Actions tab, it can try for more books, keep to some shelves (or to the
+# classics), or take books out by id.
 name: Add books
 
 on:
@@ -12,6 +13,12 @@ on:
       batch:
         description: How many books to add
         default: '50'
+      shelves:
+        description: Only these shelves, separated by commas, or "classics" for old books from the classic shelves
+        default: ''
+      before:
+        description: Only books first published before this year (empty for any)
+        default: ''
       remove:
         description: Ids of books to take out, separated by commas (adds none)
         default: ''
@@ -36,6 +43,8 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           BATCH: ${{ inputs.batch || '50' }}
           REMOVE: ${{ inputs.remove }}
+          SHELVES: ${{ inputs.shelves }}
+          BEFORE: ${{ inputs.before }}
       - name: Keep what was written
         if: always()
         run: |

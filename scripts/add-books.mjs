@@ -6,6 +6,8 @@
 //   GEMINI_API_KEY=... BATCH=50 node scripts/add-books.mjs     add up to BATCH books
 //   node scripts/add-books.mjs --dry                           show what would be asked, write nothing
 //   REMOVE=some-book,another node scripts/add-books.mjs        take books out, for good
+//   SHELVES=classics BATCH=50 node scripts/add-books.mjs       only old books, from the shelves of CLASSICS
+//   SHELVES="poetry,drama" BEFORE=1900 node ...                only these shelves, only books from before 1900
 //
 // The free tier's daily limit ends a run early, which loses nothing: what was written is kept, and
 // the next run goes on from there. The repository is public, and so are the logs of its runs: the
@@ -99,7 +101,27 @@ const NEAR = [
   'thriller',
   'romance',
 ];
-const SHELVES = [...AFAR, ...NEAR];
+const CLASSICS = [
+  'classic literature',
+  'english literature',
+  'american literature',
+  'russian literature',
+  'french literature',
+  'german literature',
+  'gothic fiction',
+  'italian fiction',
+  'spanish fiction',
+  'irish literature',
+  'japanese fiction',
+  'satire',
+  'drama',
+  'poetry',
+  'philosophy',
+];
+/** A run by hand may keep to some shelves, and to books first published before a year. */
+const ASKED = (process.env.SHELVES ?? '').trim();
+const SHELVES = ASKED === 'classics' ? CLASSICS : ASKED ? ASKED.split(',').map((shelf) => shelf.trim()).filter(Boolean) : [...AFAR, ...NEAR];
+const BEFORE = Number(process.env.BEFORE) || (ASKED === 'classics' ? 1950 : 0);
 
 /** Not one book but several, or a book about a book. */
 const NOT_A_BOOK = /box(ed)? set|omnibus|anthology|collection|collected|^the complete|complete (works|novels|stories)|trilogy|\bseries\b|\bbooks? \d|\bvolumes?\b|\bvol\.|summary of|study guide|sparknotes|cliffs ?notes|workbook|\bset\b/i;
@@ -272,7 +294,8 @@ async function heldNow(books, state) {
 }
 
 async function search(shelf, page) {
-  const q = `subject:"${shelf}" AND ${AFAR.includes(shelf) ? ENOUGH_FROM_AFAR : ENOUGH} ${LEAVE_OUT}`;
+  const old = BEFORE ? ` AND first_publish_year:[* TO ${BEFORE - 1}]` : '';
+  const q = `subject:"${shelf}" AND ${AFAR.includes(shelf) ? ENOUGH_FROM_AFAR : ENOUGH}${old} ${LEAVE_OUT}`;
   const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&sort=readinglog&limit=100&page=${page}&fields=${FIELDS}`;
   const response = await fetch(url, { headers: { 'User-Agent': AGENT }, signal: AbortSignal.timeout(60000) });
   if (!response.ok) throw new Error(`Open Library answered ${response.status}.`);
@@ -280,7 +303,9 @@ async function search(shelf, page) {
 }
 
 /** The next books to ask about, a few from each shelf in turn. */
-async function* candidates(held, state) {
+async function* candidates(held, daily) {
+  // A run kept to some shelves reads its own pages, and leaves the daily runs where they were.
+  const state = ASKED || BEFORE ? { turn: 0, pages: {} } : daily;
   const byAuthor = new Map();
   let empty = 0;
   while (empty < SHELVES.length) {
@@ -418,7 +443,9 @@ async function main() {
         const { book } = written;
         const name = book && sameBook(book.title, book.author);
         // Its name in English may be that of a book held under the same name.
-        const reason = name && name !== sameBook(doc.title, doc.author_name[0]) && held.names.has(name) ? 'held' : written.reason;
+        // Open Library's first year is sometimes that of a stray record: the model's year decides.
+        const late = BEFORE && book && book.year >= BEFORE;
+        const reason = name && name !== sameBook(doc.title, doc.author_name[0]) && held.names.has(name) ? 'held' : late ? 'too-late' : written.reason;
         if (!reason) {
           const entry = { id: idFor(book, doc, books), ...book };
           held.names.add(name);

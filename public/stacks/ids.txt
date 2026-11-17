@@ -30,7 +30,6 @@ a-wrinkle-in-time
 ada-or-ardor-a-family-chronicle
 african-short-stories
 against-nature
-alices-adventures-in-wonderland-and-through-the-looking-glass
 all-about-love
 all-men-are-mortal
 all-the-light-we-cannot-see
@@ -64,7 +63,6 @@ bel-ami
 better-than-the-movies
 between-the-world-and-me
 beware-of-pity
-biology
 black-notice
 bonjour-tristesse
 braiding-sweetgrass
@@ -81,7 +79,6 @@ cats-cradle
 central-park
 charlie-and-the-chocolate-factory
 charlottes-web
-chemistry-the-central-science
 chicka-chicka-boom-boom
 children-of-time
 chronicle-of-a-death-foretold
