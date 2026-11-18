@@ -1,5 +1,5 @@
 {
- "turn": 38,
+ "turn": 48,
  "pages": {
   "latin american fiction": "done",
   "korean fiction": "done",
@@ -28,7 +28,8 @@
   "classic literature": 2,
   "magical realism": "done",
   "history": 2,
-  "science": 2
+  "science": 2,
+  "science fiction": 2
  },
  "refused": [
   "/works/OL6658317W",
@@ -148,6 +149,23 @@
   "/works/OL26386W",
   "/works/OL1455259W",
   "/works/OL16825084W",
-  "/works/OL15399118W"
+  "/works/OL15399118W",
+  "/works/OL24350123W",
+  "/works/OL27201W",
+  "/works/OL1930743W",
+  "/works/OL16591835W",
+  "/works/OL1826387W",
+  "/works/OL16821124W",
+  "/works/OL45804W",
+  "/works/OL17823218W",
+  "/works/OL34028551W",
+  "/works/OL40939W",
+  "/works/OL20033244W",
+  "/works/OL2780331W",
+  "/works/OL21237606W",
+  "/works/OL19747970W",
+  "/works/OL28954802W",
+  "/works/OL25088743W",
+  "/works/OL16142316W"
  ]
 }
