@@ -9,7 +9,9 @@ a-certain-hunger
 a-child-called-it
 a-clash-of-kings
 a-clockwork-orange
+a-confederacy-of-dunces
 a-connecticut-yankee-in-king-arthurs-court
+a-discovery-of-witches
 a-fine-balance
 a-good-girls-guide-to-murder
 a-grief-observed
@@ -22,9 +24,11 @@ a-pale-view-of-hills
 a-passage-to-india
 a-peoples-history-of-the-united-states
 a-princess-of-mars
+a-raisin-in-the-sun
 a-room-of-ones-own
 a-study-in-scarlet
 a-suitable-boy
+a-thousand-boy-kisses
 a-thousand-splendid-suns
 a-time-to-kill
 a-tree-grows-in-brooklyn
@@ -36,9 +40,11 @@ a-wrinkle-in-time
 abraham-lincoln-the-prairie-years
 ada-or-ardor-a-family-chronicle
 african-short-stories
+after-the-funeral
 against-nature
 all-about-love
 all-men-are-mortal
+all-the-bright-places
 all-the-light-we-cannot-see
 almond
 along-came-a-spider
@@ -56,9 +62,11 @@ anne-of-windy-poplars
 annihilation
 anthem
 antifragile-things-that-gain-from-disorder
+antigone
 anxious-people
 apology
 arrow-of-god
+artificial-intelligence-a-modern-approach
 arturos-island
 as-a-man-thinketh
 as-good-as-dead
@@ -74,6 +82,7 @@ back-to-eden
 bad-feminist
 bambi
 baudolino
+beach-read
 behave
 behold-a-pale-horse
 being-and-nothingness
@@ -92,7 +101,9 @@ breakfast-of-champions
 breaking-the-habit-of-being-yourself
 bridge-to-terabithia
 brief-answers-to-the-big-questions
+brown-girl-dreaming
 calculus
+call-me-by-your-name
 cant-hurt-me
 capital
 captains-of-the-sands
@@ -107,6 +118,7 @@ charlie-and-the-chocolate-factory
 charlottes-web
 chicka-chicka-boom-boom
 children-of-time
+christine
 chronicle-of-a-death-foretold
 cinder
 cirque-du-freak
@@ -137,6 +149,7 @@ dance-dance-dance
 dark-matter
 dark-places
 darkest-fear
+darkly-dreaming-dexter
 dawn-to-the-west
 deal-breaker
 dear-ijeawele-or-a-feminist-manifesto-in-fifteen-suggestions
@@ -194,14 +207,17 @@ fear-no-evil
 fight-club
 finding-me
 fire-blood
+flow
 flowers-for-algernon
 flowers-in-the-attic
+for-colored-girls-who-have-considered-suicide-when-the-rainbow-is-enuf
 for-whom-the-bell-tolls
 foucaults-pendulum
 foundation
 foundation-and-empire
 fox-in-socks
 friends-lovers-and-the-big-terrible-thing
+from-the-earth-to-the-moon
 fun-home
 galapagos
 games-people-play
@@ -218,6 +234,7 @@ gone-with-the-wind
 good-girl-bad-blood
 green-eggs-and-ham
 guards-guards
+guts
 half-of-a-yellow-sun
 hard-boiled-wonderland-and-the-end-of-the-world
 hard-times
@@ -231,6 +248,7 @@ heart-of-a-dog
 hearts-in-atlantis
 her-body-and-other-parties
 his-last-bow
+history-of-rome
 history-of-the-peloponnesian-war
 homo-deus-a-brief-history-of-tomorrow
 hopscotch
@@ -252,6 +270,7 @@ if-on-a-winters-night-a-traveler
 if-we-were-villains
 ignite-me
 im-glad-my-mom-died
+in-cold-blood
 in-defense-of-food
 in-evil-hour
 in-search-of-lost-time
@@ -277,6 +296,7 @@ johnny-tremain
 jonathan-livingston-seagull
 jos-boys
 journey-to-the-end-of-the-night
+journey-to-the-west
 julius-caesar
 junie-b-jones-and-a-little-monkey-business
 just-after-sunset
@@ -337,6 +357,7 @@ molecular-biology-of-the-cell
 moonwalking-with-einstein
 moralia
 mort
+mother-goose-tales
 mother-night
 murder-on-the-links
 murder-on-the-orient-express
@@ -357,11 +378,13 @@ nineteen-minutes
 no-longer-at-ease
 no-one-writes-to-the-colonel
 northern-lights
+noughts-crosses
 number-the-stars
 oblomov
 ocean-sea
 of-love-and-shadows
 of-mice-and-men
+oh-the-places-youll-go
 on-the-road
 on-the-social-contract
 on-tyranny
@@ -371,7 +394,9 @@ one-day-in-the-life-of-ivan-denisovich
 one-flew-over-the-cuckoos-nest
 one-no-one-and-one-hundred-thousand
 one-of-us-is-lying
+one-of-us-is-next
 one-shot
+origin
 orlando
 oryx-and-crake
 othello
@@ -421,6 +446,7 @@ revolution-2020
 rich-dad-poor-dad-for-teens
 ring
 roadside-picnic
+rock-paper-scissors
 room
 sacred-games
 saint-manuel-bueno-martyr
@@ -442,6 +468,8 @@ smillas-sense-of-snow
 snow
 snow-crash
 so-long-a-letter
+sodom-and-gomorrah
+something-i-never-told-you
 something-wicked-this-way-comes
 sonnets
 sophies-world
@@ -449,6 +477,7 @@ spare
 spring-snow
 start-with-why
 steve-jobs
+storm-of-the-century
 suicide-med
 suite-francaise
 sula
@@ -474,6 +503,7 @@ the-angels-game
 the-anthropocene-reviewed
 the-antichrist
 the-art-of-loving
+the-art-of-money-getting
 the-art-of-seduction
 the-art-of-thinking-clearly
 the-artists-way
@@ -498,6 +528,7 @@ the-boy-who-harnessed-the-wind
 the-buddha-in-the-attic
 the-burning-plain
 the-butterfly-garden
+the-butterflys-burden
 the-case-book-of-sherlock-holmes
 the-castle
 the-castle-of-otranto
@@ -513,6 +544,7 @@ the-concubine
 the-cossacks
 the-courage-to-be-disliked
 the-cruel-prince
+the-crying-of-lot-49
 the-curious-incident-of-the-dog-in-the-night-time
 the-da-vinci-code
 the-days-of-abandonment
@@ -522,6 +554,7 @@ the-deal
 the-death-cure
 the-death-of-ivan-ilyich
 the-design-of-everyday-things
+the-diary-of-anne-frank
 the-discovery-of-heaven
 the-dispossessed
 the-dream-of-the-red-chamber
@@ -539,6 +572,7 @@ the-feast-of-the-goat
 the-fifth-woman
 the-fine-print
 the-fire-next-time
+the-five-people-you-meet-in-heaven
 the-flowers-of-evil
 the-four-agreements
 the-gambler
@@ -551,6 +585,7 @@ the-giver
 the-giving-tree
 the-glass-bead-game
 the-glass-castle
+the-glass-menagerie
 the-god-delusion
 the-golden-ass
 the-grapes-of-wrath
@@ -569,6 +604,7 @@ the-hollow
 the-horse-and-his-boy
 the-hostile-hospital
 the-hours
+the-house-of-hades
 the-house-of-mirth
 the-house-of-the-dead
 the-housemaids-secret
@@ -586,9 +622,11 @@ the-kitchen-gods-wife
 the-kybalion
 the-lady-of-the-camellias
 the-lady-of-the-lake
+the-last-battle
 the-last-days-of-hitler
 the-last-days-of-socrates
 the-last-precinct
+the-last-straw
 the-last-wish
 the-late-mattia-pascal
 the-lathe-of-heaven
@@ -607,6 +645,7 @@ the-lord-of-the-rings
 the-lost-hero
 the-lost-honour-of-katharina-blum
 the-lost-symbol
+the-lost-world-crichton
 the-love-hypothesis
 the-lover
 the-magic-mountain
@@ -635,6 +674,7 @@ the-mythical-man-month
 the-name-of-the-wind
 the-new-girl
 the-new-jim-crow
+the-night-circus
 the-nightingale
 the-ocean-at-the-end-of-the-lane
 the-omnivores-dilemma
@@ -644,12 +684,15 @@ the-paket
 the-palace-of-illusions
 the-passage
 the-passion
+the-pearl
 the-people-in-the-trees
 the-perks-of-being-a-wallflower
 the-phantom-tollbooth
 the-pilgrims-progress
 the-pillars-of-the-earth
 the-plague
+the-poet-x
+the-posthumous-memoirs-of-bras-cubas
 the-power-of-habit
 the-power-of-now
 the-power-of-positive-thinking
@@ -662,6 +705,7 @@ the-rape-of-the-lock
 the-raven
 the-reader
 the-rebel
+the-restaurant-at-the-end-of-the-universe
 the-return-of-sherlock-holmes
 the-return-of-the-king
 the-rise-and-fall-of-the-third-reich
@@ -699,8 +743,10 @@ the-suitcase
 the-summer-book
 the-sun-also-rises
 the-sun-and-her-flowers
+the-sword-of-summer
 the-tempest
 the-things-you-can-see-only-when-you-slow-down
+the-thursday-murder-club
 the-time-of-the-hero
 the-tipping-point
 the-titans-curse
@@ -721,6 +767,7 @@ the-way-of-kings
 the-way-of-zen
 the-white-book
 the-white-castle
+the-white-lioness
 the-wicked-king
 the-wind-up-bird-chronicle
 the-witches
@@ -735,12 +782,14 @@ things-we-never-got-over
 think-again
 thinking-in-systems
 thirteen-reasons-why
+this-is-how-you-lose-the-time-war
 this-side-of-paradise
 throne-of-glass
 through-the-looking-glass
 to-all-the-boys-ive-loved-before
 to-the-lighthouse
 trading-in-the-zone
+treasure
 tripwire
 tuesdays-with-morrie
 twenty-love-poems-and-a-song-of-despair
@@ -761,6 +810,7 @@ we-should-all-be-feminists
 welcome-to-dead-house
 well-always-have-summer
 what-if
+whatever
 when-breath-becomes-air
 when-i-was-puerto-rican
 when-the-body-says-no
