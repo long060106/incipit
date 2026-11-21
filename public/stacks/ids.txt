@@ -12,6 +12,7 @@ a-clockwork-orange
 a-confederacy-of-dunces
 a-connecticut-yankee-in-king-arthurs-court
 a-discovery-of-witches
+a-feast-for-crows
 a-fine-balance
 a-good-girls-guide-to-murder
 a-good-man-is-hard-to-find
@@ -54,8 +55,10 @@ along-came-a-spider
 altered-carbon
 american-gods
 american-pastoral
+american-prometheus
 american-psycho
 amerika
+amusing-ourselves-to-death
 an-autobiography-the-story-of-my-experiments-with-truth
 anabasis
 and-quiet-flows-the-don
@@ -163,6 +166,7 @@ deal-breaker
 dear-ijeawele-or-a-feminist-manifesto-in-fifteen-suggestions
 death-of-a-salesman
 death-on-the-nile
+debt-the-first-5-000-years
 deep-work
 demian
 democracy-in-america
@@ -185,6 +189,8 @@ dork-diaries
 double-down
 down-and-out-in-paris-and-london
 dragon-rider
+dragonflight
+drive-the-surprising-truth-about-what-motivates-us
 dune-messiah
 east-of-eden
 eat-that-frog
@@ -212,6 +218,7 @@ faceless-killers
 fairy-tales-and-stories
 faust
 fear-and-trembling
+fear-and-trembling-kierkegaard
 fear-no-evil
 fight-club
 finding-me
@@ -234,10 +241,12 @@ games-people-play
 gathering-blue
 gender-queer
 georges-marvelous-medicine
+gideon-the-ninth
 giovannis-room
 go-tell-it-on-the-mountain
 godel-escher-bach-an-eternal-golden-braid
 gods-bits-of-wood
+going-postal
 going-solo
 golden-son
 gone-girl
@@ -258,6 +267,7 @@ harry-potter-and-the-order-of-the-phoenix
 heart-of-a-dog
 hearts-in-atlantis
 her-body-and-other-parties
+hillbilly-elegy
 his-last-bow
 history-of-rome
 history-of-the-peloponnesian-war
@@ -333,6 +343,7 @@ letters-to-a-young-poet
 letters-to-milena
 leviathan
 life-a-users-manual
+life-as-we-knew-it
 life-on-the-mississippi
 little-big
 long-walk-to-freedom
@@ -347,7 +358,9 @@ maigret-and-the-tramp
 malgudi-days
 manon-lescaut
 mans-fate
+manufacturing-consent
 martin-eden
+mastery
 matilda
 maurice
 maus
@@ -371,6 +384,7 @@ mist
 mockingjay
 molecular-biology-of-the-cell
 molloy
+money-master-the-game
 moonwalking-with-einstein
 moralia
 mort
@@ -383,10 +397,12 @@ my-sister-the-serial-killer
 nada
 nana
 native-son
+natural-history
 nausea
 nervous-conditions
 neuromancer
 never-split-the-difference
+neverwhere
 new-moon
 nicomachean-ethics
 night
@@ -397,14 +413,17 @@ no-longer-at-ease
 no-one-writes-to-the-colonel
 northern-lights
 noughts-crosses
+nudge
 number-the-stars
 oblomov
 ocean-sea
 of-love-and-shadows
 of-mice-and-men
 oh-the-places-youll-go
+old-school
 on-food-and-cooking
 on-heroes-and-tombs
+on-liberty
 on-the-road
 on-the-social-contract
 on-tyranny
@@ -452,9 +471,12 @@ politics
 pollyanna
 pretties
 prince-caspian
+principles-for-dealing-with-the-changing-world-order
+prisoners-of-geography
 project-hail-mary
 prometheus-bound
 prozac-nation
+psycho-cybernetics
 punk-57
 purple-hibiscus
 pygmalion
@@ -466,9 +488,11 @@ red-dragon
 red-queen
 red-rising
 red-sorghum
+red-storm-rising
 red-white-royal-blue
 redshirts
 reminders-of-him
+rendezvous-with-rama
 requiem-for-a-spanish-peasant
 resurrection
 revolution-2020
@@ -482,6 +506,7 @@ saint-manuel-bueno-martyr
 salems-lot
 sarahs-key
 scythe
+second-foundation
 severance
 shall-we-tell-the-president
 shatter-me
@@ -514,6 +539,7 @@ storm-of-the-century
 suicide-med
 suite-francaise
 sula
+superintelligence
 surrounded-by-idiots
 symposium
 talk-like-ted
@@ -540,6 +566,7 @@ the-art-of-money-getting
 the-art-of-seduction
 the-art-of-thinking-clearly
 the-artists-way
+the-audacity-of-hope
 the-austere-academy
 the-autobiography-of-malcolm-x
 the-autumn-of-the-patriarch
@@ -549,6 +576,8 @@ the-battle-of-the-labyrinth
 the-bell-jar
 the-bellini-bride
 the-bfg
+the-blank-slate
+the-blind-watchmaker
 the-blue-castle
 the-bluest-eye
 the-body-in-the-library
@@ -556,6 +585,7 @@ the-body-keeps-the-score
 the-bonesetters-daughter
 the-book-of-disquiet
 the-book-of-five-rings
+the-botany-of-desire
 the-boxcar-children
 the-boy-in-the-striped-pyjamas
 the-boy-who-harnessed-the-wind
@@ -581,6 +611,7 @@ the-cossacks
 the-courage-to-be-disliked
 the-cruel-prince
 the-crying-of-lot-49
+the-cuckoos-calling
 the-curious-incident-of-the-dog-in-the-night-time
 the-da-vinci-code
 the-day-of-the-triffids
@@ -628,10 +659,12 @@ the-god-delusion
 the-golden-ass
 the-grapes-of-wrath
 the-graveyard-book
+the-great-conversation
 the-great-god-pan
 the-green-mile
 the-green-witch
 the-gunslinger
+the-hating-game
 the-haunting-of-hill-house
 the-help
 the-hidden-life-of-trees
@@ -666,6 +699,7 @@ the-lady-of-the-lake
 the-last-battle
 the-last-days-of-hitler
 the-last-days-of-socrates
+the-last-olympian
 the-last-precinct
 the-last-straw
 the-last-wish
@@ -708,6 +742,7 @@ the-millionaire-master-plan
 the-monk-who-sold-his-ferrari
 the-moors-last-sigh
 the-mountain-is-you
+the-murders-in-the-rue-morgue
 the-mysterious-affair-at-styles
 the-mysterious-island
 the-mystery-of-the-blue-train
@@ -718,6 +753,7 @@ the-new-girl
 the-new-jim-crow
 the-night-circus
 the-nightingale
+the-obstacle-is-the-way
 the-ocean-at-the-end-of-the-lane
 the-omnivores-dilemma
 the-origins-of-totalitarianism
@@ -733,6 +769,7 @@ the-phantom-tollbooth
 the-pilgrims-progress
 the-pillars-of-the-earth
 the-plague
+the-plot-against-america
 the-poet-x
 the-posthumous-memoirs-of-bras-cubas
 the-power-of-habit
@@ -766,16 +803,19 @@ the-secret-agent
 the-secret-in-old-edinburgh
 the-selection
 the-sellout
+the-seven-deaths-of-evelyn-hardcastle
 the-seven-husbands-of-evelyn-hugo
 the-shining
 the-sign-of-four
 the-silence-of-the-lambs
 the-silent-patient
 the-silmarillion
+the-silver-chair
 the-sirens-of-titan
 the-sixth-extinction
 the-slave-girl
 the-slippery-slope
+the-son-of-neptune
 the-song-of-achilles
 the-spanish-love-deception
 the-stand
@@ -783,6 +823,7 @@ the-stepford-wives
 the-story-of-a-new-name
 the-story-of-philosophy
 the-story-of-the-lost-child
+the-subtle-knife
 the-suitcase
 the-summer-book
 the-sun-also-rises
@@ -792,6 +833,7 @@ the-tempest
 the-things-you-can-see-only-when-you-slow-down
 the-thursday-murder-club
 the-time-of-the-hero
+the-time-travelers-wife
 the-tipping-point
 the-titans-curse
 the-tobacconist
@@ -817,6 +859,7 @@ the-wind-up-bird-chronicle
 the-witches
 the-witches-of-eastwick
 the-worldly-philosophers
+the-wretched-of-the-earth
 the-year-of-the-flood
 the-yiddish-policemens-union
 then-she-was-gone
@@ -835,6 +878,7 @@ through-the-looking-glass
 to-all-the-boys-ive-loved-before
 to-selena-with-love
 to-the-lighthouse
+tools-of-titans
 trading-in-the-zone
 treasure
 tripwire
@@ -849,10 +893,12 @@ unbroken
 uncle-vanya
 unravel-me
 untamed
+v-for-vendetta
 voices-from-chernobyl
 waiting-for-godot
 watchmen
 watership-down
+ways-of-seeing
 we-have-always-lived-in-the-castle
 we-need-to-talk-about-kevin
 we-should-all-be-feminists
@@ -870,10 +916,13 @@ where-the-sidewalk-ends
 white-nights
 who-moved-my-cheese
 whose-body
+why-does-he-do-that
 why-nations-fail
 why-we-sleep
 wicked
 wintersmith
+without-fail
+wolves-of-the-calla
 woman-at-point-zero
 women-in-love
 wonder
@@ -882,6 +931,7 @@ world-war-z
 wyrd-sisters
 yellowface
 yotsuba-vol-1
+you-are-a-badass
 youve-reached-sam
 zen-and-the-art-of-motorcycle-maintenance
 zero-to-one
