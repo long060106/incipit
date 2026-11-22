@@ -1,5 +1,5 @@
 {
- "turn": 49,
+ "turn": 30,
  "pages": {
   "latin american fiction": "done",
   "korean fiction": "done",
@@ -35,7 +35,11 @@
   "translations into english": 2,
   "french literature": "done",
   "philosophy": 2,
-  "psychology": 2
+  "psychology": 2,
+  "american literature": 2,
+  "nonfiction": 2,
+  "romance": 2,
+  "german literature": "done"
  },
  "refused": [
   "/works/OL6658317W",
@@ -209,6 +213,22 @@
   "/works/OL30150379W",
   "/works/OL20029303W",
   "/works/OL27172270W",
-  "/works/OL1984422W"
+  "/works/OL1984422W",
+  "/works/OL362695W",
+  "/works/OL20650912W",
+  "/works/OL24314065W",
+  "/works/OL20893778W",
+  "/works/OL29330646W",
+  "/works/OL35718442W",
+  "/works/OL166934W",
+  "/works/OL1214250W",
+  "/works/OL156213W",
+  "/works/OL15186137W",
+  "/works/OL15715748W",
+  "/works/OL9156413W",
+  "/works/OL17739027W",
+  "/works/OL4056475W",
+  "/works/OL4278218W",
+  "/works/OL134371W"
  ]
 }
