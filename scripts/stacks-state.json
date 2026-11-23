@@ -1,5 +1,5 @@
 {
- "turn": 30,
+ "turn": 32,
  "pages": {
   "latin american fiction": "done",
   "korean fiction": "done",
@@ -39,7 +39,8 @@
   "american literature": 2,
   "nonfiction": 2,
   "romance": 2,
-  "german literature": "done"
+  "german literature": "done",
+  "literary fiction": "done"
  },
  "refused": [
   "/works/OL6658317W",
