@@ -48,6 +48,7 @@ african-short-stories
 after-the-funeral
 against-nature
 all-about-love
+all-boys-arent-blue
 all-fires-the-fire
 all-men-are-mortal
 all-the-bright-places
@@ -129,6 +130,7 @@ caraval
 carrie
 catch-22
 catching-fire
+cato
 cats-cradle
 cell
 central-park
@@ -178,6 +180,7 @@ death-on-the-nile
 debt-the-first-5-000-years
 deception
 deep-work
+delirium
 demian
 democracy-in-america
 demon-copperhead
@@ -247,6 +250,7 @@ foucaults-pendulum
 foundation
 foundation-and-empire
 fox-in-socks
+freedom-from-the-known
 friends-lovers-and-the-big-terrible-thing
 from-the-earth-to-the-moon
 fun-home
@@ -291,6 +295,7 @@ homo-deus-a-brief-history-of-tomorrow
 hopeless
 hopscotch
 house-of-leaves
+how-to
 how-to-be-an-antiracist
 how-to-do-nothing
 how-to-win-friends-and-influence-people
@@ -487,6 +492,7 @@ passing
 paula
 pebble-in-the-sky
 pedagogy-of-the-oppressed
+perdido-street-station
 perfume
 persian-letters
 persuader
@@ -570,6 +576,7 @@ sophies-world
 spare
 spring-snow
 start-with-why
+steelheart
 steve-jobs
 stone-butch-blues
 storm-of-the-century
@@ -815,6 +822,7 @@ the-plague
 the-plot-against-america
 the-poet-x
 the-posthumous-memoirs-of-bras-cubas
+the-power
 the-power-of-habit
 the-power-of-now
 the-power-of-positive-thinking
@@ -969,6 +977,7 @@ who-moved-my-cheese
 whos-afraid-of-virginia-woolf
 whose-body
 why-does-he-do-that
+why-im-no-longer-talking-to-white-people-about-race
 why-nations-fail
 why-we-sleep
 wicked
