@@ -26,6 +26,7 @@ a-mans-head
 a-mans-place
 a-pale-view-of-hills
 a-passage-to-india
+a-pattern-language
 a-peoples-history-of-the-united-states
 a-princess-of-mars
 a-raisin-in-the-sun
@@ -64,6 +65,7 @@ amerika
 amusing-ourselves-to-death
 an-autobiography-the-story-of-my-experiments-with-truth
 anabasis
+anathem
 and-quiet-flows-the-don
 angelas-ashes
 angels-demons
@@ -93,6 +95,7 @@ autobiography-of-a-yogi
 babbitt
 back-to-eden
 bad-feminist
+bad-luck-and-trouble
 bag-of-bones
 bambi
 baudolino
@@ -153,6 +156,7 @@ confessions-minato
 confessions-of-a-mask
 confessions-of-zeno
 contact
+contagious
 coraline
 cousin-bette
 crazy-rich-asians
@@ -168,6 +172,7 @@ cujo
 cutting-for-stone
 cyclops
 dance-dance-dance
+dare-to-lead
 dark-matter
 dark-places
 darkest-fear
@@ -249,6 +254,7 @@ forever
 foucaults-pendulum
 foundation
 foundation-and-empire
+four-thousand-weeks
 fox-in-socks
 freedom-from-the-known
 friends-lovers-and-the-big-terrible-thing
@@ -323,6 +329,7 @@ in-evil-hour
 in-search-of-lost-time
 in-the-miso-soup
 in-the-skin-of-a-lion
+in-the-woods
 incidents-in-the-life-of-a-slave-girl
 inferno
 inferno-brown
@@ -426,6 +433,7 @@ much-ado-about-nothing
 murder-on-the-links
 murder-on-the-orient-express
 murphy
+musicophilia
 my-lesbian-experience-with-loneliness
 my-sister-the-serial-killer
 nada
@@ -532,6 +540,7 @@ red-sorghum
 red-storm-rising
 red-white-royal-blue
 redshirts
+redwall
 reminders-of-him
 rendezvous-with-rama
 requiem-for-a-spanish-peasant
@@ -569,6 +578,7 @@ snow
 snow-crash
 so-long-a-letter
 sodom-and-gomorrah
+sold
 something-i-never-told-you
 something-wicked-this-way-comes
 sonnets
@@ -620,6 +630,7 @@ the-battle-of-the-labyrinth
 the-bell-jar
 the-bellini-bride
 the-bfg
+the-black-dahlia
 the-blank-slate
 the-blind-watchmaker
 the-blue-castle
@@ -643,6 +654,8 @@ the-castle-of-otranto
 the-cat-in-the-hat
 the-charterhouse-of-parma
 the-cherry-orchard
+the-city-of-ember
+the-city-the-city
 the-client
 the-club-dumas
 the-color-of-water
@@ -671,6 +684,7 @@ the-diary-of-anne-frank
 the-discovery-of-heaven
 the-dispossessed
 the-dogs-of-riga
+the-drawing-of-the-three
 the-dream-of-the-red-chamber
 the-duke-and-i
 the-elementary-particles
@@ -692,6 +706,7 @@ the-five-people-you-meet-in-heaven
 the-flanders-panel
 the-flowers-of-evil
 the-four-agreements
+the-freedom-writers-diary
 the-gambler
 the-game-of-life-and-how-to-play-it
 the-ghost-bride
@@ -713,6 +728,7 @@ the-green-mile
 the-green-witch
 the-guest-list
 the-gunslinger
+the-hard-way
 the-hating-game
 the-haunting-of-hill-house
 the-help
@@ -734,6 +750,7 @@ the-hunger-games
 the-hunt-for-the-blue-beetle
 the-immortals-of-meluha
 the-inheritance-games
+the-innovators-dilemma
 the-interpreters
 the-invisible-life-of-addie-larue
 the-island-of-the-day-before
@@ -749,6 +766,7 @@ the-lady-of-the-lake
 the-last-battle
 the-last-days-of-hitler
 the-last-days-of-socrates
+the-last-lecture
 the-last-olympian
 the-last-precinct
 the-last-straw
