@@ -1,5 +1,5 @@
 {
- "turn": 42,
+ "turn": 53,
  "pages": {
   "latin american fiction": "done",
   "korean fiction": "done",
@@ -40,7 +40,9 @@
   "nonfiction": 2,
   "romance": 2,
   "german literature": "done",
-  "literary fiction": "done"
+  "literary fiction": "done",
+  "satire": "done",
+  "politics": 2
  },
  "refused": [
   "/works/OL6658317W",
@@ -235,6 +237,15 @@
   "/works/OL17366206W",
   "/works/OL79339W",
   "/works/OL37826293W",
-  "/works/OL19337438W"
+  "/works/OL19337438W",
+  "/works/OL16810944W",
+  "/works/OL20915117W",
+  "/works/OL3875883W",
+  "/works/OL259028W",
+  "/works/OL2024851W",
+  "/works/OL362289W",
+  "/works/OL40992W",
+  "/works/OL24514935W",
+  "/works/OL19661009W"
  ]
 }

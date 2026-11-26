@@ -5,6 +5,8 @@
 21-lessons-for-the-21st-century
 22-cells-in-nuremberg
 2666
+400-days
+a-canticle-for-leibowitz
 a-certain-hunger
 a-child-called-it
 a-clash-of-kings
@@ -98,6 +100,7 @@ bad-feminist
 bad-luck-and-trouble
 bag-of-bones
 bambi
+band-of-brothers
 baudolino
 beach-read
 behave
@@ -131,6 +134,7 @@ captain-alatriste
 captains-of-the-sands
 caraval
 carrie
+casino-royale
 catch-22
 catching-fire
 cato
@@ -140,13 +144,16 @@ central-park
 charlie-and-the-chocolate-factory
 charlottes-web
 chicka-chicka-boom-boom
+children-of-dune
 children-of-time
+christiane-f-wir-kinder-vom-bahnhof-zoo
 christine
 chronicle-of-a-death-foretold
 cinder
 cirque-du-freak
 citadel
 city-of-bones
+city-of-the-beasts
 clear-and-present-danger
 collapse
 colorless-tsukuru-tazaki-and-his-years-of-pilgrimage
@@ -196,6 +203,7 @@ destroy-me
 diary-of-a-country-priest
 diary-of-a-wimpy-kid
 different-seasons
+dirk-gentlys-holistic-detective-agency
 dirty-snow
 discipline-and-punish
 disclosure
@@ -203,6 +211,7 @@ divergent
 do-androids-dream-of-electric-sheep
 doctor-faustus
 doctor-faustus-marlowe
+doctor-zhivago
 dom-casmurro
 dona-flor-and-her-two-husbands
 dork-diaries
@@ -214,6 +223,7 @@ drive-the-surprising-truth-about-what-motivates-us
 dune-messiah
 east-of-eden
 eat-that-frog
+eaters-of-the-dead
 el-filibusterismo
 eleanor-oliphant-is-completely-fine
 eleanor-park
@@ -297,9 +307,13 @@ hillbilly-elegy
 his-last-bow
 history-of-rome
 history-of-the-peloponnesian-war
+hogfather
+homage-to-catalonia
 homo-deus-a-brief-history-of-tomorrow
+hop-on-pop
 hopeless
 hopscotch
+horton-hears-a-who
 house-of-leaves
 how-to
 how-to-be-an-antiracist
@@ -307,6 +321,7 @@ how-to-do-nothing
 how-to-win-friends-and-influence-people
 howls-moving-castle
 human-acts
+humankind-a-hopeful-history
 hygiene-and-the-assassin
 hyperion
 i-am-a-cat
@@ -331,6 +346,7 @@ in-the-miso-soup
 in-the-skin-of-a-lion
 in-the-woods
 incidents-in-the-life-of-a-slave-girl
+india-from-curzon-to-nehru-and-after
 inferno
 inferno-brown
 innocent-erendira-and-her-heartless-grandmother
@@ -370,8 +386,10 @@ kokoro
 labyrinths
 leaf-storm
 leaves-of-grass
+legend
 les-enfants-terribles
 less
+lessons-in-chemistry
 let-the-right-one-in
 letter-to-his-father
 letters-of-a-portuguese-nun
@@ -390,6 +408,7 @@ lord-of-the-flies
 lords-of-easy-money
 love-from-a-to-z
 love-in-the-time-of-cholera
+love-is-a-dog-from-hell
 love-on-the-brain
 macbeth
 maigret-and-the-tramp
@@ -411,6 +430,7 @@ memories-of-my-melancholy-whores
 men-are-from-mars-women-are-from-venus
 mere-christianity
 metamorphoses
+mexican-gothic
 midnights-children
 milk-and-honey
 mindhunter
@@ -423,6 +443,7 @@ mockingjay
 molecular-biology-of-the-cell
 molloy
 money-master-the-game
+monster-the-autobiography-of-an-l-a-gang-member
 mood-indigo
 moonwalking-with-einstein
 moralia
@@ -430,6 +451,7 @@ mort
 mother-goose-tales
 mother-night
 much-ado-about-nothing
+murder-in-three-acts
 murder-on-the-links
 murder-on-the-orient-express
 murphy
@@ -437,12 +459,15 @@ musicophilia
 my-lesbian-experience-with-loneliness
 my-sister-the-serial-killer
 nada
+naked-lunch
 nana
 native-son
 natural-history
 nausea
+needful-things
 nervous-conditions
 neuromancer
+never-cry-wolf
 never-split-the-difference
 neverwhere
 new-moon
@@ -450,10 +475,12 @@ nicomachean-ethics
 night
 night-at-the-crossroads
 night-flight
+night-shift
 nineteen-minutes
 no-longer-at-ease
 no-one-writes-to-the-colonel
 northern-lights
+not-without-my-daughter
 noughts-crosses
 nudge
 number-the-stars
@@ -505,6 +532,7 @@ perfume
 persian-letters
 persuader
 pet-sematary
+petals-on-the-wind
 phantastes
 philosophiae-naturalis-principia-mathematica
 physics
@@ -544,6 +572,7 @@ redwall
 reminders-of-him
 rendezvous-with-rama
 requiem-for-a-spanish-peasant
+restore-me
 resurrection
 revolution-2020
 rework
@@ -557,6 +586,7 @@ sailor-moon-vol-1
 saint-manuel-bueno-martyr
 salems-lot
 sarahs-key
+scary-stories-to-tell-in-the-dark
 scythe
 second-foundation
 severance
@@ -583,12 +613,14 @@ something-i-never-told-you
 something-wicked-this-way-comes
 sonnets
 sophies-world
+soul-music
 spare
 spring-snow
 start-with-why
 steelheart
 steve-jobs
 stone-butch-blues
+stories-of-your-life-and-others
 storm-of-the-century
 suicide-med
 suite-francaise
@@ -630,6 +662,7 @@ the-battle-of-the-labyrinth
 the-bell-jar
 the-bellini-bride
 the-bfg
+the-big-four
 the-black-dahlia
 the-blank-slate
 the-blind-watchmaker
@@ -671,6 +704,7 @@ the-crying-of-lot-49
 the-cuckoos-calling
 the-curious-incident-of-the-dog-in-the-night-time
 the-da-vinci-code
+the-daily-laws
 the-day-of-the-triffids
 the-days-of-abandonment
 the-de-santis-marriage
@@ -684,6 +718,7 @@ the-diary-of-anne-frank
 the-discovery-of-heaven
 the-dispossessed
 the-dogs-of-riga
+the-dragons-of-eden
 the-drawing-of-the-three
 the-dream-of-the-red-chamber
 the-duke-and-i
@@ -727,6 +762,7 @@ the-great-god-pan
 the-green-mile
 the-green-witch
 the-guest-list
+the-gulag-archipelago
 the-gunslinger
 the-hard-way
 the-hating-game
@@ -740,6 +776,7 @@ the-hollow
 the-horse-and-his-boy
 the-hostile-hospital
 the-hours
+the-house-in-the-cerulean-sea
 the-house-of-hades
 the-house-of-mirth
 the-house-of-the-dead
@@ -832,6 +869,7 @@ the-passage
 the-passion
 the-pearl
 the-people-in-the-trees
+the-perfect-storm
 the-perks-of-being-a-wallflower
 the-phantom-tollbooth
 the-pilgrims-progress
@@ -841,6 +879,7 @@ the-plot-against-america
 the-poet-x
 the-posthumous-memoirs-of-bras-cubas
 the-power
+the-power-broker
 the-power-of-habit
 the-power-of-now
 the-power-of-positive-thinking
@@ -858,6 +897,7 @@ the-rebel
 the-restaurant-at-the-end-of-the-universe
 the-return-of-sherlock-holmes
 the-return-of-the-king
+the-return-of-the-native
 the-rise-and-fall-of-the-third-reich
 the-road-to-serfdom
 the-running-man
@@ -901,7 +941,9 @@ the-summer-book
 the-sun-also-rises
 the-sun-and-her-flowers
 the-sword-of-summer
+the-talented-mr-ripley
 the-tempest
+the-things-we-leave-unfinished
 the-things-you-can-see-only-when-you-slow-down
 the-thursday-murder-club
 the-time-of-the-hero
@@ -916,12 +958,15 @@ the-truth-about-the-harry-quebert-affair
 the-tunnel
 the-twelve-chairs
 the-two-towers
+the-ugly-truth
 the-ultimate-hitchhikers-guide-to-the-galaxy
+the-valley-of-fear
 the-vampire-lestat
 the-vanishing-half
 the-village-by-the-sea
 the-wanderer
 the-waste-lands
+the-watsons-go-to-birmingham-1963
 the-waves
 the-way-of-kings
 the-way-of-zen
@@ -932,6 +977,7 @@ the-wicked-king
 the-wind-up-bird-chronicle
 the-witches
 the-witches-of-eastwick
+the-witching-hour
 the-words
 the-worldly-philosophers
 the-wretched-of-the-earth
@@ -951,6 +997,7 @@ this-is-how-you-lose-the-time-war
 this-side-of-paradise
 throne-of-glass
 through-the-looking-glass
+thunderhead
 to-all-the-boys-ive-loved-before
 to-selena-with-love
 to-the-lighthouse
@@ -1000,10 +1047,13 @@ why-nations-fail
 why-we-sleep
 wicked
 wintersmith
+wishtree
 without-fail
 wolves-of-the-calla
 woman-at-point-zero
 women-in-love
+women-who-love-too-much
+women-who-run-with-the-wolves
 wonder
 wool
 world-war-z
