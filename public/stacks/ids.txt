@@ -23,6 +23,7 @@ a-happy-death
 a-heart-so-white
 a-history-of-western-philosophy
 a-little-life
+a-little-princess
 a-man-of-the-people
 a-mans-head
 a-mans-place
@@ -49,6 +50,7 @@ abraham-lincoln-the-prairie-years
 ada-or-ardor-a-family-chronicle
 african-short-stories
 after-the-funeral
+against-interpretation
 against-nature
 all-about-love
 all-boys-arent-blue
@@ -72,9 +74,11 @@ and-quiet-flows-the-don
 angelas-ashes
 angels-demons
 aniara
+anils-ghost
 anne-of-avonlea
 anne-of-windy-poplars
 annihilation
+another-country
 anthem
 antifragile-things-that-gain-from-disorder
 antigone
@@ -95,6 +99,7 @@ aunt-julia-and-the-scriptwriter
 aura
 autobiography-of-a-yogi
 babbitt
+babel
 back-to-eden
 bad-feminist
 bad-luck-and-trouble
@@ -111,11 +116,13 @@ bel-ami
 better-than-the-movies
 between-the-world-and-me
 beware-of-pity
+beyond-the-wand
 black-notice
 bleak-house
 blink
 bonjour-tristesse
 borderlands-la-frontera
+bouvard-and-pecuchet
 boy
 braiding-sweetgrass
 brain-damage
@@ -131,6 +138,7 @@ call-me-by-your-name
 cant-hurt-me
 capital
 captain-alatriste
+captain-pantoja-and-the-special-service
 captains-of-the-sands
 caraval
 carrie
@@ -141,6 +149,7 @@ cato
 cats-cradle
 cell
 central-park
+champion
 charlie-and-the-chocolate-factory
 charlottes-web
 chicka-chicka-boom-boom
@@ -152,6 +161,7 @@ chronicle-of-a-death-foretold
 cinder
 cirque-du-freak
 citadel
+cities-of-the-plain
 city-of-bones
 city-of-the-beasts
 clear-and-present-danger
@@ -172,6 +182,7 @@ cronopios-and-famas
 crooked-house
 crooked-kingdom
 crooked-plow
+crossed
 crucial-conversations-tools-for-talking-when-stakes-are-high
 cry-the-beloved-country
 crying-in-h-mart
@@ -188,9 +199,11 @@ dawn-to-the-west
 deal-breaker
 dear-ijeawele-or-a-feminist-manifesto-in-fifteen-suggestions
 death-of-a-salesman
+death-on-credit
 death-on-the-nile
 debt-the-first-5-000-years
 deception
+deep-rivers
 deep-work
 delirium
 demian
@@ -224,6 +237,7 @@ dune-messiah
 east-of-eden
 eat-that-frog
 eaters-of-the-dead
+el-deafo
 el-filibusterismo
 eleanor-oliphant-is-completely-fine
 eleanor-park
@@ -243,6 +257,7 @@ eva-luna
 every-heart-a-doorway
 every-last-word
 everything-is-f-cked
+exemplary-novels
 exile-and-the-kingdom
 fables
 faceless-killers
@@ -342,6 +357,7 @@ in-cold-blood
 in-defense-of-food
 in-evil-hour
 in-search-of-lost-time
+in-the-dream-house
 in-the-miso-soup
 in-the-skin-of-a-lion
 in-the-woods
@@ -359,6 +375,7 @@ into-the-wild-krakauer
 into-thin-air
 invisible
 invisible-planets
+invitation-to-the-game
 ishmael
 it
 it-cant-happen-here
@@ -402,6 +419,7 @@ life-as-we-knew-it
 life-on-the-mississippi
 life-the-universe-and-everything
 little-big
+little-men
 long-walk-to-freedom
 looking-for-alaska
 lord-of-the-flies
@@ -425,12 +443,16 @@ maybe-you-should-talk-to-someone
 me-before-you
 me-talk-pretty-one-day
 measuring-the-world
+memoirs-of-a-geisha
 memoirs-of-sherlock-holmes
+memories-dreams-reflections
 memories-of-my-melancholy-whores
 men-are-from-mars-women-are-from-venus
 mere-christianity
 metamorphoses
 mexican-gothic
+michael-strogoff
+midnight-sun
 midnights-children
 milk-and-honey
 mindhunter
@@ -450,6 +472,7 @@ moralia
 mort
 mother-goose-tales
 mother-night
+mr-mercedes
 much-ado-about-nothing
 murder-in-three-acts
 murder-on-the-links
@@ -458,9 +481,11 @@ murphy
 musicophilia
 my-lesbian-experience-with-loneliness
 my-sister-the-serial-killer
+mythologies
 nada
 naked-lunch
 nana
+narcissus-and-goldmund
 native-son
 natural-history
 nausea
@@ -479,6 +504,7 @@ night-shift
 nineteen-minutes
 no-longer-at-ease
 no-one-writes-to-the-colonel
+nobodys-boy
 northern-lights
 not-without-my-daughter
 noughts-crosses
@@ -506,6 +532,7 @@ one-no-one-and-one-hundred-thousand
 one-of-us-is-lying
 one-of-us-is-next
 one-piece-vol-1-romance-dawn
+one-punch-man-vol-1
 one-shot
 origin
 orlando
@@ -521,7 +548,9 @@ pale-fire
 palomar
 parable-of-the-sower
 parable-of-the-talents
+paradise
 paradise-lost
+paradiso
 parzival
 passing
 paula
@@ -539,12 +568,14 @@ physics
 pimp-the-story-of-my-life
 pippi-longstocking
 play-it-as-it-lays
+player-piano
 please-look-after-mom
 poems
 poems-kabbani
 poetics
 politics
 pollyanna
+post-office
 pretties
 prince-caspian
 principles-for-dealing-with-the-changing-world-order
@@ -556,6 +587,7 @@ psycho-cybernetics
 punk-57
 purple-hibiscus
 pygmalion
+qed
 querelle-of-brest
 quiet
 ramayana
@@ -590,6 +622,7 @@ scary-stories-to-tell-in-the-dark
 scythe
 second-foundation
 severance
+shadow-and-bone
 shall-we-tell-the-president
 shatter-me
 shoe-dog
@@ -615,6 +648,7 @@ sonnets
 sophies-world
 soul-music
 spare
+specials
 spring-snow
 start-with-why
 steelheart
@@ -686,6 +720,7 @@ the-castle
 the-castle-of-otranto
 the-cat-in-the-hat
 the-charterhouse-of-parma
+the-cheese-and-the-worms
 the-cherry-orchard
 the-city-of-ember
 the-city-the-city
@@ -703,6 +738,7 @@ the-cruel-prince
 the-crying-of-lot-49
 the-cuckoos-calling
 the-curious-incident-of-the-dog-in-the-night-time
+the-cyberiad
 the-da-vinci-code
 the-daily-laws
 the-day-of-the-triffids
@@ -817,6 +853,7 @@ the-light-fantastic
 the-lightning-thief
 the-lion-and-the-jewel
 the-lion-the-witch-and-the-wardrobe
+the-little-mermaid
 the-long-haul
 the-long-ships
 the-long-walk
@@ -858,6 +895,7 @@ the-new-girl
 the-new-jim-crow
 the-night-circus
 the-nightingale
+the-notebook
 the-obstacle-is-the-way
 the-ocean-at-the-end-of-the-lane
 the-omnivores-dilemma
@@ -901,6 +939,7 @@ the-return-of-the-native
 the-rise-and-fall-of-the-third-reich
 the-road-to-serfdom
 the-running-man
+the-salmon-of-doubt
 the-satanic-verses
 the-scam
 the-scorch-trials
@@ -928,6 +967,7 @@ the-slave-girl
 the-slippery-slope
 the-son-of-neptune
 the-song-of-achilles
+the-sound-and-the-fury
 the-spanish-love-deception
 the-spy-who-came-in-from-the-cold
 the-stand
@@ -951,6 +991,7 @@ the-time-travelers-wife
 the-tipping-point
 the-titans-curse
 the-tobacconist
+the-toll
 the-tower-of-the-swallow
 the-travels-of-marco-polo
 the-tree-of-knowledge
@@ -964,6 +1005,7 @@ the-valley-of-fear
 the-vampire-lestat
 the-vanishing-half
 the-village-by-the-sea
+the-viscount-who-loved-me
 the-wanderer
 the-waste-lands
 the-watsons-go-to-birmingham-1963
@@ -978,6 +1020,7 @@ the-wind-up-bird-chronicle
 the-witches
 the-witches-of-eastwick
 the-witching-hour
+the-woman-in-me
 the-words
 the-worldly-philosophers
 the-wretched-of-the-earth
@@ -1015,8 +1058,10 @@ uglies
 ugly-love
 unbroken
 uncle-vanya
+under-the-dome
 unravel-me
 untamed
+utilitarianism
 v-for-vendetta
 voices-from-chernobyl
 waiting-for-godot
@@ -1030,6 +1075,7 @@ welcome-to-dead-house
 well-always-have-summer
 what-i-talk-about-when-i-talk-about-running
 what-if
+what-my-bones-know
 whatever
 when-breath-becomes-air
 when-i-was-puerto-rican
@@ -1037,7 +1083,10 @@ when-the-body-says-no
 when-the-sleeper-awakes
 where-the-red-fern-grows
 where-the-sidewalk-ends
+white-king
 white-nights
+white-noise
+who-fears-death
 who-moved-my-cheese
 whos-afraid-of-virginia-woolf
 whose-body
@@ -1059,6 +1108,7 @@ wool
 world-war-z
 wyrd-sisters
 yellowface
+yes-please
 yotsuba-vol-1
 you-are-a-badass
 youve-reached-sam
