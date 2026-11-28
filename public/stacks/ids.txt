@@ -6,11 +6,13 @@
 22-cells-in-nuremberg
 2666
 400-days
+61-hours
 a-canticle-for-leibowitz
 a-certain-hunger
 a-child-called-it
 a-clash-of-kings
 a-clockwork-orange
+a-concise-history-of-pakistan
 a-confederacy-of-dunces
 a-connecticut-yankee-in-king-arthurs-court
 a-discovery-of-witches
@@ -31,9 +33,11 @@ a-pale-view-of-hills
 a-passage-to-india
 a-pattern-language
 a-peoples-history-of-the-united-states
+a-poetry-handbook
 a-princess-of-mars
 a-raisin-in-the-sun
 a-room-of-ones-own
+a-sand-county-almanac
 a-storm-of-swords
 a-study-in-scarlet
 a-suitable-boy
@@ -52,6 +56,8 @@ african-short-stories
 after-the-funeral
 against-interpretation
 against-nature
+airframe
+alexander-hamilton
 all-about-love
 all-boys-arent-blue
 all-fires-the-fire
@@ -73,6 +79,7 @@ anathem
 and-quiet-flows-the-don
 angelas-ashes
 angels-demons
+angels-fall
 aniara
 anils-ghost
 anne-of-avonlea
@@ -95,6 +102,7 @@ as-you-like-it
 astrophysics-for-people-in-a-hurry
 atomic-habits
 atonement
+attached
 aunt-julia-and-the-scriptwriter
 aura
 autobiography-of-a-yogi
@@ -106,6 +114,8 @@ bad-luck-and-trouble
 bag-of-bones
 bambi
 band-of-brothers
+basic-economics
+batman-year-one
 baudolino
 beach-read
 behave
@@ -216,10 +226,12 @@ destroy-me
 diary-of-a-country-priest
 diary-of-a-wimpy-kid
 different-seasons
+digital-minimalism
 dirk-gentlys-holistic-detective-agency
 dirty-snow
 discipline-and-punish
 disclosure
+disgrace
 divergent
 do-androids-dream-of-electric-sheep
 doctor-faustus
@@ -245,6 +257,7 @@ elon-musk
 emotional-intelligence
 emotional-intelligence-2-0
 enders-game
+entangled-life
 equal-rites
 eragon
 eros-the-bittersweet
@@ -270,6 +283,7 @@ fear-no-evil
 fight-club
 finding-me
 fire-blood
+firestarter
 flow
 flowers-for-algernon
 flowers-in-the-attic
@@ -302,6 +316,7 @@ gone-girl
 gone-with-the-wind
 good-girl-bad-blood
 green-eggs-and-ham
+greenlights
 grit
 guards-guards
 guts
@@ -319,6 +334,7 @@ hearts-in-atlantis
 heated-rivalry
 her-body-and-other-parties
 hillbilly-elegy
+his-dark-materials
 his-last-bow
 history-of-rome
 history-of-the-peloponnesian-war
@@ -333,6 +349,8 @@ house-of-leaves
 how-to
 how-to-be-an-antiracist
 how-to-do-nothing
+how-to-make-money-in-stocks
+how-to-read-a-book
 how-to-win-friends-and-influence-people
 howls-moving-castle
 human-acts
@@ -345,6 +363,7 @@ i-fell-in-love-with-hope
 i-have-to-tell-you-something
 i-know-why-the-caged-bird-sings
 i-robot
+i-want-to-die-but-i-want-to-eat-tteokbokki
 icebreaker
 if-cats-disappeared-from-the-world
 if-he-had-been-with-me
@@ -392,6 +411,7 @@ julius-caesar
 junie-b-jones-and-a-little-monkey-business
 just-after-sunset
 just-kids
+justice
 kafka-on-the-shore
 kensukes-kingdom
 killing-floor
@@ -414,6 +434,7 @@ letters-to-a-young-poet
 letters-to-milena
 leviathan
 leviathan-wakes
+life-3-0
 life-a-users-manual
 life-as-we-knew-it
 life-on-the-mississippi
@@ -434,6 +455,7 @@ malgudi-days
 manon-lescaut
 mans-fate
 manufacturing-consent
+market-wizards
 martin-eden
 mastery
 matilda
@@ -479,6 +501,7 @@ murder-on-the-links
 murder-on-the-orient-express
 murphy
 musicophilia
+my-family-and-other-animals
 my-lesbian-experience-with-loneliness
 my-sister-the-serial-killer
 mythologies
@@ -502,10 +525,12 @@ night-at-the-crossroads
 night-flight
 night-shift
 nineteen-minutes
+no-logo
 no-longer-at-ease
 no-one-writes-to-the-colonel
 nobodys-boy
 northern-lights
+not-a-penny-more-not-a-penny-less
 not-without-my-daughter
 noughts-crosses
 nudge
@@ -520,6 +545,7 @@ old-school
 on-food-and-cooking
 on-heroes-and-tombs
 on-liberty
+on-the-banks-of-plum-creek
 on-the-road
 on-the-social-contract
 on-tyranny
@@ -539,10 +565,12 @@ orlando
 orthodoxy
 oryx-and-crake
 othello
+our-husband-has-gone-mad-again
 our-wives-under-the-sea
 out
 outlander
 outliers
+outwitting-the-devil
 p-s-i-still-love-you
 pale-fire
 palomar
@@ -554,8 +582,10 @@ paradiso
 parzival
 passing
 paula
+pax
 pebble-in-the-sky
 pedagogy-of-the-oppressed
+percy-jacksons-greek-gods
 perdido-street-station
 perfume
 persian-letters
@@ -576,8 +606,10 @@ poetics
 politics
 pollyanna
 post-office
+predictably-irrational
 pretties
 prince-caspian
+principles
 principles-for-dealing-with-the-changing-world-order
 prisoners-of-geography
 project-hail-mary
@@ -617,6 +649,7 @@ sacred-games
 sailor-moon-vol-1
 saint-manuel-bueno-martyr
 salems-lot
+salvage-the-bones
 sarahs-key
 scary-stories-to-tell-in-the-dark
 scythe
@@ -649,7 +682,9 @@ sophies-world
 soul-music
 spare
 specials
+split-second
 spring-snow
+spy-school-of-doom
 start-with-why
 steelheart
 steve-jobs
@@ -676,6 +711,7 @@ the-a-b-c-murders
 the-adolescent
 the-adventures-of-captain-underpants
 the-aeneid
+the-age-of-surveillance-capitalism
 the-alchemist-jonson
 the-aleph
 the-angels-game
@@ -722,6 +758,7 @@ the-cat-in-the-hat
 the-charterhouse-of-parma
 the-cheese-and-the-worms
 the-cherry-orchard
+the-circular-staircase
 the-city-of-ember
 the-city-the-city
 the-client
@@ -784,6 +821,7 @@ the-ghost-bride
 the-girl-on-the-train
 the-girl-who-kicked-the-hornets-nest
 the-girl-who-played-with-fire
+the-girl-with-all-the-gifts
 the-giver
 the-giving-tree
 the-glass-bead-game
@@ -791,6 +829,7 @@ the-glass-castle
 the-glass-menagerie
 the-god-delusion
 the-golden-ass
+the-goldfinch
 the-grapes-of-wrath
 the-graveyard-book
 the-great-conversation
@@ -882,6 +921,7 @@ the-merchant-of-venice
 the-midnight-library
 the-millionaire-master-plan
 the-monk-who-sold-his-ferrari
+the-moon-is-a-harsh-mistress
 the-moors-last-sigh
 the-mountain-is-you
 the-murders-in-the-rue-morgue
@@ -896,11 +936,13 @@ the-new-jim-crow
 the-night-circus
 the-nightingale
 the-notebook
+the-number-devil
 the-obstacle-is-the-way
 the-ocean-at-the-end-of-the-lane
 the-omnivores-dilemma
 the-origins-of-totalitarianism
 the-outsiders
+the-overstory
 the-paket
 the-palace-of-illusions
 the-passage
@@ -937,7 +979,9 @@ the-return-of-sherlock-holmes
 the-return-of-the-king
 the-return-of-the-native
 the-rise-and-fall-of-the-third-reich
+the-road-less-traveled
 the-road-to-serfdom
+the-ruins-of-gorlan
 the-running-man
 the-salmon-of-doubt
 the-satanic-verses
@@ -985,6 +1029,7 @@ the-talented-mr-ripley
 the-tempest
 the-things-we-leave-unfinished
 the-things-you-can-see-only-when-you-slow-down
+the-throne-of-fire
 the-thursday-murder-club
 the-time-of-the-hero
 the-time-travelers-wife
@@ -1016,6 +1061,7 @@ the-white-book
 the-white-castle
 the-white-lioness
 the-wicked-king
+the-wild-robot
 the-wind-up-bird-chronicle
 the-witches
 the-witches-of-eastwick
@@ -1035,6 +1081,7 @@ things-we-lost-in-the-fire
 things-we-never-got-over
 think-again
 thinking-in-systems
+thinner
 thirteen-reasons-why
 this-is-how-you-lose-the-time-war
 this-side-of-paradise
@@ -1046,6 +1093,7 @@ to-selena-with-love
 to-the-lighthouse
 tools-of-titans
 trading-in-the-zone
+train-to-pakistan
 treasure
 tripwire
 tuesdays-with-morrie
@@ -1063,8 +1111,10 @@ unravel-me
 untamed
 utilitarianism
 v-for-vendetta
+violet-bent-backwards-over-the-grass
 voices-from-chernobyl
 waiting-for-godot
+war-horse
 watchmen
 watership-down
 ways-of-seeing
